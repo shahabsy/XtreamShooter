@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75730c4f26e119a4fbe0cc1c75ac646f, type: 3}
   m_Name: Layer_Particles2
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundLayerData
-  scrollSpeed: 0.7
+  scrollSpeed: 0.8
   spawnInterval: 2
   continuousSpwning: 1
   possibleTiles:
   - {fileID: 11400000, guid: e5ab18d9c45735543a32c057550fa4ad, type: 2}
+  sortingLayerName: Layer8
+  baseOrderInLayer: 8
+  OrderGap: 10
+  zOffset: 8

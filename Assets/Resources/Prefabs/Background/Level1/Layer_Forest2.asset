@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75730c4f26e119a4fbe0cc1c75ac646f, type: 3}
   m_Name: Layer_Forest2
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundLayerData
-  scrollSpeed: 3
+  scrollSpeed: 0.3
   spawnInterval: 2
   continuousSpwning: 1
   possibleTiles:
   - {fileID: 11400000, guid: 9ae43587419a47f46bb9c98e0d853b70, type: 2}
+  sortingLayerName: Layer3
+  baseOrderInLayer: 3
+  OrderGap: 10
+  zOffset: 3

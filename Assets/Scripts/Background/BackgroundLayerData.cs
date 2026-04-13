@@ -9,4 +9,10 @@ public class BackgroundLayerData : ScriptableObject
 
     public bool continuousSpwning = true;
     public List<BackgroundTileData> possibleTiles;
+
+    [Header("Rendering / Sorting")]
+    public string sortingLayerName = "Default";
+    public int baseOrderInLayer = 0; //pre-group base
+    public int OrderGap = 10; // gap between layers (layerIndex * orderGap)
+    public float zOffset = 0f; // small zoffset for parallax only
 }

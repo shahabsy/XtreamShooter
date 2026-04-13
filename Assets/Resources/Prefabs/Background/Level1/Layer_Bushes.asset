@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75730c4f26e119a4fbe0cc1c75ac646f, type: 3}
   m_Name: Layer_Bushes
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundLayerData
-  scrollSpeed: 0.8
+  scrollSpeed: 0.9
   spawnInterval: 2
   continuousSpwning: 1
   possibleTiles:
   - {fileID: 11400000, guid: 7c025b5e75b73a74983e773345c46220, type: 2}
+  sortingLayerName: Layer9
+  baseOrderInLayer: 9
+  OrderGap: 10
+  zOffset: 9

@@ -44,5 +44,38 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Layer1
+    uniqueID: 1437321273
+    locked: 0
+  - name: Layer2
+    uniqueID: 4185540139
+    locked: 0
+  - name: Layer3
+    uniqueID: 3911826863
+    locked: 0
+  - name: Layer4
+    uniqueID: 2351571021
+    locked: 0
+  - name: Layer5
+    uniqueID: 1628078751
+    locked: 0
+  - name: Layer6
+    uniqueID: 104998707
+    locked: 0
+  - name: Layer7
+    uniqueID: 1172599787
+    locked: 0
+  - name: Layer8
+    uniqueID: 2093024119
+    locked: 0
+  - name: Layer9
+    uniqueID: 3402084915
+    locked: 0
+  - name: Layer10
+    uniqueID: 115919655
+    locked: 0
+  - name: Layer11
+    uniqueID: 1376537341
+    locked: 0
   m_RenderingLayers:
   - Default

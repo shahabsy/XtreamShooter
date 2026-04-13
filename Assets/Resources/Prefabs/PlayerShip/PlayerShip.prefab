@@ -81,9 +81,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 1376537341
+  m_SortingLayer: 11
+  m_SortingOrder: 11
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7368636186254407926, guid: 725fcb727a599c84e8da785738883da2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -104,10 +104,10 @@ Rigidbody2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5589010798283346986}
   m_BodyType: 0
-  m_Simulated: 1
+  m_Simulated: 0
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 2.0172
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 0
@@ -181,13 +181,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 8
-  leftBoundary: -8
-  rightBoundary: 8
-  topBoundary: 4.5
-  bottomBoundary: -4.5
+  screenPadding: {x: 0.5, y: 0.5}
+  useColliderForExtents: 1
+  previewBounds: 1
   bulletPrefab: {fileID: 2819959981398355972, guid: ad7800d941227a74dad34ed2f0ef8e87, type: 3}
   firePoint: {fileID: 3805962243659026194}
-  fireRate: 0.2
+  fireRate: 0.1
 --- !u!1 &8468528681728882824
 GameObject:
   m_ObjectHideFlags: 0

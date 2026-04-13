@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEngine.Rendering;
 
 public class BackgroundSpawner : MonoBehaviour
 {
@@ -49,24 +50,33 @@ public class BackgroundSpawner : MonoBehaviour
             return;
         }
 
-        foreach(var layerData in layers)
+        for (int i = 0; i < layers.Count; ++i)
         {
+            var layerData = layers[i];
             if (layerData == null)
             {
                 Debug.LogError("BackgroundSpawner: one of the 'layers' entries is null. Skipping.");
                 continue;
             }
-            GameObject layerObj = new GameObject($"Layer_{layerData.name}");
+
+            GameObject layerObj = new GameObject($"Layer_{i:00}_{layerData.name}");
             layerObj.transform.SetParent(transform);
+
+            var sg = layerObj.AddComponent<SortingGroup>();
+            sg.sortingLayerName = layerData.sortingLayerName;
+
+            int layerOrder = layerData.baseOrderInLayer + (i * layerData.OrderGap);
+            sg.sortingOrder = layerOrder;
+
             BackgroundLayer layer = layerObj.AddComponent<BackgroundLayer>();
 
-            SetLayerData(layer, layerData);
+            SetLayerData(layer, layerData, i, layerOrder);
         }
     }
 
-    public void SetLayerData(BackgroundLayer layer, BackgroundLayerData data)
+    public void SetLayerData(BackgroundLayer layer, BackgroundLayerData data, int layerIndex, int layerOrder)
     {
-        layer.Init(data);
+        layer.Init(data, layerIndex, layerOrder);
     }
 
     private int CalculateRequiredPoolSize()

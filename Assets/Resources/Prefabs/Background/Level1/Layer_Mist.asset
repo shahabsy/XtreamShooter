@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75730c4f26e119a4fbe0cc1c75ac646f, type: 3}
   m_Name: Layer_Mist
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundLayerData
-  scrollSpeed: 0.9
+  scrollSpeed: 1
   spawnInterval: 2
   continuousSpwning: 1
   possibleTiles:
   - {fileID: 11400000, guid: cb2b363d73f9dd34297bc4e83b200cfc, type: 2}
+  sortingLayerName: Layer10
+  baseOrderInLayer: 10
+  OrderGap: 10
+  zOffset: 10

@@ -12,23 +12,33 @@ public class BackgroundLayer : MonoBehaviour
     private float leftBoundary;
     private float rightSpawnX;
 
+    private int layerIndex = 0;
+    private int layerSortingOrder = 0;
+    private float layerZ = 0f;
+    private const float layerZSpacing = 0.05f; // very small z space for parallax only
     
-    private float nextSpawnX;
     private float fallbackWidth = 10f;
 
-    public void Init(BackgroundLayerData data)
+    public void Init(BackgroundLayerData data, int index, int sortingOrder)
     {
         layerData = data;
+        layerIndex = index;
+        layerSortingOrder = sortingOrder;
         mainCamera = Camera.main;
-        // rest of the initialzation here
+
+        layerZ = layerData.zOffset - (layerIndex * layerZSpacing);
+        var p = transform.position;
+        p.z = layerZ;
+        transform.position = p;
     }
 
     void Start()
     {
         if (mainCamera == null) mainCamera = Camera.main;
-
         ComputeBoundaries();
 
+        if (layerData == null) return;
+        
         if (layerData.continuousSpwning)
         {
             float currentX = rightSpawnX;
@@ -42,6 +52,35 @@ public class BackgroundLayer : MonoBehaviour
         {
             StartCoroutine(SpawnRoutine());
         }
+    }
+
+    private void SpawnTileAt(float x)
+    {
+        if (BackgroundTilePool.Instance == null) return;
+
+        BackgroundTile tile = BackgroundTilePool.Instance.GetTile();
+        if (tile == null) return;
+
+        BackgroundTileData data = GetRandomTile();
+        if (data == null || data.sprite == null)
+        {
+            BackgroundTilePool.Instance.ReturnTile(tile);
+            return;
+        }
+        tile.SetTile(data);
+
+        tile.transform.SetParent(transform, worldPositionStays: false);
+        tile.transform.localScale = Vector3.one;
+        tile.transform.position = new Vector3(x, 0, 0);
+
+        var sr = tile.SpriteRenderer;
+        if (sr != null)
+        {
+            sr.sortingLayerName = layerData.sortingLayerName;
+            sr.sortingOrder = 0;
+        }
+
+        activeTiles.Add(tile);
     }
 
     // Update is called once per frame
@@ -97,26 +136,6 @@ public class BackgroundLayer : MonoBehaviour
 
         Vector3 rightEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(1, 0, mainCamera.nearClipPlane));
         rightSpawnX = rightEdgeWorld.x + 2f;
-    }
-
-    private void SpawnTileAt(float x)
-    {
-        if (BackgroundTilePool.Instance == null) return;
-
-        BackgroundTile tile = BackgroundTilePool.Instance.GetTile();
-        if (tile == null) return;
-
-        BackgroundTileData data = GetRandomTile();
-        if(data == null || data.sprite == null)
-        {
-            BackgroundTilePool.Instance.ReturnTile(tile);
-            return;
-        }
-        tile.SetTile(data);
-        tile.transform.SetParent(transform, worldPositionStays: false);
-        tile.transform.localScale = Vector3.one;
-        tile.transform.position = new Vector3(x, 0, 0);
-        activeTiles.Add(tile);
     }
 
     private BackgroundTileData GetRandomTile()

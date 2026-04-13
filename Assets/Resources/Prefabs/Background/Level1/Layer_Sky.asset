@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75730c4f26e119a4fbe0cc1c75ac646f, type: 3}
   m_Name: Layer_Sky
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundLayerData
-  scrollSpeed: 1
+  scrollSpeed: 0.1
   spawnInterval: 2
   continuousSpwning: 1
   possibleTiles:
   - {fileID: 11400000, guid: 2e84f5172cfa38f478c4c828b5ee50e1, type: 2}
+  sortingLayerName: Layer1
+  baseOrderInLayer: 1
+  OrderGap: 10
+  zOffset: 1
