@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75730c4f26e119a4fbe0cc1c75ac646f, type: 3}
+  m_Name: Layer_Sky
+  m_EditorClassIdentifier: Assembly-CSharp::BackgroundLayerData
+  scrollSpeed: 1
+  spawnInterval: 2
+  continuousSpwning: 1
+  possibleTiles:
+  - {fileID: 11400000, guid: 2e84f5172cfa38f478c4c828b5ee50e1, type: 2}
