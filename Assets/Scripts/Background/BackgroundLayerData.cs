@@ -7,7 +7,7 @@ public class BackgroundLayerData : ScriptableObject
     public float scrollSpeed = 1f;
     public float spawnInterval = 2f;
 
-    public bool continuousSpwning = true;
+    public bool continuousSpawning = true;
     public List<BackgroundTileData> possibleTiles;
 
     [Header("Rendering / Sorting")]

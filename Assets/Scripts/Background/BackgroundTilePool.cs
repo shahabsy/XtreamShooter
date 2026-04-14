@@ -20,12 +20,6 @@ public class BackgroundTilePool : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            
-            if (tilePrefab != null && poolSize > 0)
-            {
-                CreatePool();
-                initialized = true;
-            } 
         }
         else
         {
@@ -87,6 +81,7 @@ public class BackgroundTilePool : MonoBehaviour
             if (tilePrefab == null)
             {
                 Debug.LogWarning("BackgroundTilePool.GetTile is null, cannot expand pool");
+                return null;
             }
             else
             {

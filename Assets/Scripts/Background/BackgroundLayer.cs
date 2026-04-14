@@ -18,6 +18,7 @@ public class BackgroundLayer : MonoBehaviour
     private const float layerZSpacing = 0.05f; // very small z space for parallax only
     
     private float fallbackWidth = 10f;
+    private float lastSpawnedWidth = 5f;
 
     public void Init(BackgroundLayerData data, int index, int sortingOrder)
     {
@@ -35,11 +36,12 @@ public class BackgroundLayer : MonoBehaviour
     void Start()
     {
         if (mainCamera == null) mainCamera = Camera.main;
-        ComputeBoundaries();
-
-        if (layerData == null) return;
         
-        if (layerData.continuousSpwning)
+        if (layerData == null) return;
+
+        ComputeBoundaries();
+        
+        if (layerData.continuousSpawning)
         {
             float currentX = rightSpawnX;
             while (currentX > leftBoundary)
@@ -68,6 +70,7 @@ public class BackgroundLayer : MonoBehaviour
             return;
         }
         tile.SetTile(data);
+        lastSpawnedWidth = tile.Width;
 
         tile.transform.SetParent(transform, worldPositionStays: false);
         tile.transform.localScale = Vector3.one;
@@ -86,8 +89,7 @@ public class BackgroundLayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ComputeBoundaries();
-
+        //ComputeBoundaries();
         if (layerData == null) return;
 
         float delta = layerData.scrollSpeed * Time.deltaTime;
@@ -112,7 +114,7 @@ public class BackgroundLayer : MonoBehaviour
             }
         }
 
-        if (layerData.continuousSpwning)
+        if (layerData.continuousSpawning)
         {
             float rightmostX = GetRightmostTileX();
             float avgWidth = GetAverageTileWidth();
@@ -179,7 +181,7 @@ public class BackgroundLayer : MonoBehaviour
 
     private float GetRightmostTileX()
     {
-        if (activeTiles.Count == 0 || activeTiles == null)
+        if (activeTiles == null || activeTiles.Count == 0)
         {
             return rightSpawnX - GetAverageTileWidth();
         }
@@ -199,7 +201,10 @@ public class BackgroundLayer : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(layerData != null ? layerData.spawnInterval : 1f);
-            SpawnTileAt(rightSpawnX);
+            if(layerData != null && !layerData.continuousSpawning)
+            {
+                SpawnTileAt(rightSpawnX);
+            }
         }
     }
 }

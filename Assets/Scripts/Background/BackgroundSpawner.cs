@@ -14,6 +14,14 @@ public class BackgroundSpawner : MonoBehaviour
         int requiredPoolSize = CalculateRequiredPoolSize();
 
         BackgroundTilePool pool = FindAnyObjectByType<BackgroundTilePool>();
+
+        if (pool != null && pool.tilePrefab != tilePrefab)
+        {
+            Debug.LogWarning("Existing BackgroundTilePool uses a different tilePrefab. Destroying and recreating.");
+            Destroy(pool.gameObject);
+            pool = null;
+        }
+
         if (pool == null)
         {
             GameObject poolObj = new GameObject("BackgroundTilePool");
@@ -70,13 +78,8 @@ public class BackgroundSpawner : MonoBehaviour
 
             BackgroundLayer layer = layerObj.AddComponent<BackgroundLayer>();
 
-            SetLayerData(layer, layerData, i, layerOrder);
+            layer.Init(layerData, i, layerOrder);
         }
-    }
-
-    public void SetLayerData(BackgroundLayer layer, BackgroundLayerData data, int layerIndex, int layerOrder)
-    {
-        layer.Init(data, layerIndex, layerOrder);
     }
 
     private int CalculateRequiredPoolSize()
@@ -85,6 +88,7 @@ public class BackgroundSpawner : MonoBehaviour
 
         Camera mainCamera = Camera.main;
         if (mainCamera == null) return poolSize;
+
         float zDistance = Mathf.Abs(Camera.main.transform.position.z - 0f);
         Vector3 leftEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, zDistance));
         Vector3 rightEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(1, 0, zDistance));
@@ -111,7 +115,7 @@ public class BackgroundSpawner : MonoBehaviour
                 if (cout > 0) avgWidth = sum / cout;
             }
             int neededForLayer = Mathf.CeilToInt(screenWidth / Mathf.Max(0.01f, avgWidth)) + 2;
-            if (!ld.continuousSpwning) neededForLayer = Mathf.Min(3, neededForLayer);
+            if (!ld.continuousSpawning) neededForLayer = Mathf.Min(3, neededForLayer);
             totalNeeded += neededForLayer;
         }
         return Mathf.Max(poolSize, totalNeeded);
