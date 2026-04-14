@@ -8,6 +8,7 @@ public class BackgroundTilePool : MonoBehaviour
 
     public GameObject tilePrefab;
     public int poolSize = 5;
+    [SerializeField] private int expandChunk = 5;
 
     private Queue<BackgroundTile> pool = new Queue<BackgroundTile>();
     private HashSet<BackgroundTile> allTiles = new HashSet<BackgroundTile>();
@@ -80,22 +81,28 @@ public class BackgroundTilePool : MonoBehaviour
 
         if ( pool.Count == 0)
         {
-            Debug.LogWarning("BackgroundTilePool exhausted: expanding pool by 1.");
-            GameObject obj = Instantiate(tilePrefab, transform);
-            obj.SetActive(false);
-            var t = obj.GetComponent<BackgroundTile>();
-            if (t != null)
+            
+            int minChunk = Mathf.Max(3, poolSize / 2);
+            int chunk = Mathf.Max(expandChunk, minChunk);
+            if (tilePrefab == null)
             {
-                pool.Enqueue(t);
-                allTiles.Add(t);
+                Debug.LogWarning("BackgroundTilePool.GetTile is null, cannot expand pool");
             }
-            else Debug.LogWarning("BackgroundTilePool: instantiated prefab has no BackgroundTile component.");
+            else
+            {
+                Debug.LogWarning($"BackgroundTilePool exhausted: expanding pool by {chunk}.");
+                ExpandPool(chunk);
+            }
         }
         
-        BackgroundTile tile = pool.Dequeue();
+        BackgroundTile tile = (pool.Count > 0) ? pool.Dequeue() : null;
         if (tile != null)
         {
             tile.gameObject.SetActive(true);
+        }
+        else
+        {
+            Debug.Log("BackgroundTilePool.GetTile: failed to obtain a tile even after expansion.");
         }
         return tile;
     }

@@ -85,9 +85,9 @@ public class BackgroundSpawner : MonoBehaviour
 
         Camera mainCamera = Camera.main;
         if (mainCamera == null) return poolSize;
-
-        Vector3 leftEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, mainCamera.nearClipPlane));
-        Vector3 rightEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(1, 0, mainCamera.nearClipPlane));
+        float zDistance = Mathf.Abs(Camera.main.transform.position.z - 0f);
+        Vector3 leftEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, zDistance));
+        Vector3 rightEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(1, 0, zDistance));
         float screenWidth = Mathf.Abs(rightEdgeWorld.x  - leftEdgeWorld.x);
 
         int totalNeeded = 0;

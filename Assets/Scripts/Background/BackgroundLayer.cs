@@ -71,7 +71,7 @@ public class BackgroundLayer : MonoBehaviour
 
         tile.transform.SetParent(transform, worldPositionStays: false);
         tile.transform.localScale = Vector3.one;
-        tile.transform.position = new Vector3(x, 0, 0);
+        tile.transform.position = new Vector3(x, 0, layerZ);
 
         var sr = tile.SpriteRenderer;
         if (sr != null)
@@ -131,10 +131,11 @@ public class BackgroundLayer : MonoBehaviour
         if (mainCamera == null) mainCamera = Camera.main;
         if (mainCamera == null) return;
 
-        Vector3 leftEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, mainCamera.nearClipPlane));
+        float zDistance = Mathf.Abs(mainCamera.transform.position.z - transform.position.z);
+        Vector3 leftEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, zDistance));
         leftBoundary = leftEdgeWorld.x - 1f;
 
-        Vector3 rightEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(1, 0, mainCamera.nearClipPlane));
+        Vector3 rightEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(1, 0, zDistance));
         rightSpawnX = rightEdgeWorld.x + 2f;
     }
 
