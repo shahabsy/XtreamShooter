@@ -20,6 +20,14 @@ public class BackgroundLayer : MonoBehaviour
     private float fallbackWidth = 10f;
     private float lastSpawnedWidth = 5f;
 
+    private bool scrollingEnabled = true;
+    private bool spawningEnabled = true;
+    private float speedMultiplier = 1f;
+
+    public void SetScrolling(bool enabled) => scrollingEnabled = enabled;
+    public void SetSpawning(bool enabled) => spawningEnabled = enabled;
+    public void SetScrollSpeedMultiplier(float multiplier) => speedMultiplier = multiplier;
+
     public void Init(BackgroundLayerData data, int index, int sortingOrder)
     {
         layerData = data;
@@ -89,20 +97,23 @@ public class BackgroundLayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //ComputeBoundaries();
         if (layerData == null) return;
-
-        float delta = layerData.scrollSpeed * Time.deltaTime;
-        foreach (var tile in activeTiles)
+        if (scrollingEnabled)
         {
-            if (tile != null)
-                tile.transform.position += Vector3.left * delta;
+            float delta = layerData.scrollSpeed * speedMultiplier * Time.deltaTime;
+            foreach(var tile in activeTiles)
+            {
+                if (tile != null)
+                {
+                    tile.transform.position += Vector3.left * delta;
+                }
+            }
         }
-
+        // Recycle off-screen tiles
         for (int i = activeTiles.Count -1; i >=0; i--)
         {
             var t = activeTiles[i];
-            if (t == null)
+            if (t == null) 
             {
                 activeTiles.RemoveAt(i);
                 continue;
@@ -113,15 +124,15 @@ public class BackgroundLayer : MonoBehaviour
                 activeTiles.RemoveAt(i);
             }
         }
-
-        if (layerData.continuousSpawning)
+        // Spawning only if enabled
+        if (layerData.continuousSpawning && spawningEnabled)
         {
             float rightmostX = GetRightmostTileX();
-            float avgWidth = GetAverageTileWidth();
+            //float avgWidth = GetAverageTileWidth();
 
             while(rightmostX < rightSpawnX)
             {
-                float spawnX = rightmostX + avgWidth / 2f;
+                float spawnX = rightmostX + lastSpawnedWidth / 2f;
                 SpawnTileAt(spawnX);
                 rightmostX = GetRightmostTileX();
             }

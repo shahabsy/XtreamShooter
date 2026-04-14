@@ -5,9 +5,12 @@ using UnityEngine.Rendering;
 
 public class BackgroundSpawner : MonoBehaviour
 {
-    [SerializeField] private List<BackgroundLayerData> layers;
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private int poolSize = 5;
+
+    private List<BackgroundLayerData> layers = new List<BackgroundLayerData>();
+    [SerializeField] private List<BackgroundLayer> activeLayers = new List<BackgroundLayer>();
+
 
     private void Awake()
     {
@@ -79,7 +82,49 @@ public class BackgroundSpawner : MonoBehaviour
             BackgroundLayer layer = layerObj.AddComponent<BackgroundLayer>();
 
             layer.Init(layerData, i, layerOrder);
+            // store the runtime component for later control
+            activeLayers.Add(layer);
         }
+    }
+
+    public void SetScrolling(bool enabled)
+    {
+        foreach (var layer in activeLayers)
+        {
+            layer.SetScrolling(enabled);
+        }
+    }
+
+    public void SetSpawning(bool enabled)
+    {
+        foreach (var layer in activeLayers)
+        {
+            layer.SetSpawning(enabled);
+        }
+    }
+
+    public void SetScrollingMultiplier(float multiplier)
+    {
+        foreach (var layer in activeLayers)
+        {
+            if (layer != null)
+            {
+                layer.SetScrollSpeedMultiplier(multiplier);
+            }
+        }
+    }
+
+    public void ResetBackground()
+    {
+        foreach(var layer in activeLayers)
+        {
+            if (layer != null)
+            {
+                Destroy(layer.gameObject);
+            }
+        }
+        activeLayers.Clear();
+        Start();
     }
 
     private int CalculateRequiredPoolSize()

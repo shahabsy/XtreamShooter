@@ -77,5 +77,8 @@ TagManager:
   - name: Layer11
     uniqueID: 1376537341
     locked: 0
+  - name: Character
+    uniqueID: 2889772199
+    locked: 0
   m_RenderingLayers:
   - Default

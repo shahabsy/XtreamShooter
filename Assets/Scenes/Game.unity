@@ -659,7 +659,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 0000000039c8ab552b467af9afbd29e94d202a8c9f820a6133274206eb73e4457703c17c33b2c7ca27cbe806fd4a0c52
+  m_ApplyToSortingLayers: 0000000039c8ab552b467af9afbd29e94d202a8c9f820a6133274206eb73e4457703c17c33b2c7ca27cbe806fd4a0c52a76c3eac
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1075,9 +1075,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30e14fa571c322438e6d1c37aa0f09a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundSpawner
-  layers: []
   tilePrefab: {fileID: 2112999589981664126, guid: b54a0f39d6fd20a4382a0a800b815108, type: 3}
   poolSize: 5
+  activeLayers:
+  - {fileID: 1093706544}
+  - {fileID: 1972959124}
+  - {fileID: 192392242}
+  - {fileID: 987457200}
+  - {fileID: 1877012502}
+  - {fileID: 1560046558}
+  - {fileID: 972352953}
+  - {fileID: 1308847541}
+  - {fileID: 349499258}
+  - {fileID: 550024363}
 --- !u!1 &1308847539
 GameObject:
   m_ObjectHideFlags: 0
@@ -1288,6 +1298,53 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &1658546692
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1658546694}
+  - component: {fileID: 1658546693}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1658546693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1658546692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a61806d895ffb704897612f8bd9fb73f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageController
+  currentStage: {fileID: 11400000, guid: f827af4a19872fa48bf722ab4a22fd77, type: 2}
+  backgroundSpawner: {fileID: 1236166020}
+  enemySpawner: {fileID: 1906335883}
+--- !u!4 &1658546694
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1658546692}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1877012500
 GameObject:
   m_ObjectHideFlags: 0
@@ -1402,6 +1459,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1906335882}
+  - component: {fileID: 1906335883}
   m_Layer: 0
   m_Name: EnemySpawner
   m_TagString: Untagged
@@ -1424,6 +1482,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1906335883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1906335881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e11ac4f1af094ed4fb9d1ea668e3336c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  spawnRate: 1
+  enemyPrefab:
+  - {fileID: 6468513381374726774, guid: 54f1bcca6b1cddc49898c5b8f3189745, type: 3}
 --- !u!1 &1972959120
 GameObject:
   m_ObjectHideFlags: 0
@@ -1596,3 +1669,4 @@ SceneRoots:
   - {fileID: 1906335882}
   - {fileID: 474771562}
   - {fileID: 1236166019}
+  - {fileID: 1658546694}
