@@ -10,6 +10,7 @@ public class StageData : ScriptableObject
     public AudioClip stageMusic;
     public float bossIntroDelay = 2f;
     public float transitionDelay = 3f;
+    public float transitionScrollMultiplier = 2f;
     // just in case if we want to trigger events during mid stage
     public float[] midStageTriggers;
 }

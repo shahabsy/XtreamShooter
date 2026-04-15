@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using UnityEditor.Experimental.GraphView;
 
 public class StageController : MonoBehaviour
 {
@@ -85,7 +86,7 @@ public class StageController : MonoBehaviour
         // Enable background scrolling and spawning
         backgroundSpawner?.SetScrolling(true);
         backgroundSpawner?.SetSpawning(true);
-        backgroundSpawner?.SetScrollingMultiplier(1f);
+        backgroundSpawner?.SetScrollingMultiplier(currentStage.baseScrollSpeed);
         enemySpawner?.StartSpawning();
 
         OnStateChanged?.Invoke(currentState);
@@ -125,6 +126,23 @@ public class StageController : MonoBehaviour
         backgroundSpawner?.SetScrolling(false);
         backgroundSpawner?.SetScrollingMultiplier(1f);
     }
+
+    //private IEnumerator SmoothTransitionScroll(float targetMultiplier, float duration)
+    //{
+        /*
+        float startMultiplier = backgroundSpawner.GetCurrentMultiplier();
+        float elapsed = 0f;
+        while(elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            float mult = Mathf.Lerp(startMultiplier, targetMultiplier, t);
+            backgroundSpawner?.SetScrollingMultiplier(mult);
+            yield return null;
+        }
+        backgroundSpawner?.SetScrollingMultiplier(targetMultiplier);
+        */
+    //}
 
     private IEnumerator BossIntroRoutine()
     {
@@ -186,7 +204,18 @@ public class StageController : MonoBehaviour
         currentState = StageState.Transition;
         OnStateChanged?.Invoke(currentState);
 
+        //Temporarily enable scrolling for the transition
+        backgroundSpawner?.SetScrolling(true);
+        // apply faster scroll multiplier
+        backgroundSpawner?.SetScrollingMultiplier(currentStage.transitionScrollMultiplier);
+
+        Debug.Log($"Transition: scrolling at {currentStage.transitionScrollMultiplier}");
+
         yield return new WaitForSeconds(currentStage.transitionDelay);
+
+        // Reset multiplier back to normal
+        backgroundSpawner?.SetScrollingMultiplier(1f);
+        backgroundSpawner?.SetScrolling(false);
 
         LoadNextStage();
     }

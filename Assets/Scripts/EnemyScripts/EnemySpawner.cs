@@ -1,12 +1,32 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class EnemySpawnEntry
+{
+    public EnemyData enemyData;
+    public int weight = 1;
+}
 
 public class EnemySpawner : MonoBehaviour
 {
-    public float spawnRate = 1f;
-    public GameObject[] enemyPrefab;
+    [SerializeField] private List<EnemySpawnEntry> spawnableEnemies;
+    [SerializeField] private float spawnRate = 1.0f;
+    [SerializeField] private Transform enemyContainer;
+
     private bool isSpawning = false;
     private Coroutine spawnRoutine;
+    private int totalWeight;
+
+    private void Start()
+    {
+        totalWeight = 0;
+        foreach(var entry in spawnableEnemies)
+        {
+            totalWeight += entry.weight;
+        }
+    }
 
     public void StartSpawning()
     {
@@ -35,11 +55,42 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnRandomEnemy()
     {
-        if (enemyPrefab.Length == 0) return;
-        GameObject prefab = enemyPrefab[Random.Range(0, enemyPrefab.Length)];
-        //Vector3 spawnPos = Camera.main.ViewportToWorldPoint(new Vector3(1.1f, Random.Range(0.2f, 0.8f), 0));
-        Vector3 spawnPos = new Vector3(10f, Random.Range(-3f, 3f), 0);
-        GameObject enemy = Instantiate(prefab, spawnPos, Quaternion.identity);
-        enemy.transform.SetParent(transform);
+        if (spawnableEnemies.Count == 0) return;
+
+        int randomValue = Random.Range(0, totalWeight);
+        EnemyData selectedData = null;
+        foreach(var entry in spawnableEnemies)
+        {
+            if (randomValue < entry.weight)
+            {
+                selectedData = entry.enemyData;
+                break;
+            }
+            randomValue -= entry.weight;
+        }
+
+        if (selectedData == null) return;
+
+        Vector3 spawnPos = new Vector3(12f, Random.Range(-5f, 5f), 0);
+        GameObject enemyObj = new GameObject(selectedData.enemyName);
+        enemyObj.transform.position = spawnPos;
+        enemyObj.transform.SetParent(enemyContainer != null ? enemyContainer : transform);
+
+        var sr = enemyObj.AddComponent<SpriteRenderer>();
+        sr.sprite = selectedData.sprite;
+        sr.sortingLayerName = selectedData.sortingLayerName;
+        sr.sortingOrder = selectedData.orderInLayer;
+        enemyObj.transform.localScale = selectedData.spriteScale;
+
+        var enemy = enemyObj.AddComponent<Enemy>();
+        enemy.Initialize(selectedData);
+
+        var rb = enemyObj.AddComponent<Rigidbody2D>();
+        rb.gravityScale = 0;
+        rb.simulated = false;
+        var collider = enemyObj.AddComponent<BoxCollider2D>();
+        collider.isTrigger = true;
+        
+        enemyObj.tag = "Enemy";
     }
 }

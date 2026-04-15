@@ -2,41 +2,88 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private GameObject enemyBulletPrefab;
-    [SerializeField] private Transform firePoint;
-    [SerializeField] private float fireRate = 1f;
-    [SerializeField] private float leftBoundary = -10f;
+    [SerializeField] private EnemyData data;
 
+    private float currentHealth;
     private float nextFireTime;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private Transform firePoint;
+    private float leftBoundary = -12f;
+
+    public void Initialize(EnemyData enemyData)
     {
-        if (firePoint == null) firePoint = transform;
+        data = enemyData;
+        currentHealth = data.health;
+
+        if (firePoint == null)
+        {
+            firePoint = new GameObject("FirePoint").transform;
+            firePoint.SetParent(transform);
+            
+            SpriteRenderer sr = GetComponent<SpriteRenderer>();
+            if (sr != null )
+            {
+                firePoint.localPosition = new Vector3(sr.bounds.size.x / 2 + 0.2f, 0, 0);
+            }
+            else
+            {
+                firePoint.localPosition = new Vector3(0.5f, 0, 0);
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(Vector2.left * moveSpeed * Time.deltaTime);
+        transform.Translate(Vector2.left * data.moveSpeed * Time.deltaTime);
 
         if (transform.position.x < leftBoundary)
         {
-            Destroy(gameObject);
+            Die();
         }
 
         if (Time.time > nextFireTime)
         {
-            nextFireTime = Time.time + fireRate;
+            nextFireTime = Time.time + (1f / data.fireRate);
             Shoot();
         }
     }
 
     void Shoot()
     {
-        if (enemyBulletPrefab != null)
+        if (ObjectPooler.Instance != null && !string.IsNullOrEmpty(data.bulletPoolTag))
         {
-            ObjectPooler.Instance.SpawnFromPool("EnemyBullet", firePoint.position, Quaternion.identity);
+            GameObject bullet = ObjectPooler.Instance.SpawnFromPool("EnemyBullet", firePoint.position, Quaternion.identity);
+            if (bullet != null)
+            {
+                var proj = bullet.GetComponent<Projectile>();
+                if (proj != null)
+                {
+                    proj.SetSpeed(data.bulletSpeed);
+                }
+            }
+        }
+    }
+
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("PlayerBullet"))
+        {
+            TakeDamage(10); // get damage from bullet
+            other.gameObject.SetActive(false); // return bullet to pool
         }
     }
 }
