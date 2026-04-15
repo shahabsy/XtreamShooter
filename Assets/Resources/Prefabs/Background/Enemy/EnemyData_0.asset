@@ -19,7 +19,7 @@ MonoBehaviour:
   bulletPoolTag: EnemyBullet
   bulletSpeed: 10
   scoreValue: 10
-  sprite: {fileID: 3874517981774512945, guid: c616f60802325004f9e85bf07f655c0a, type: 3}
+  sprite: {fileID: 21300000, guid: 78032bbc4d34a784fb65a69c7afd3e2f, type: 3}
   spriteScale: {x: 1, y: 1}
   sortingLayerName: Character
   orderInLayer: 11

@@ -58,7 +58,7 @@ public class Enemy : MonoBehaviour
                 var proj = bullet.GetComponent<Projectile>();
                 if (proj != null)
                 {
-                    proj.SetSpeed(data.bulletSpeed);
+                    proj.SetSpeed(-data.bulletSpeed);
                 }
             }
         }
