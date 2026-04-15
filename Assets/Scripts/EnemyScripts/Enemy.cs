@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -8,6 +9,13 @@ public class Enemy : MonoBehaviour
     private float nextFireTime;
     private Transform firePoint;
     private float leftBoundary = -12f;
+
+    public event Action OnDeath;
+
+    private void Start()
+    {
+        EnemySpawner.Instance?.RegisterEnemy();
+    }
 
     public void Initialize(EnemyData enemyData)
     {
@@ -29,11 +37,15 @@ public class Enemy : MonoBehaviour
                 firePoint.localPosition = new Vector3(0.5f, 0, 0);
             }
         }
+        EnemySpawner.Instance?.RegisterEnemy();
     }
 
     // Update is called once per frame
     void Update()
     {
+        Debug.Log($"Enemy {name} position {transform.position.x}, speed: {data.moveSpeed}");
+        if (data == null) return;
+        
         transform.Translate(Vector2.left * data.moveSpeed * Time.deltaTime);
 
         if (transform.position.x < leftBoundary)

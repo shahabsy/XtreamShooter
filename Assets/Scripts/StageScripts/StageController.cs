@@ -2,29 +2,41 @@ using UnityEngine;
 using System.Collections;
 using System;
 using UnityEditor.Experimental.GraphView;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 public class StageController : MonoBehaviour
 {
     public static StageController Instance {  get; private set; }
 
-    [Header("Stage Data")]
-    public StageData currentStage;
+    [Header("Mission")]
+    public MissionData currentMission;
 
-    [Header("Reference (auto-assigned")]
+    [Header("References")]
     public BackgroundSpawner backgroundSpawner;
     public EnemySpawner enemySpawner;
+    public DialogManager dialogManager;
+    public PlayerController playerController;
 
-    // state
-    private StageState currentState = StageState.None;
-    private float stageProgress = 0f;
-    private bool scrollingEnabled = false;
-    private GameObject currentBoss;
-    private bool[] midTriggersFired;
+    private enum MissionPhase
+    {
+        Intro,
+        Gameplay,
+        BossIntro,
+        BossFight,
+        Completed
+    }
 
-    // events
-    public System.Action<StageState> OnStateChanged;
-    public System.Action OnBossDefeated;
+    private MissionPhase currenPhase = MissionPhase.Intro;
+    private int actionIndex = -1;
+    private float actionTimer = 0f;
+    private bool waitingForTrigger = false;
+    private string requiredTrigger;
+    private List<string> activeTriggers = new List<string>();
+    private bool scrollingFrozen = false;
+    private bool missionComplete = false;
 
+    public bool IsScrollingForzen => scrollingFrozen;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -33,207 +45,228 @@ public class StageController : MonoBehaviour
 
     void Start()
     {
-        if (backgroundSpawner == null)
+        if (currentMission == null) { Debug.LogError("No mission assigned."); return; }
+        if (backgroundSpawner == null) backgroundSpawner = FindAnyObjectByType<BackgroundSpawner>(); 
+        if (enemySpawner == null) enemySpawner = FindAnyObjectByType<EnemySpawner>();
+        if (dialogManager == null) dialogManager = FindAnyObjectByType<DialogManager>();
+        if (playerController == null) playerController = FindAnyObjectByType<PlayerController>();
+
+        StartMission();
+    }
+
+    private void StartMission()
+    {
+        // Play music
+        //if (!string.IsNullOrEmpty(currentMission.music)) AudioManger.PlayMusic(currentMission.music);
+
+        // Configure enemy spawner
+        if (enemySpawner != null)
         {
-            backgroundSpawner = FindAnyObjectByType<BackgroundSpawner>();
-        }
-        if (enemySpawner == null)
-        {
-            enemySpawner = FindAnyObjectByType<EnemySpawner>();
+            enemySpawner.SetSpawnIntervals(currentMission.quarter1Min, currentMission.quarter1Max,
+                                            currentMission.quarter2Min, currentMission.quarter2Max,
+                                            currentMission.quarter3Min, currentMission.quarter3Max,
+                                            currentMission.quarter4Min, currentMission.quarter4Max);
         }
 
-        if ( currentStage == null)
-        {
-            Debug.LogError("StageController: No StageData assigned.");
-            return;
-        }
-
-        midTriggersFired = new bool[currentStage.midStageTriggers.Length];
-        StartStage();
+        // Begin intro phase
+        currenPhase = MissionPhase.Intro;
+        actionIndex = -1;
+        NextAction();
     }
 
     void Update()
     {
-        if (!scrollingEnabled) return;
-
-        float delta = currentStage.baseScrollSpeed * Time.deltaTime;
-        stageProgress += delta;
-
-        // check mid stage trigger
-        for (int i = 0; i < currentStage.midStageTriggers.Length; i++)
+        if (missionComplete) return;
+        if (waitingForTrigger) return;
+        if(actionTimer >  0)
         {
-            if (!midTriggersFired[i] && stageProgress >= currentStage.midStageTriggers[i])
+            actionTimer -= Time.deltaTime;
+            if ( actionTimer <= 0)
             {
-                midTriggersFired[i] = true;
-                OnMindStageTrigger(i);
+                ExecuteCurrentAction();
             }
         }
-
-        // stage and condition
-        if ( stageProgress >= currentStage.stageLength && currentState != StageState.StageEnd)
+    }
+    private void NextAction()
+    {
+        StageAction[] actions = GetCurrentPhaseActions();
+        actionIndex++;
+        if (actions == null || actionIndex >= actions.Length)
         {
-            BeginBossPhase();
+            OnPhaseComplete();
+            return;
+        }
+
+        StageAction action = actions[actionIndex];
+        actionTimer = action.delayTime;
+        waitingForTrigger = false;
+    }
+
+    private StageAction[] GetCurrentPhaseActions()
+    {
+        switch (currenPhase)
+        {
+            case MissionPhase.Intro: return currentMission.introActions;
+            case MissionPhase.Gameplay: return currentMission.gameplayActions;
+            case MissionPhase.BossIntro: return currentMission.bossActions;
+            case MissionPhase.BossFight: return currentMission.bossActions;
+            default: return new StageAction[0];
+        }
+    }
+    
+    private void OnPhaseComplete()
+    {
+        switch(currenPhase)
+        {
+            case MissionPhase.Intro:
+                // Start gameplay phase: enable scrolling and enemy spawning
+                backgroundSpawner?.SetScrolling(true);
+                enemySpawner?.StartSpawning();
+                currenPhase = MissionPhase.Gameplay;
+                actionIndex = -1;
+                NextAction();
+                break;
+            case MissionPhase.Gameplay:
+                // Gameplay finished - trigger boss intro
+                currenPhase = MissionPhase.BossIntro;
+                actionIndex = -1;
+                NextAction();
+                break;
+            case MissionPhase.BossIntro:
+                currenPhase = MissionPhase.BossFight;
+                actionIndex = -1;
+                NextAction();
+                break;
+            case MissionPhase.BossFight:
+                MissionComplete();
+                break;
         }
     }
 
-    private void StartStage()
+    private void ExecuteCurrentAction()
     {
-        currentState = StageState.StageStart;
-        stageProgress = 0;
-        scrollingEnabled = true;
-        midTriggersFired = new bool[currentStage.midStageTriggers.Length];
+        StageAction[] actions = GetCurrentPhaseActions();
+        if (actions == null || actionIndex >= actions.Length) return;
+        StageAction action = actions[actionIndex];
 
-        // Enable background scrolling and spawning
-        backgroundSpawner?.SetScrolling(true);
-        backgroundSpawner?.SetSpawning(true);
-        backgroundSpawner?.SetScrollingMultiplier(currentStage.baseScrollSpeed);
-        enemySpawner?.StartSpawning();
-
-        OnStateChanged?.Invoke(currentState);
-        Debug.Log($"Stage started: {currentStage.stageName}");
-    }
-
-    private void OnMindStageTrigger(int index)
-    {
-        Debug.Log($"Mid-stage trigger {index} reached at distance {currentStage.midStageTriggers[index]}");
-    }
-
-    private void BeginBossPhase()
-    {
-        currentState = StageState.StageEnd;
-        scrollingEnabled = false;
-        enemySpawner?.StopSpawning();
-
-        OnStateChanged?.Invoke(currentState);
-        Debug.Log("Stage end reached. Preparing boss...");
-
-        StartCoroutine(SmoothStopScrolling(1f));
-        StartCoroutine(BossIntroRoutine());
-    }
-    private IEnumerator SmoothStopScrolling(float decelerationTime)
-    {
-        float startSpeed = currentStage.baseScrollSpeed;
-        float elapsed = 0f;
-        while (elapsed < decelerationTime)
+        switch(action.type)
         {
-            elapsed += Time.deltaTime;
-            float t = elapsed / decelerationTime;
-            float newSpeed = Mathf.Lerp(startSpeed, 0, t);
-            float multiplier = newSpeed / startSpeed;
-            backgroundSpawner.SetScrollingMultiplier(multiplier);
-            yield return null;
+            case StageAction.ActionType.Idle:
+                NextAction();
+                break;
+            case StageAction.ActionType.Dialog:
+                ShowDialog(action, () => NextAction());
+                break;
+            case StageAction.ActionType.SpawnEnemy:
+                enemySpawner?.SpawnWave(action.spawnId);
+                NextAction();
+                break;
+            case StageAction.ActionType.SpawnEliteEnemy:
+                enemySpawner.SpawnEliteWave(action.spawnId);
+                NextAction();
+                break;
+            case StageAction.ActionType.SpawnBoss:
+                SpawnBoss(action.spawnId);
+                NextAction();
+                break;
+            case StageAction.ActionType.FreezeScrolling:
+                backgroundSpawner?.SetScrolling(false);
+                scrollingFrozen = true;
+                NextAction();
+                break;
+            case StageAction.ActionType.UnfreezeScrolling:
+                backgroundSpawner?.SetScrolling(true);
+                scrollingFrozen = false;
+                NextAction();
+                break;
+            case StageAction.ActionType.SetScrollSpeedMultiplier:
+                backgroundSpawner?.SetScrollingMultiplier(action.floatValue);
+                NextAction();
+                break;
+            case StageAction.ActionType.WaitUntilAllEnemiesDead:
+                StartCoroutine(WaitForEnemiesDead());
+                break;
+            case StageAction.ActionType.WaitForPlayerTrigger:
+                StartCoroutine(WaitForPlayerTrigger(action.completeTrigger));
+                break;
+            case StageAction.ActionType.NPCFlyIn:
+                NextAction();
+                break;
+            case StageAction.ActionType.NPCFlyOut:
+                NextAction();
+                break;
+            case StageAction.ActionType.CompleteMission:
+                MissionComplete();
+                break;
         }
-        backgroundSpawner?.SetScrolling(false);
-        backgroundSpawner?.SetScrollingMultiplier(1f);
     }
 
-    //private IEnumerator SmoothTransitionScroll(float targetMultiplier, float duration)
-    //{
-        /*
-        float startMultiplier = backgroundSpawner.GetCurrentMultiplier();
-        float elapsed = 0f;
-        while(elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = elapsed / duration;
-            float mult = Mathf.Lerp(startMultiplier, targetMultiplier, t);
-            backgroundSpawner?.SetScrollingMultiplier(mult);
-            yield return null;
-        }
-        backgroundSpawner?.SetScrollingMultiplier(targetMultiplier);
-        */
-    //}
-
-    private IEnumerator BossIntroRoutine()
+    private void ShowDialog(StageAction action, System.Action onComplete)
     {
-        currentState = StageState.BossIntro;
-        OnStateChanged?.Invoke(currentState);
-
-        yield return new WaitForSeconds(currentStage.bossIntroDelay);
-
-        // Spawn boss at designated position (right edge of screen)
-        if (currentStage.bossPrefab != null)
+        if (dialogManager != null)
         {
-            //Vector3 bossSpawnPos = Camera.main.ViewportToWorldPoint(new Vector3(1.2f, 0.5f, 0));
-            Vector3 bossSpawnPos = new Vector3(10f, 0, 0);
-            //bossSpawnPos.z = 0;
-            currentBoss = Instantiate(currentStage.bossPrefab, bossSpawnPos, Quaternion.identity);
-
-            var bossCtrl = currentBoss.GetComponent<BossController>();
-            if (bossCtrl != null)
-            {
-                bossCtrl.OnDefeat += OnBossDefeatedHandler;
-                StartCoroutine(TestAutoDefeat(bossCtrl, 5f));
-            }
-            else
-            {
-                Debug.LogWarning("Boss prefab has no BossController component. auto-defeat will not work.");
-            }
+            dialogManager.ShowDialog(action, onComplete);
         }
         else
         {
-            Debug.LogWarning("No boss prefab assigned. Skipping boss spawn");
-            StartCoroutine(TransitionRoutine());
-            yield break;
+            Debug.Log($"Dialog: {action.text}");
+            onComplete?.Invoke();
         }
-
-        currentState = StageState.BossFight;
-        OnStateChanged?.Invoke(currentState);
-        Debug.Log("Boss fight started.");
     }
 
-    private IEnumerator TestAutoDefeat(BossController boss, float delay)
+    private void SpawnBoss(string bossId)
     {
-        yield return new WaitForSeconds(delay);
-        Debug.Log("Test: Auto-defeating boss after 5 seconds.");
-        boss.TakeDamage(9999);// assumes bosscontroller has takedamage method
+        // Lookup boss prefab from a batabase (single resources load for demo
+        GameObject bossPrefab = Resources.Load<GameObject>($"Bosses/{bossId}");
+        if(bossPrefab != null)
+        {
+            Vector3 spawnPos = Camera.main.ViewportToWorldPoint(new Vector3(1.2f, 0.5f, 0));
+            spawnPos.z = 0f;
+            Instantiate(bossPrefab, spawnPos, Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogError($"Boss prefab not found: {bossId}");
+        }
     }
 
-    private void OnBossDefeatedHandler()
+    private IEnumerator WaitForEnemiesDead()
     {
-        currentState = StageState.BossDefeated;
-        OnStateChanged?.Invoke(currentState);
-        OnBossDefeated?.Invoke();
-        Debug.Log("Boss Defeated.");
-
-        StartCoroutine(TransitionRoutine());
+        while(enemySpawner != null && enemySpawner.ActiveEnemyCount > 0)
+        {
+            yield return null;
+        }
+        NextAction();
     }
 
-    private IEnumerator TransitionRoutine()
+    private IEnumerator WaitForPlayerTrigger(string triggerName)
     {
-        currentState = StageState.Transition;
-        OnStateChanged?.Invoke(currentState);
+        if (playerController == null) { NextAction(); yield break; }
+        bool triggered = false;
+        System.Action<string> handler = (t) => { if (t == triggerName) triggered = true; };
+        playerController.RegisterTriggerListener(handler);
+        activeTriggers.Add(triggerName);
+        while (!triggered) yield return null;
+        playerController.UnregisterTriggerListener(handler);
+        activeTriggers.Remove(triggerName);
+        NextAction();
+    }
 
-        //Temporarily enable scrolling for the transition
-        backgroundSpawner?.SetScrolling(true);
-        // apply faster scroll multiplier
-        backgroundSpawner?.SetScrollingMultiplier(currentStage.transitionScrollMultiplier);
-
-        Debug.Log($"Transition: scrolling at {currentStage.transitionScrollMultiplier}");
-
-        yield return new WaitForSeconds(currentStage.transitionDelay);
-
-        // Reset multiplier back to normal
-        backgroundSpawner?.SetScrollingMultiplier(1f);
+    private void MissionComplete()
+    {
+        missionComplete = true;
+        enemySpawner?.StopSpawning();
         backgroundSpawner?.SetScrolling(false);
-
-        LoadNextStage();
+        Debug.Log($"Mission {currentMission.missionName} completed!");
+        // load next mission or show rewards
     }
 
-    private void LoadNextStage()
+    private void OnDestroy()
     {
-        Debug.Log("Loading next stage...");
-
-        StartStage();
+        if (playerController != null)
+        {
+            foreach (var trigger in activeTriggers)
+                playerController.UnregisterAllListeners(trigger);
+        }
     }
-
-    public void SetScrolling(bool enabled)
-    {
-        scrollingEnabled = enabled;
-        backgroundSpawner?.SetScrolling(enabled);
-    }
-
-    public bool IsScrolling => scrollingEnabled;
-    public StageState CurrentState => currentState;
-
 }

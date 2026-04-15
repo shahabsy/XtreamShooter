@@ -4,8 +4,11 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance {  get; private set; }
+
     [Header("MovementSettings")]
     [SerializeField] private float moveSpeed = 8f;
+    private float leftBoundary, rightBoundary, topBoundary, bottomBoundary;
 
     [Header("Auto Bounds (Camera)")]
     [SerializeField] private Vector2 screenPadding = new Vector2(0.5f, 0.5f); // world units padding from edges
@@ -16,7 +19,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool previewBounds = false;
 
     [Header("Shooting Settings")]
-    [SerializeField] private GameObject bulletPrefab;
+    //[SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float fireRate = 0.2f;
 
@@ -24,29 +27,33 @@ public class PlayerController : MonoBehaviour
     private Vector2 moveInput;
     private float nextFireTime;
 
-    private Camera mainCamera;
+    private event Action<string> OnTriggerEvent;
+
+    //private Camera mainCamera;
     private float halfWidth = 0.5f;
     private float halfHeight = 0.5f;
 
     // runtime computed bounds
-    private float leftBoundary, rightBoundary, topBoundary, bottomBoundary;
+    
 
     private void Awake()
     {
-        inputActions = new InputSystem_Actions();
-        mainCamera = Camera.main;
-        RecalculateExtents();
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
+        inputActions = new InputSystem_Actions();
     }
 
     private void OnEnable()
     {
         inputActions.Enable();
+        inputActions.Player.Attack.performed += OnAttack;
     }
 
     private void OnDisable()
     {
         inputActions.Disable();
+        inputActions.Player.Attack.performed -= OnAttack;
     }
 
     void Update()
@@ -72,19 +79,17 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 movement = moveInput * moveSpeed * Time.deltaTime;
         transform.Translate(movement);
+        if (moveInput.magnitude > 0.1) FireTrigger("Movement");
     }
 
     private void UpdateBoundsFromCamera()
     {
-        if (mainCamera == null)
-        {
-            mainCamera = Camera.main;
-            if (mainCamera == null) return;
-        }
+        if (Camera.main == null) return;
+
         // Use distance from camera to player for proper viewport 
-        float zDistance = Mathf.Abs(mainCamera.transform.position.x - transform.position.z);
-        Vector3 leftBottom = mainCamera.ViewportToWorldPoint(new Vector3(0f, 0f, zDistance));
-        Vector3 rightTop = mainCamera.ViewportToWorldPoint(new Vector3(1f, 1f, zDistance));
+        float zDistance = Mathf.Abs(Camera.main.transform.position.x - transform.position.z);
+        Vector3 leftBottom = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, zDistance));
+        Vector3 rightTop = Camera.main.ViewportToWorldPoint(new Vector3(1f, 1f, zDistance));
 
         // Apply padding and account for player sprite/collider extents
         leftBoundary = leftBottom.x + halfWidth + screenPadding.x;
@@ -106,6 +111,7 @@ public class PlayerController : MonoBehaviour
         if (context.performed)
         {
             Shoot();
+            FireTrigger("Weapon1");
         }
     }
 
@@ -115,7 +121,6 @@ public class PlayerController : MonoBehaviour
         {
             ObjectPooler.Instance.SpawnFromPool("PlayerBullet", firePoint.position, Quaternion.identity);
         }
-        
     }
 
     public void RecalculateExtents()
@@ -145,18 +150,34 @@ public class PlayerController : MonoBehaviour
         halfHeight = 0.5f;
     }
 
+    public void RegisterTriggerListener(Action<string> listener)
+    {
+        OnTriggerEvent += listener;
+    }
+    public void UnregisterTriggerListener(Action<string> listener)
+    {
+        OnTriggerEvent -= listener;
+    }
+
+    public void UnregisterAllListeners(string trigger)
+    {
+        OnTriggerEvent = null;
+    }
+
+    private void FireTrigger(string triggerName)
+    {
+        OnTriggerEvent?.Invoke(triggerName);
+    }
+
     // Draw preview of computed bounds in Scene view when previewBounds is enabled (or when selected)
     private void OnDrawGizmos()
     {
         if (!previewBounds) return;
+        if (Camera.main == null) return;
 
-        Camera cam = mainCamera;
-        if (cam == null) cam = Camera.main;
-        if (cam == null) return;
-
-        float zDistance = Mathf.Abs(cam.transform.position.z - transform.position.z);
-        Vector3 leftBottom = cam.ViewportToWorldPoint(new Vector3(0f, 0f, zDistance));
-        Vector3 rightTop = cam.ViewportToWorldPoint(new Vector3(1f, 1f, zDistance));
+        float zDistance = Mathf.Abs(Camera.main.transform.position.z - transform.position.z);
+        Vector3 leftBottom = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, zDistance));
+        Vector3 rightTop = Camera.main.ViewportToWorldPoint(new Vector3(1f, 1f, zDistance));
 
         float l = leftBottom.x + halfWidth + screenPadding.x;
         float r = rightTop.x - halfWidth - screenPadding.x;

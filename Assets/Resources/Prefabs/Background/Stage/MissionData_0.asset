@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe4d3b6210349924e94d0a698e141114, type: 3}
+  m_Name: MissionData_0
+  m_EditorClassIdentifier: Assembly-CSharp::MissionData
+  missionName: FirstMission
+  missionId: testID
+  enabled: 1
+  tileSets:
+  - EnmptySpace
+  music: 
+  startWait: 3.5
+  quarter1Min: 2
+  quarter1Max: 2.5
+  quarter2Min: 1.8
+  quarter2Max: 2.3
+  quarter3Min: 1.5
+  quarter3Max: 2
+  quarter4Min: 1.3
+  quarter4Max: 1.8
+  enemyWaves: []
+  eliteEnemyWaves: []
+  bosses: []
+  introActions:
+  - type: 1
+    spawnId: intro_dialog
+    delayTime: 0.5
+    floatValue: 3
+    text: '"Welcome to the fight, pilot.'
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: Valkyrie
+    skippable: 0
+  gameplayActions:
+  - type: 2
+    spawnId: 
+    delayTime: 0
+    floatValue: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  bossActions:
+  - type: 4
+    spawnId: TestBoss
+    delayTime: 0
+    floatValue: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  outroActions:
+  - type: 1
+    spawnId: 
+    delayTime: 0
+    floatValue: 0
+    text: Mission Complete.
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  rewards: []
+  killCredit: 10
+  levelCompleteCredit: 200
+  bossName: 
+  bossIcon: 
+  bossTaunts: []
