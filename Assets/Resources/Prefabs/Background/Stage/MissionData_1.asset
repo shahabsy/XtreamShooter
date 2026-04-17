@@ -40,6 +40,7 @@ MonoBehaviour:
     spawnId: intro_dialog
     delayTime: 0.5
     floatValue: 3
+    scrollSpeedMultiplier: 0
     text: '"Welcome to the fight, pilot.'
     openSFX: 
     closeSFX: 
@@ -53,6 +54,7 @@ MonoBehaviour:
     spawnId: 
     delayTime: 5
     floatValue: 0
+    scrollSpeedMultiplier: 0
     text: 
     openSFX: 
     closeSFX: 
@@ -65,6 +67,7 @@ MonoBehaviour:
     spawnId: 
     delayTime: 5
     floatValue: 0
+    scrollSpeedMultiplier: 0
     text: 
     openSFX: 
     closeSFX: 
@@ -78,6 +81,7 @@ MonoBehaviour:
     spawnId: 
     delayTime: 0
     floatValue: 0
+    scrollSpeedMultiplier: 0
     text: 
     openSFX: 
     closeSFX: 
@@ -90,6 +94,7 @@ MonoBehaviour:
     spawnId: 
     delayTime: 0
     floatValue: 0
+    scrollSpeedMultiplier: 0
     text: Boss Comming Next...
     openSFX: 
     closeSFX: 
@@ -103,6 +108,7 @@ MonoBehaviour:
     spawnId: TestBoss
     delayTime: 0
     floatValue: 0
+    scrollSpeedMultiplier: 0
     text: 
     openSFX: 
     closeSFX: 
@@ -115,6 +121,7 @@ MonoBehaviour:
     spawnId: TestBoss
     delayTime: 0
     floatValue: 0
+    scrollSpeedMultiplier: 0
     text: 
     openSFX: 
     closeSFX: 
@@ -128,6 +135,7 @@ MonoBehaviour:
     spawnId: 
     delayTime: 0
     floatValue: 0
+    scrollSpeedMultiplier: 0
     text: 
     openSFX: 
     closeSFX: 
@@ -140,6 +148,7 @@ MonoBehaviour:
     spawnId: 
     delayTime: 0
     floatValue: 3
+    scrollSpeedMultiplier: 0
     text: Wave Cleard. Mission Complete.
     openSFX: 
     closeSFX: 
@@ -152,6 +161,7 @@ MonoBehaviour:
     spawnId: 
     delayTime: 0
     floatValue: 0
+    scrollSpeedMultiplier: 100
     text: 
     openSFX: 
     closeSFX: 

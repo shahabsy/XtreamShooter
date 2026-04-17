@@ -23,6 +23,7 @@ public class StageAction
     public string spawnId;
     public float delayTime;
     public float floatValue;
+    public float scrollSpeedMultiplier;
 
     public string text;
     public string openSFX;

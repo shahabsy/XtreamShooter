@@ -129,7 +129,7 @@ public class StageController : MonoBehaviour
                 break;
             case StageAction.ActionType.SetScrollSpeedMultiplier:
                 Debug.Log("Stage: SetScrollSpeedMltiplier");
-                backgroundSpawner?.SetScrollingMultiplier(backgroundSpawner.scrollSpeedMultiplier);
+                backgroundSpawner?.SetScrollingMultiplier(action.scrollSpeedMultiplier);
                 break;
             case StageAction.ActionType.WaitUntilAllEnemiesDead:
                 Debug.Log("Stage: WaitUntilAllEnemiesDead");
