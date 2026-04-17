@@ -21,6 +21,9 @@ public class EnemySpawner : MonoBehaviour
     private Coroutine spawnRoutine;
     private int activeEnemyCount = 0;
 
+    private List<string> normalWaveNames = new List<string>();
+    private List<string> eliteWaveNames = new List<string>();
+
     public int ActiveEnemyCount => activeEnemyCount;
 
     private void Awake()
@@ -37,6 +40,14 @@ public class EnemySpawner : MonoBehaviour
         quarterIntervals[2] = (q3min,  q3max);
         quarterIntervals[3] = (q4min,  q4max);
         UpdateIntervalForQuarter();
+    }
+
+    public void SetWaveLists(string[] normalWaves, string[] eliteWaves)
+    {
+        normalWaveNames.Clear();
+        eliteWaveNames.Clear();
+        if(normalWaves != null) normalWaveNames.AddRange(normalWaves);
+        if (eliteWaves != null) eliteWaveNames.AddRange(eliteWaves);
     }
 
     public void StartSpawning()
@@ -59,7 +70,7 @@ public class EnemySpawner : MonoBehaviour
     {
         if (!isSpawning) return;
         accumulatedDistance += distance;
-        if(accumulatedDistance >= quarterDistance && currentQuarter < 4)
+        if(accumulatedDistance >= quarterDistance && currentQuarter < 4) // quarterIntervals.Length
         {
             accumulatedDistance -= quarterDistance;
             currentQuarter++;
@@ -80,50 +91,68 @@ public class EnemySpawner : MonoBehaviour
         yield return new WaitForSeconds(startWait);
         while (isSpawning)
         {
-            float interval = Random.Range(currentMaxInterval, currentMaxInterval);
+            float interval = Random.Range(currentMinInterval, currentMaxInterval);
             yield return new WaitForSeconds(interval);
-            SpawnRandomEnemy();
+
+            if (eliteWaveNames.Count > 0 && Random.value < 0.2)
+            {
+                SpawnRandomEliteWave();
+            }
+            else
+            {
+                SpawnRandomWave();
+            }
+                
         }
     }
 
-    private void SpawnRandomEnemy()
+    private void SpawnRandomWave()
     {
-        if (waveDatabase != null && waveDatabase.waves != null && waveDatabase.waves.Count > 0)
-        {
-            //var randomWave = waveDatabase.waves[Random.Range(0, waveDatabase.waves.Count)];
-            SpawnWave(waveDatabase.GetRandomWave());
-        }
-        else
-        {
-            Debug.Log("No wave database, spawning fallback enemy");
-        }
+        if (normalWaveNames.Count == 0) return;
+        string waveName = normalWaveNames[Random.Range(0, normalWaveNames.Count)];
+        SpawnWave(waveName);
+    }
+    private void SpawnRandomEliteWave()
+    {
+        if (eliteWaveNames.Count == 0) return;
+        string waveName = eliteWaveNames[Random.Range(0, eliteWaveNames.Count)];
+        //Debug.Log($"Attempting to spawn elite wave: {waveName}");
+        SpawnEliteWave(waveName);
     }
 
     public void SpawnWave(string waveName)
     {
-        if (waveDatabase == null) return;
-        var wave = waveDatabase.waves.Find(w => w.waveName == waveName);
-        if (wave != null)
+        if(waveDatabase == null) return;
+        var wave = waveDatabase.GetWave(waveName);
+        if (wave != null) 
         {
-            SpawnWave(wave);
-            Debug.Log($"Spawning wave: {waveName}");
+            StartCoroutine(SpawnWaveCoroutine(wave, false));
         }
         else
         {
-            Debug.Log($"Wave: {waveName} not sound in database.");
+            Debug.LogWarning($"Wave {waveName} not found.");
         }
     }
 
-    public void SpawnWave(WaveDefinition wave)
+    public void SpawnEliteWave(string waveName)
     {
-        if (wave == null || wave.enemyPrefabs == null || wave.enemyPrefabs.Length == 0)
+        if (waveDatabase == null) return;
+        var wave = waveDatabase.GetEliteWave(waveName);
+        if (wave != null)
         {
-            Debug.LogWarning("Wave has no enemy prefabs.");
-            return;
+            StartCoroutine(SpawnWaveCoroutine(wave, true));
         }
-        StartCoroutine(SpawnWaveCoroutine(wave));
+        else
+        {
+            Debug.LogWarning($"Elite Wave {waveName} not found.");
+            if(waveDatabase.eliteWaves != null)
+            {
+                foreach (var w in waveDatabase.eliteWaves)
+                    Debug.Log($" - {w.waveName}");
+            }
+        }
     }
-    private IEnumerator SpawnWaveCoroutine(WaveDefinition wave)
+    private IEnumerator SpawnWaveCoroutine(WaveDefinition wave, bool isElite)
     {
         Camera cam = Camera.main;
         if (cam == null) yield break;
@@ -141,17 +170,48 @@ public class EnemySpawner : MonoBehaviour
             // Register enemy with spawner
             var enemy = enemyObj.GetComponent<Enemy>();
             if (enemy != null)
+            {
                 enemy.Initialize(wave.enemyData);
-                enemy.OnDeath += () => UnregisterEnemy();
-
-            RegisterEnemy();
+                RegisterEnemy();
+                enemy.OnDeath += () =>
+                {
+                    UnregisterEnemy();
+                };
+                
+            }
 
             if (wave.spacing > 0 && i < wave.count - 1)
                 yield return new WaitForSeconds(wave.spacing);
         }
     }
 
-    public void SpawnEliteWave(string waveId) { /* similar */ }
+    public void SpawnBoss(string bossId)
+    {
+        if (waveDatabase == null) return;
+        var bossDef = waveDatabase.GetBoss(bossId);
+        if (bossDef == null || bossDef.bossPrefab == null)
+        {
+            Debug.LogError($"Boss {bossId} not found or missing prefab.");
+            return;
+        }
+
+        Camera cam = Camera.main;
+        Vector3 spawnPos = cam.ViewportToWorldPoint(new Vector3(1.2f, 0.5f, 0));
+        spawnPos.z = 0;
+        GameObject bossObj = Instantiate(bossDef.bossPrefab, spawnPos, Quaternion.identity);
+        var bossController = bossObj.GetComponent<BossController>();
+        if (bossController != null)
+        {
+            bossController.OnDefeat += () =>
+            {
+                UnregisterEnemy();
+                Debug.Log("Boss defeated.");
+            };
+            RegisterEnemy();
+            bossController.Initialize(bossDef);
+            
+        }
+    }
     public void RegisterEnemy() => activeEnemyCount++;
-    public void UnregisterEnemy() => activeEnemyCount = Mathf.Max(0, activeEnemyCount - 1);
+    public void UnregisterEnemy() => activeEnemyCount--;
 }

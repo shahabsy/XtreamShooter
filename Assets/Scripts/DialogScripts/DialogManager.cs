@@ -9,6 +9,7 @@ public class DialogManager : MonoBehaviour
     public Text characterNameText;
     public Image portraitImage;
     public Button skipButton;
+    public Button continueButton;
 
     private StageAction currentAction;
     private System.Action onComplete;
@@ -26,11 +27,28 @@ public class DialogManager : MonoBehaviour
         }
         dialogPanel.SetActive(true);
 
-        float autoDuration = action.floatValue > 0 ? action.floatValue : 3f;
-        StartCoroutine(AutoAdvance(autoDuration));
+        // Clear previous listners
+        if (continueButton != null) continueButton.onClick.RemoveAllListeners();
+        if(skipButton != null ) skipButton.onClick.RemoveAllListeners();
 
-        skipButton.onClick.RemoveAllListeners();
-        skipButton.onClick.AddListener(CloseDialog);
+        if (action.skippable)
+        {
+            continueButton.gameObject.SetActive(true);
+            skipButton.gameObject.SetActive(false);
+            continueButton.onClick.AddListener(CloseDialog);
+        }
+        else
+        {
+            continueButton.gameObject.SetActive(false);
+            skipButton.gameObject.SetActive(true);
+            float duration = action.floatValue > 0 ? action.floatValue : 3f;
+            StartCoroutine(AutoAdvance(duration));
+        }
+        
+        if (skipButton != null)
+        {
+            skipButton.onClick.AddListener(CloseDialog);
+        }
     }
 
     private IEnumerator AutoAdvance(float duration)

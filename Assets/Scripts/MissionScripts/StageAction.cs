@@ -15,8 +15,7 @@ public class StageAction
         SetScrollSpeedMultiplier,
         WaitUntilAllEnemiesDead,
         WaitForPlayerTrigger,
-        NPCFlyIn,
-        NPCFlyOut,
+        ClearAllenemies,
         CompleteMission
     }
 

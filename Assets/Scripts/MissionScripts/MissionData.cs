@@ -28,7 +28,8 @@ public class MissionData : ScriptableObject
     [Header("Mission Sequence")]
     public StageAction[] introActions;
     public StageAction[] gameplayActions;
-    public StageAction[] bossActions;
+    public StageAction[] bossIntroActions;
+    public StageAction[] bossFightActions;
     public StageAction[] outroActions;
 
     [Header("Rewards")]

@@ -85,7 +85,7 @@ public class BackgroundTilePool : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"BackgroundTilePool exhausted: expanding pool by {chunk}.");
+                //Debug.LogWarning($"BackgroundTilePool exhausted: expanding pool by {chunk}.");
                 ExpandPool(chunk);
             }
         }

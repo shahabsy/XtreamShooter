@@ -7,6 +7,7 @@ public class BackgroundSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private int poolSize = 5;
+    public float scrollSpeedMultiplier = 100f;
 
     private List<BackgroundLayerData> layers = new List<BackgroundLayerData>();
     [SerializeField] private List<BackgroundLayer> activeLayers = new List<BackgroundLayer>();
@@ -57,7 +58,7 @@ public class BackgroundSpawner : MonoBehaviour
     {
         if (layers == null || layers.Count == 0)
         {
-            Debug.LogWarning("BackgroundSpawner: 'Layers' is empty. No background layers will be created.");
+            //Debug.LogWarning("BackgroundSpawner: 'Layers' is empty. No background layers will be created.");
             return;
         }
 
