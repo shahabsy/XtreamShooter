@@ -594,7 +594,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61806d895ffb704897612f8bd9fb73f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageController
-  currentMission: {fileID: 11400000, guid: 0acdb780d9f878a439a0f97b28f0e395, type: 2}
+  currentMission: {fileID: 11400000, guid: 11aba906da76ef4459d27bf952bab35f, type: 2}
   backgroundSpawner: {fileID: 1236166020}
   enemySpawner: {fileID: 1906335883}
   dialogManager: {fileID: 39783560}
@@ -2399,8 +2399,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e11ac4f1af094ed4fb9d1ea668e3336c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  startWait: 3.5
-  quarterDistance: 50
   waveDatabase: {fileID: 11400000, guid: 3444e7b4952be504087a5ec6330cb2e3, type: 2}
 --- !u!1 &1942467959
 GameObject:
@@ -2674,6 +2672,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1858566140251558467, guid: 3479d04740b4bb44fbc5183b6ada8bd2, type: 3}
+      propertyPath: m_BodyType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1858566140251558467, guid: 3479d04740b4bb44fbc5183b6ada8bd2, type: 3}
+      propertyPath: m_Simulated
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5589010798283346986, guid: 3479d04740b4bb44fbc5183b6ada8bd2, type: 3}
       propertyPath: m_Name
       value: PlayerShip

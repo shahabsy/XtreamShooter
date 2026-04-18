@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1858566140251558467}
   - component: {fileID: -3363264583361525056}
   - component: {fileID: 1408813251512291250}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerShip
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -103,8 +103,8 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5589010798283346986}
-  m_BodyType: 0
-  m_Simulated: 0
+  m_BodyType: 1
+  m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 2.0172
@@ -152,7 +152,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -184,7 +184,6 @@ MonoBehaviour:
   screenPadding: {x: 0.5, y: 0.5}
   useColliderForExtents: 1
   previewBounds: 1
-  bulletPrefab: {fileID: 2819959981398355972, guid: ad7800d941227a74dad34ed2f0ef8e87, type: 3}
   firePoint: {fileID: 3805962243659026194}
   fireRate: 0.1
 --- !u!1 &8468528681728882824
@@ -196,7 +195,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3805962243659026194}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -212,7 +211,7 @@ Transform:
   m_GameObject: {fileID: 8468528681728882824}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.017, y: 0, z: 0}
+  m_LocalPosition: {x: 1.39, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -32,7 +32,7 @@ public class BackgroundSpawner : MonoBehaviour
             pool = poolObj.AddComponent<BackgroundTilePool>();
             int initialSize = Mathf.Max(poolSize, requiredPoolSize);
             pool.Initialize(tilePrefab, initialSize);
-            Debug.Log($"BackgroundSpawner: Initialized BackgroundTilePool with size {initialSize}");
+            //Debug.Log($"BackgroundSpawner: Initialized BackgroundTilePool with size {initialSize}");
         }
         else
         {

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8305050143260095035}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 8576451058124416733}
   - component: {fileID: 4787827074947146252}
   - component: {fileID: -8355679162713223031}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BossPrefab
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -211,4 +211,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1525fc4b15429445865232e5810ee27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossController
-  health: 100

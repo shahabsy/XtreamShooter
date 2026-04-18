@@ -3,27 +3,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MissionData_", menuName = "Game/MissionData")]
 public class MissionData : ScriptableObject
 {
+    [Header("Mission Info")]
     public string missionName;
     public string missionId;
     public bool enabled = true;
-    public string[] tileSets;
-    public string music;
 
-    [Header("Enemy Spawn Intervals (Seconds) - used when no explicity waves are available")]
-    public float startWait = 3.5f;
-    public float quarter1Min = 2.0f;
-    public float quarter1Max = 2.5f;
-    public float quarter2Min = 1.8f;
-    public float quarter2Max = 2.3f;
-    public float quarter3Min = 1.5f;
-    public float quarter3Max = 2.0f;
-    public float quarter4Min = 1.3f;
-    public float quarter4Max = 1.8f;
-
-    [Header("Wave")]
-    public string[] enemyWaves;
-    public string[] eliteEnemyWaves;
-    public string[] bosses;
+    [Header("Visuals & Audio")]
+    public string[] tileSets; // used for parallax layers, in order from back to front
+    public string music; // music track name or path
 
     [Header("Mission Sequence")]
     public StageAction[] introActions;

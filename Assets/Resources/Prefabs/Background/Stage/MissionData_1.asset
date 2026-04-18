@@ -12,47 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe4d3b6210349924e94d0a698e141114, type: 3}
   m_Name: MissionData_1
   m_EditorClassIdentifier: Assembly-CSharp::MissionData
-  missionName: Test with My Waves
-  missionId: TEST_WAVES_01
+  missionName: Mission1
+  missionId: MIssion_Id1
   enabled: 1
-  tileSets:
-  - EnmptySpace
+  tileSets: []
   music: 
-  startWait: 3.5
-  quarter1Min: 2
-  quarter1Max: 2.5
-  quarter2Min: 1.8
-  quarter2Max: 2.3
-  quarter3Min: 1.5
-  quarter3Max: 2
-  quarter4Min: 1.3
-  quarter4Max: 1.8
-  enemyWaves:
-  - LightFighterWave
-  - SineWaveGroup
-  - ZigzagWave
-  eliteEnemyWaves:
-  - EliteSpiralWave
-  bosses:
-  - TestBoss
   introActions:
   - type: 1
-    spawnId: intro_dialog
-    delayTime: 0.5
-    floatValue: 3
+    spawnId: 
+    delayTime: 0
+    floatValue: 2
     scrollSpeedMultiplier: 0
-    text: '"Welcome to the fight, pilot.'
+    text: Welcome to The Game
     openSFX: 
     closeSFX: 
     overridePrefab: 
     completeTrigger: 
     characterPortrait: 
-    characterName: Valkyrie
-    skippable: 0
+    characterName: Command
+    skippable: 1
   gameplayActions:
-  - type: 0
-    spawnId: 
-    delayTime: 5
+  - type: 2
+    spawnId: NormalWave1
+    delayTime: 0
     floatValue: 0
     scrollSpeedMultiplier: 0
     text: 
@@ -63,9 +45,35 @@ MonoBehaviour:
     characterPortrait: 
     characterName: 
     skippable: 0
-  - type: 2
+  - type: 8
     spawnId: 
-    delayTime: 5
+    delayTime: 0
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  - type: 3
+    spawnId: EliteWave1
+    delayTime: 0
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  - type: 8
+    spawnId: EliteWave1
+    delayTime: 0
     floatValue: 0
     scrollSpeedMultiplier: 0
     text: 
@@ -77,31 +85,18 @@ MonoBehaviour:
     characterName: 
     skippable: 0
   bossIntroActions:
-  - type: 5
-    spawnId: 
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
   - type: 1
     spawnId: 
-    delayTime: 0
+    delayTime: 2
     floatValue: 0
     scrollSpeedMultiplier: 0
-    text: Boss Comming Next...
+    text: Boss is approaching...
     openSFX: 
     closeSFX: 
     overridePrefab: 
     completeTrigger: 
     characterPortrait: 
-    characterName: Bro
+    characterName: Command
     skippable: 0
   bossFightActions:
   - type: 4
@@ -118,7 +113,7 @@ MonoBehaviour:
     characterName: 
     skippable: 0
   - type: 8
-    spawnId: TestBoss
+    spawnId: 
     delayTime: 0
     floatValue: 0
     scrollSpeedMultiplier: 0
@@ -131,45 +126,19 @@ MonoBehaviour:
     characterName: 
     skippable: 0
   outroActions:
-  - type: 6
-    spawnId: 
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
   - type: 1
     spawnId: 
     delayTime: 0
-    floatValue: 3
-    scrollSpeedMultiplier: 0
-    text: Wave Cleard. Mission Complete.
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: Commad
-    skippable: 1
-  - type: 7
-    spawnId: 
-    delayTime: 0
     floatValue: 0
-    scrollSpeedMultiplier: 100
-    text: 
+    scrollSpeedMultiplier: 0
+    text: Mission Completed!
     openSFX: 
     closeSFX: 
     overridePrefab: 
     completeTrigger: 
     characterPortrait: 
-    characterName: 
-    skippable: 0
+    characterName: Command
+    skippable: 1
   rewards: []
   killCredit: 10
   levelCompleteCredit: 200

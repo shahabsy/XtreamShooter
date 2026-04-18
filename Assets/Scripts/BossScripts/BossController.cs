@@ -6,14 +6,23 @@ public class BossController : MonoBehaviour
     public event Action OnDefeat;
     private float currentHealth;
     private BossDefinition data;
-    private bool autoDefeat = true;
+    private float leftBoundary = -12f;
+    private bool isDead = false;
+
+    public event Action OnDeath;
 
     private void Start()
     {
-        if (autoDefeat)
+        
+    }
+
+    private void Update()
+    {
+
+        transform.Translate(Vector2.left * 2 * Time.deltaTime);
+        if (transform.position.x < leftBoundary)
         {
-            Invoke(nameof(AutoDefeat), 5f);
-            Debug.Log($"Boss will auto-defeat in 5 secs.");
+            Die();
         }
     }
 
@@ -29,14 +38,14 @@ public class BossController : MonoBehaviour
         currentHealth -= amount;
         if (currentHealth <= 0)
         {
-            OnDefeat?.Invoke();
-            Destroy(gameObject);
+            Die();
         }
     }
-
-    public void AutoDefeat()
+    void Die()
     {
-        OnDefeat?.Invoke();
+        if (isDead) return;
+        isDead = true;
+        OnDeath?.Invoke();
         Destroy(gameObject);
     }
 

@@ -47,13 +47,13 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         inputActions.Enable();
-        inputActions.Player.Attack.performed += OnAttack;
+        //inputActions.Player.Attack.performed += OnAttack;
     }
 
     private void OnDisable()
     {
         inputActions.Disable();
-        inputActions.Player.Attack.performed -= OnAttack;
+        //inputActions.Player.Attack.performed -= OnAttack;
     }
 
     void Update()

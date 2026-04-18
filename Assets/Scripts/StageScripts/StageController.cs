@@ -54,19 +54,6 @@ public class StageController : MonoBehaviour
     private void StartMission()
     {
         // Play music
-        //if (!string.IsNullOrEmpty(currentMission.music)) AudioManger.PlayMusic(currentMission.music);
-
-        // Configure enemy spawner
-        if (enemySpawner != null)
-        {
-            enemySpawner.SetWaveLists(currentMission.enemyWaves, currentMission.eliteEnemyWaves);
-
-            enemySpawner.SetSpawnIntervals(currentMission.quarter1Min, currentMission.quarter1Max,
-                                            currentMission.quarter2Min, currentMission.quarter2Max,
-                                            currentMission.quarter3Min, currentMission.quarter3Max,
-                                            currentMission.quarter4Min, currentMission.quarter4Max
-                                            );
-        }
 
         // Begin intro phase
         currentPhase = MissionPhase.Intro;
@@ -141,7 +128,7 @@ public class StageController : MonoBehaviour
                 break;
             case StageAction.ActionType.ClearAllenemies:
                 Debug.Log("Stage: Clear All enemies");
-                ClearAllEnemies();
+                enemySpawner?.ClearAllEnemies();
                 break;
             case StageAction.ActionType.CompleteMission:
                 Debug.Log("Stage: CompleteMission");
@@ -172,17 +159,15 @@ public class StageController : MonoBehaviour
                 // Start gameplay phase: enable scrolling and enemy spawning
                 Debug.Log("Phase: Intro");
                 currentPhase = MissionPhase.Gameplay;
-                SetScrolling(true);
-                enemySpawner?.StartSpawning();
+                //SetScrolling(true);
                 actionIndex = -1;
                 ProceedToNextAction();
                 break;
             case MissionPhase.Gameplay:
                 // Gameplay finished - trigger boss intro
                 Debug.Log("Phase: GamePlay");
-                enemySpawner?.StopSpawning();
-                SetScrolling(false);
                 currentPhase = MissionPhase.BossIntro;
+                //SetScrolling(false);
                 actionIndex = -1;
                 ProceedToNextAction();
                 break;
@@ -206,21 +191,14 @@ public class StageController : MonoBehaviour
     }
     private IEnumerator WaitForEnemiesDead()
     {
-        if (enemySpawner == null) yield break;
-        while(enemySpawner.ActiveEnemyCount > 0)
+        while (enemySpawner != null && enemySpawner.ActiveEnemyCount > 0)
         {
-            //Debug.Log($"Waiting... ActiveEnemycount = {enemySpawner.ActiveEnemyCount}");
             yield return null;
-        }
-        Debug.Log("All enemies dead -> proceeding.");
-        ProceedToNextAction();
-            
+        }   
     }
 
     private IEnumerator WaitForPlayerTrigger(string triggerName)
     {
-        if (playerController == null) yield break;
-
         bool triggered = false;
         Action<string> handler = (t) =>
         {
@@ -228,11 +206,11 @@ public class StageController : MonoBehaviour
         };
 
         triggerHandlers[triggerName] = handler;
-        playerController.UnregisterTriggerListener(handler);
+        playerController?.RegisterTriggerListener(handler);
 
         while (!triggered) yield return null;
 
-        playerController.UnregisterTriggerListener(handler);
+        playerController?.UnregisterTriggerListener(handler);
         triggerHandlers.Remove(triggerName);
     }
     private IEnumerator ExecuteDialog(StageAction action)
@@ -247,17 +225,6 @@ public class StageController : MonoBehaviour
 
         while (!completed) yield return null;
     }
-    private void ClearAllEnemies()
-    {
-        Enemy[] enemies;
-        enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
-
-        foreach( var enemy in enemies)
-        {
-            Destroy(enemy.gameObject);
-        }
-    }
-
     private void SetScrolling(bool enabled)
     {
         if (backgroundSpawner != null)
@@ -268,9 +235,8 @@ public class StageController : MonoBehaviour
         {
             Debug.Log("BackgroundSpawner missing. cannot set scrolling.");
         }
-        
-    }
 
+    }
     private void MissionComplete()
     {
         if (missionComplete) return;
@@ -278,13 +244,9 @@ public class StageController : MonoBehaviour
         missionComplete = true;
         currentPhase = MissionPhase.Completed;
 
-        enemySpawner?.StopSpawning();
-        //SetScrolling(false);
-
         Debug.Log($"Mission: {currentMission.missionName} completed.");
         // show reward screen, load next mission etc...
     }
-
     private void OnDestroy()
     {
         if (playerController != null)

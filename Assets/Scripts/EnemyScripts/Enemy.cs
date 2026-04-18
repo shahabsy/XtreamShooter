@@ -1,14 +1,16 @@
 using System;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamageable
 {
+    [Header("Data")]
     [SerializeField] private EnemyData data;
 
     private float currentHealth;
     private float nextFireTime;
     private Transform firePoint;
     private float leftBoundary = -12f;
+    private bool isDead = false;
 
     public event Action OnDeath;
 
@@ -30,7 +32,8 @@ public class Enemy : MonoBehaviour
             SpriteRenderer sr = GetComponent<SpriteRenderer>();
             if (sr != null )
             {
-                firePoint.localPosition = new Vector3(sr.bounds.size.x / 2 + 0.2f, 0, 0);
+                float spriteWidth = sr.bounds.size.x * transform.localScale.x;
+                firePoint.localPosition = new Vector3(spriteWidth / 2 + 0.2f, 0, 0);
             }
             else
             {
@@ -44,7 +47,7 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         //Debug.Log($"Enemy {name} position {transform.position.x}, speed: {data.moveSpeed}");
-        if (data == null) return;
+        if (data == null || isDead) return;
         
         transform.Translate(Vector2.left * data.moveSpeed * Time.deltaTime);
 
@@ -87,6 +90,8 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
+        if (isDead) return;
+        isDead = true;
         OnDeath?.Invoke();
         Destroy(gameObject);
     }
@@ -95,6 +100,7 @@ public class Enemy : MonoBehaviour
     {
         if (other.CompareTag("PlayerBullet"))
         {
+            //Debug.Log("Enemy hit by player bullet");
             TakeDamage(10); // get damage from bullet
             other.gameObject.SetActive(false); // return bullet to pool
         }

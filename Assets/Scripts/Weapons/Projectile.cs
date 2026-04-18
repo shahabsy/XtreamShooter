@@ -27,8 +27,8 @@ public class Projectile : MonoBehaviour
 
     private void ReturnToPool()
     {
-        gameObject.SetActive(false);
         CancelInvoke();
+        gameObject.SetActive(false);
     }
 
     public void SetSpeed(float newSpeed) => speed = newSpeed;
