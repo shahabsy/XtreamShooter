@@ -51,6 +51,34 @@ public class EnemySpawner : MonoBehaviour
             }
         }
     }
+
+    public void SpawnBoss(string bossId)
+    {
+        if (waveDatabase == null) return;
+
+        BossData bossData = waveDatabase.GetBossData(bossId);
+        if (bossData == null) return;
+
+        GameObject bossPrefab = waveDatabase.GetBossPrefab(bossId);
+        if (bossPrefab == null) return;
+
+
+        Camera cam = Camera.main;
+        Vector3 spawnPos = cam.ViewportToWorldPoint(new Vector3(1.2f, 0.5f, 0));
+        spawnPos.z = 0;
+
+        GameObject bossObj = Instantiate(bossPrefab, spawnPos, Quaternion.identity);
+
+        var boss = bossObj.GetComponent<Boss>();
+        if (boss != null)
+        {
+            boss.Initialize(bossData);
+        }
+        else
+        {
+            Debug.LogError("Boss Prefab does not have a Boss component.");
+        }
+    }
     private IEnumerator SpawnWaveCoroutine(WaveDefinition wave, bool isElite)
     {
         Camera cam = Camera.main;
@@ -76,7 +104,6 @@ public class EnemySpawner : MonoBehaviour
                 {
                     UnregisterEnemy();
                 };
-                
             }
 
             if (wave.spacing > 0 && i < wave.count - 1)
@@ -84,33 +111,6 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    public void SpawnBoss(string bossId)
-    {
-        if (waveDatabase == null) return;
-
-        BossDefinition bossDef = waveDatabase.GetBoss(bossId);
-        if (bossDef == null || bossDef.bossPrefab == null)
-        {
-            Debug.LogError($"Boss {bossId} not found or missing prefab.");
-            return;
-        }
-
-        Camera cam = Camera.main;
-        Vector3 spawnPos = cam.ViewportToWorldPoint(new Vector3(1.2f, 0.5f, 0));
-        spawnPos.z = 0;
-        GameObject bossObj = Instantiate(bossDef.bossPrefab, spawnPos, Quaternion.identity);
-        var bossController = bossObj.GetComponent<BossController>();
-        if (bossController != null)
-        {
-            bossController.OnDefeat += () =>
-            {
-                UnregisterEnemy();
-                Debug.Log("Boss defeated.");
-            };
-            RegisterEnemy();
-            //bossController.Initialize(bossDef); // need to verify the bosscontroller.cs updates
-        }
-    }
     public void RegisterEnemy()
     {
         activeEnemyCount++;
@@ -123,9 +123,14 @@ public class EnemySpawner : MonoBehaviour
     public void ClearAllEnemies()
     {
         Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
-        foreach (Enemy enemy in enemies)
+        foreach (Enemy e in enemies)
         {
-            Destroy(enemy.gameObject);
+            Destroy(e.gameObject);
+        }
+        Boss[] bosses = FindObjectsByType<Boss>(FindObjectsSortMode.None);
+        foreach (Boss b in bosses)
+        {
+            Destroy(b.gameObject);
         }
         activeEnemyCount = 0;
     }

@@ -4,6 +4,8 @@ using System.Collections;
 
 public class DialogManager : MonoBehaviour
 {
+    public static DialogManager Instance { get; private set; }
+
     public GameObject dialogPanel;
     public Text dialogText;
     public Text characterNameText;
@@ -13,6 +15,12 @@ public class DialogManager : MonoBehaviour
 
     private StageAction currentAction;
     private System.Action onComplete;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
 
     public void ShowDialog(StageAction action, System.Action callback)
     {

@@ -100,9 +100,12 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         if (other.CompareTag("PlayerBullet"))
         {
-            //Debug.Log("Enemy hit by player bullet");
-            TakeDamage(10); // get damage from bullet
-            other.gameObject.SetActive(false); // return bullet to pool
+            Projectile proj = other.GetComponent<Projectile>();
+            if (proj != null)
+            {
+                TakeDamage(proj.damage);
+                proj.OnHit();
+            }
         }
     }
 }

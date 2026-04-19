@@ -30,7 +30,7 @@ MonoBehaviour:
     completeTrigger: 
     characterPortrait: 
     characterName: Command
-    skippable: 1
+    skippable: 0
   gameplayActions:
   - type: 2
     spawnId: NormalWave1

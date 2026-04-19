@@ -6,7 +6,7 @@ public class WaveDatabase : ScriptableObject
 {
     public List<WaveDefinition> normalWaves = new List<WaveDefinition>();
     public List<WaveDefinition> eliteWaves = new List<WaveDefinition>();
-    public List<BossDefinition> bosses = new List<BossDefinition>();
+    public List<BossEntry> bosses = new List<BossEntry>();
 
     public WaveDefinition GetWave(string waveName)
     {
@@ -18,9 +18,27 @@ public class WaveDatabase : ScriptableObject
         return eliteWaves.Find(w => w.waveName == waveName);
     }
 
-    public BossDefinition GetBoss(string bossId)
+    public BossEntry GetBossEntry(string bossId)
     {
         return bosses.Find(b => b.bossId == bossId);
+    }
+
+    public BossData GetBossData(string bossId)
+    {
+        BossEntry entry = GetBossEntry(bossId);
+        return entry?.bossData;
+    }
+
+    public GameObject GetBossPrefab(string bossId)
+    {
+        BossEntry entry = GetBossEntry(bossId);
+        return entry?.bossPrefab;
+    }
+
+    public WaveDefinition GetRandomWave()
+    {
+        if (normalWaves.Count == 0) return null;
+        return normalWaves[Random.Range(0, normalWaves.Count)];
     }
 
     public WaveDefinition GetRandomEliteWave()
@@ -44,12 +62,10 @@ public class WaveDefinition
 }
 
 [System.Serializable]
-public class BossDefinition
+public class BossEntry
 {
     public string bossId;
     public string bossName;
     public GameObject bossPrefab;
-    public float health = 500;
-
-    public string[] phasePatterns;
+    public BossData bossData;
 }

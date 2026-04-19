@@ -30,5 +30,4 @@ MonoBehaviour:
   - bossId: TestBoss
     bossName: TestBoss
     bossPrefab: {fileID: 6468513381374726774, guid: 85df5e69d2def1b48972daa36f0a6ebb, type: 3}
-    health: 0
-    phasePatterns: []
+    bossData: {fileID: 11400000, guid: b848a0769f4d6d944b779604ad081c6f, type: 2}
