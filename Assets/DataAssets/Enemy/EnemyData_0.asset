@@ -10,16 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28dae55e6eb41e44688668b30d51e928, type: 3}
-  m_Name: EnemyData_2
+  m_Name: EnemyData_0
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  enemyName: BasicEnemyC
+  enemyName: BasicEnemyA
   health: 30
-  moveSpeed: 2
+  moveSpeed: 3
   fireRate: 1
+  scoreValue: 10
   bulletPoolTag: EnemyBullet
   bulletSpeed: 10
-  scoreValue: 10
-  sprite: {fileID: 21300000, guid: 195436fc8759070408ec5ee166776fd7, type: 3}
+  aiBehavior: {fileID: 11400000, guid: 41728fcb30972cf418973eab37444220, type: 2}
+  sprite: {fileID: 21300000, guid: 78032bbc4d34a784fb65a69c7afd3e2f, type: 3}
   spriteScale: {x: 1, y: 1}
   sortingLayerName: Character
   orderInLayer: 11

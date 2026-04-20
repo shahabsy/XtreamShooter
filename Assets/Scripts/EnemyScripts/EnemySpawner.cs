@@ -118,6 +118,7 @@ public class EnemySpawner : MonoBehaviour
     public void UnregisterEnemy()
     {
         activeEnemyCount--;
+        if (activeEnemyCount < 0) activeEnemyCount = 0;
     }
 
     public void ClearAllEnemies()

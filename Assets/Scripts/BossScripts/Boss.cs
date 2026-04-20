@@ -40,6 +40,10 @@ public class Boss : MonoBehaviour, IDamageable
         {
             enabled = false;
         }
+        if (Camera.main != null)
+        {
+            data.leftBoundary = Camera.main.ViewportToWorldPoint(Vector3.zero).x - 1f;
+        }
     }
 
     public void Initialize(BossData bossData)
@@ -207,7 +211,7 @@ public class Boss : MonoBehaviour, IDamageable
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"Boss collided with {other.gameObject.name}");
+        //Debug.Log($"Boss collided with {other.gameObject.name}");
         if (other.CompareTag("PlayerBullet"))
         {
             Projectile proj = other.GetComponent<Projectile>();
@@ -215,7 +219,7 @@ public class Boss : MonoBehaviour, IDamageable
             {
                 TakeDamage(proj.damage);
                 proj.OnHit();
-                Debug.Log($"Boss hit by projectile dealing {proj.damage} damage");
+                //Debug.Log($"Boss hit by projectile dealing {proj.damage} damage");
             }
         }
 

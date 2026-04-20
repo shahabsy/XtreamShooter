@@ -7,9 +7,14 @@ public class EnemyData : ScriptableObject
     public float health = 30f;
     public float moveSpeed = 2f;
     public float fireRate = 1f;
+    public int scoreValue = 10;
+
+    [Header("Bullet Settings")]
     public string bulletPoolTag = "EnemyBullet";
     public float bulletSpeed = 10f;
-    public int scoreValue = 10;
+
+    [Header("AI")]
+    public EnemyAIBehavior aiBehavior;
 
     [Header("Visuals")]
     public Sprite sprite;
@@ -18,5 +23,7 @@ public class EnemyData : ScriptableObject
     [Header("Rendering")]
     public string sortingLayerName = "Default";
     public int orderInLayer = 0;
+
     
+
 }

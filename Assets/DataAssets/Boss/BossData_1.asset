@@ -15,7 +15,7 @@ MonoBehaviour:
   bossName: TestBoss
   bossId: TestBoss
   maxHealth: 100
-  moveSpeed: 1
+  moveSpeed: 3
   sprite: {fileID: -1288456409569948990, guid: c616f60802325004f9e85bf07f655c0a, type: 3}
   spriteScale: {x: 4, y: 4}
   sortingLayerName: Character
