@@ -15,34 +15,33 @@ public class Boss : MonoBehaviour, IDamageable
     private float currentHealth;
     private int currentPhase = -1;
     private bool isDefeated = false;
-    private bool registered = false;
     private bool initialized = false;
 
-    public Transform firePoint;
     private float nextFireTime;
+    public Transform firePoint; // set this in inspector
+
     private SpriteRenderer spriteRenderer;
 
     public float HealthNormalized => currentHealth / data.maxHealth;
 
-    private void Awake()
+    private void OnEnable()
     {
-        if (firePoint == null)
-        {
-            firePoint = new GameObject("FirePoint").transform;
-            firePoint.SetParent(transform);
-        }
-        
+        EntityTracker.Instance?.RegisterBoss(this);
+    }
+    private void OnDisable()
+    {
+        EntityTracker.Instance?.UnregisterBoss(this);
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (!initialized)
-        {
-            enabled = false;
-        }
         if (Camera.main != null)
         {
             data.leftBoundary = Camera.main.ViewportToWorldPoint(Vector3.zero).x - 1f;
+        }
+        else
+        {
+            data.leftBoundary = -15f;
         }
     }
 
@@ -52,56 +51,35 @@ public class Boss : MonoBehaviour, IDamageable
 
         data = bossData;
         currentHealth = data.maxHealth;
+
         SetupVisuals();
-        //PositionFirePoint();
         SortPhasesDescending();
+
         initialized = true;
-
-        EnemySpawner.Instance?.RegisterEnemy();
-        registered = true;
-
-        StartBehavior();
     }
 
     private void SetupVisuals()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer == null)
-            spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
 
         spriteRenderer.sprite = data.sprite;
         spriteRenderer.sortingLayerName = data.sortingLayerName;
         spriteRenderer.sortingOrder = data.orderInLayer;
-        transform.localScale = data.spriteScale;
-    }
 
-    private void PositionFirePoint()
-    {
-        if (spriteRenderer != null && spriteRenderer.sprite != null)
-        {
-            float rightEdge = spriteRenderer.bounds.size.x * transform.localScale.x / 2f;
-            firePoint.localPosition = new Vector3(rightEdge + 0.3f, 0f, 0f);
-        }
-        else
-        {
-            firePoint.localPosition = new Vector3(0.8f, 0f, 0f);
-        }
+        transform.localScale = data.spriteScale;
     }
     private void SortPhasesDescending()
     {
         if (data.phases == null && data.phases.Length <= 1) return;
         
-        data.phases = data.phases.OrderByDescending(p => p.healthThreshold).ToArray();
-    }
-
-    private void StartBehavior()
-    {
-        CheckPhaseTransition(true);
+        data.phases = data.phases
+            .OrderByDescending(p => p.healthThreshold)
+            .ToArray();
     }
     // Update is called once per frame
     void Update()
     {
-        if (isDefeated || data == null) return;
+        if (!initialized || isDefeated) return;
 
         transform.Translate(Vector2.left * data.moveSpeed * Time.deltaTime);
 
@@ -120,10 +98,13 @@ public class Boss : MonoBehaviour, IDamageable
     {
         if (ObjectPooler.Instance != null && !string.IsNullOrEmpty(data.bulletPoolTag))
         {
-            GameObject bullet = ObjectPooler.Instance.SpawnFromPool("EnemyBullet", firePoint.position, Quaternion.identity);
+            GameObject bullet = ObjectPooler.Instance.SpawnFromPool(
+                                                    data.bulletPoolTag,
+                                                    firePoint.position,
+                                                    Quaternion.identity);
             if (bullet != null)
             {
-                var proj = bullet.GetComponent<Projectile>();
+                Projectile proj = bullet.GetComponent<Projectile>();
                 if (proj != null)
                 {
                     proj.SetSpeed(-data.bulletSpeed);
@@ -148,10 +129,9 @@ public class Boss : MonoBehaviour, IDamageable
         }
     }
 
-    private void CheckPhaseTransition(bool forceInitial = false)
+    private void CheckPhaseTransition()
     {
-        if (data.phases == null || data.phases.Length == 0)
-            return;
+        if (data.phases == null) return;
 
         for(int i = 0; i < data.phases.Length; i++)
         {
@@ -183,30 +163,16 @@ public class Boss : MonoBehaviour, IDamageable
     private void Defeat()
     {
         if (isDefeated) return;
+        
         isDefeated = true;
-
-        UnresiterIfNeeded();
         OnDefeat?.Invoke();
+
         StartCoroutine(DeathSequence());
     }
-    private void UnresiterIfNeeded()
-    {
-        if (registered)
-        {
-            EnemySpawner.Instance?.UnregisterEnemy();
-            registered = false;
-        }
-    }
-
     private IEnumerator DeathSequence()
     {
         yield return new WaitForSeconds(1.5f);
         Destroy(gameObject);
-    }
-
-    private void OnDestroy()
-    {
-        UnresiterIfNeeded();
     }
 
     private void OnTriggerEnter2D(Collider2D other)

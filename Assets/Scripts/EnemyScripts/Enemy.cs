@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using UnityEngine.Timeline;
+
 
 public class Enemy : MonoBehaviour, IDamageable
 {
@@ -18,11 +18,24 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public event Action OnDeath;
 
+    private void OnEnable()
+    {
+        EntityTracker.Instance?.RegisterEnemy(this);
+    }
+    private void OnDisable()
+    {
+        EntityTracker.Instance?.UnregisterEnemy(this);
+    }
+
     private void Start()
     {
         if(Camera.main != null)
         {
             leftBoundary = Camera.main.ViewportToWorldPoint(Vector3.zero).x - 1f;
+        }
+        else
+        {
+            leftBoundary = -15f;
         }
     }
 
@@ -151,7 +164,6 @@ public class Enemy : MonoBehaviour, IDamageable
         isDead = true;
 
         runtimeBehavior?.OnDeath();
-        runtimeBehavior?.ResetState();
         runtimeBehavior = null;
 
         OnDeath?.Invoke();

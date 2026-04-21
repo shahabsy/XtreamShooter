@@ -120,7 +120,7 @@ public class StageController : MonoBehaviour
                 break;
             case StageAction.ActionType.WaitUntilAllEnemiesDead:
                 Debug.Log("Stage: WaitUntilAllEnemiesDead");
-                yield return WaitForEnemiesDead();
+                yield return WaitForAllCombatEntitiesCleared();
                 break;
             case StageAction.ActionType.WaitForPlayerTrigger:
                 Debug.Log("Stage: WaitForPlayerTrigger");
@@ -189,9 +189,11 @@ public class StageController : MonoBehaviour
                 break;
         }
     }
-    private IEnumerator WaitForEnemiesDead()
+    private IEnumerator WaitForAllCombatEntitiesCleared()
     {
-        while (enemySpawner != null && enemySpawner.ActiveEnemyCount > 0)
+        while (EntityTracker.Instance != null &&
+              (EntityTracker.Instance.HasAnyEnemy ||
+              EntityTracker.Instance.HasBoss))
         {
             yield return null;
         }   
