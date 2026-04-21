@@ -8,6 +8,9 @@ public class MissionData : ScriptableObject
     public string missionId;
     public bool enabled = true;
 
+    [Header("Next Mission")]
+    public string nextMissionId; // for chaining missions together, can be empty
+
     [Header("Visuals & Audio")]
     public string[] tileSets; // used for parallax layers, in order from back to front
     public string music; // music track name or path

@@ -55,6 +55,25 @@ public class EnemySpawner : MonoBehaviour
         var boss = bossObj.GetComponent<Boss>();
         boss?.Initialize(bossData);
     }
+
+    public IEnumerator SpawnBossRoutine(string bossId)
+    {
+        if(waveDatabase == null || cachedCamera == null) yield break;
+
+        BossData bossData = waveDatabase.GetBossData(bossId);
+        GameObject bossPrefab = waveDatabase.GetBossPrefab(bossId);
+
+        if (bossData == null || bossPrefab == null) yield break;
+
+        Vector3 spawnPos = cachedCamera.ViewportToWorldPoint(new Vector3(1.2f, 0.5f, 0));
+        spawnPos.z = 0;
+
+        GameObject bossObj = Instantiate(bossPrefab, spawnPos, Quaternion.identity);
+        Boss boss = bossObj.GetComponent<Boss>();
+        boss?.Initialize(bossData);
+
+        yield return null;
+    }
     private IEnumerator SpawnWaveCoroutine(WaveDefinition wave, bool isElite)
     {
         if (cachedCamera == null) yield break;

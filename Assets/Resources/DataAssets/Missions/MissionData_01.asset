@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe4d3b6210349924e94d0a698e141114, type: 3}
-  m_Name: MissionData_1
+  m_Name: MissionData_01
   m_EditorClassIdentifier: Assembly-CSharp::MissionData
   missionName: Mission1
   missionId: MIssion_Id1
   enabled: 1
+  nextMissionId: MissionData_02
   tileSets: []
   music: 
   introActions:
@@ -31,6 +32,32 @@ MonoBehaviour:
     characterPortrait: 
     characterName: Command
     skippable: 0
+  - type: 0
+    spawnId: 
+    delayTime: 1
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: Welcome to The Game
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: Command
+    skippable: 0
+  - type: 10
+    spawnId: 
+    delayTime: 1
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: Welcome to The Game
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: Movement
+    characterPortrait: 
+    characterName: 
+    skippable: 0
   gameplayActions:
   - type: 2
     spawnId: NormalWave1
@@ -45,7 +72,7 @@ MonoBehaviour:
     characterPortrait: 
     characterName: 
     skippable: 0
-  - type: 8
+  - type: 9
     spawnId: 
     delayTime: 0
     floatValue: 0
@@ -71,9 +98,22 @@ MonoBehaviour:
     characterPortrait: 
     characterName: 
     skippable: 0
-  - type: 8
+  - type: 9
     spawnId: EliteWave1
     delayTime: 0
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  - type: 0
+    spawnId: 
+    delayTime: 1
     floatValue: 0
     scrollSpeedMultiplier: 0
     text: 
@@ -98,8 +138,21 @@ MonoBehaviour:
     characterPortrait: 
     characterName: Command
     skippable: 0
+  - type: 8
+    spawnId: 
+    delayTime: 0
+    floatValue: 0
+    scrollSpeedMultiplier: 1
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
   bossFightActions:
-  - type: 4
+  - type: 5
     spawnId: TestBoss
     delayTime: 0
     floatValue: 0
@@ -112,11 +165,12 @@ MonoBehaviour:
     characterPortrait: 
     characterName: 
     skippable: 0
+  outroActions:
   - type: 8
     spawnId: 
     delayTime: 0
     floatValue: 0
-    scrollSpeedMultiplier: 0
+    scrollSpeedMultiplier: 100
     text: 
     openSFX: 
     closeSFX: 
@@ -125,7 +179,6 @@ MonoBehaviour:
     characterPortrait: 
     characterName: 
     skippable: 0
-  outroActions:
   - type: 1
     spawnId: 
     delayTime: 0
@@ -139,6 +192,32 @@ MonoBehaviour:
     characterPortrait: 
     characterName: Command
     skippable: 1
+  - type: 0
+    spawnId: 
+    delayTime: 2
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  - type: 12
+    spawnId: 
+    delayTime: 0
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
   rewards: []
   killCredit: 10
   levelCompleteCredit: 200

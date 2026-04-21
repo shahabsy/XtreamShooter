@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,6 +27,8 @@ public class PlayerController : MonoBehaviour
     private InputSystem_Actions inputActions;
     private Vector2 moveInput;
     private float nextFireTime;
+
+    private bool movementFrozen = false;
 
     private event Action<string> OnTriggerEvent;
 
@@ -58,8 +61,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        moveInput = inputActions.Player.Move.ReadValue<Vector2>();
-        HandleMovement();
+        if (!movementFrozen)
+        {
+            moveInput = inputActions.Player.Move.ReadValue<Vector2>();
+            HandleMovement();
+        }
         
         bool isAttacking = inputActions.Player.Attack.IsPressed();
         if (isAttacking && Time.time >= nextFireTime)
@@ -167,6 +173,18 @@ public class PlayerController : MonoBehaviour
     private void FireTrigger(string triggerName)
     {
         OnTriggerEvent?.Invoke(triggerName);
+    }
+
+    public void FreezeMovement(float duration)
+    {
+        StartCoroutine(FreezeMovementRoutine(duration));
+    }
+
+    private IEnumerator FreezeMovementRoutine(float duration)
+    {
+        movementFrozen = true;
+        yield return new WaitForSeconds(duration);
+        movementFrozen = false;
     }
 
     // Draw preview of computed bounds in Scene view when previewBounds is enabled (or when selected)

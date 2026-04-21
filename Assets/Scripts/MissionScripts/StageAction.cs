@@ -10,6 +10,7 @@ public class StageAction
         SpawnEnemy,
         SpawnEliteEnemy,
         SpawnBoss,
+        StartBossEncounter,
         FreezeScrolling,
         UnfreezeScrolling,
         SetScrollSpeedMultiplier,

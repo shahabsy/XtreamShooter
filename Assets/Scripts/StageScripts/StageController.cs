@@ -15,6 +15,7 @@ public class StageController : MonoBehaviour
     public EnemySpawner enemySpawner;
     public DialogManager dialogManager;
     public PlayerController playerController;
+    public BossEncounterController bossEncounter;
 
     private enum MissionPhase
     {
@@ -47,6 +48,7 @@ public class StageController : MonoBehaviour
         if (enemySpawner == null) enemySpawner = FindAnyObjectByType<EnemySpawner>();
         if (dialogManager == null) dialogManager = FindAnyObjectByType<DialogManager>();
         if (playerController == null) playerController = FindAnyObjectByType<PlayerController>();
+        if (bossEncounter == null) bossEncounter = FindAnyObjectByType<BossEncounterController>();
 
         StartMission();
     }
@@ -56,8 +58,14 @@ public class StageController : MonoBehaviour
         // Play music
 
         // Begin intro phase
+        if (backgroundSpawner != null)
+        {
+            backgroundSpawner.SetScrolling(true);
+            backgroundSpawner.SetScrollingMultiplier(1);
+        }
         currentPhase = MissionPhase.Intro;
         actionIndex = -1;
+        missionComplete = false;
         ProceedToNextAction();
     }
     private void ProceedToNextAction()
@@ -105,6 +113,13 @@ public class StageController : MonoBehaviour
             case StageAction.ActionType.SpawnBoss:
                 Debug.Log("Stage: SpawnBoss");
                 enemySpawner?.SpawnBoss(action.spawnId);
+                break;
+            case StageAction.ActionType.StartBossEncounter:
+                Debug.Log("Stage: StartBossEncounter");
+                if (bossEncounter != null) 
+                    yield return bossEncounter.StartEncounter();
+                else 
+                    Debug.LogError("BossEncounter component missing on StageController.");
                 break;
             case StageAction.ActionType.FreezeScrolling:
                 Debug.Log("Stage: FreenzScrolling");
@@ -248,6 +263,28 @@ public class StageController : MonoBehaviour
 
         Debug.Log($"Mission: {currentMission.missionName} completed.");
         // show reward screen, load next mission etc...
+        LoadNextMission();
+    }
+
+    private void LoadNextMission()
+    {
+        if(string.IsNullOrEmpty(currentMission.nextMissionId))
+        {
+            Debug.LogWarning("No next mission specified. Cannot load next mission.");
+            return;
+        }
+
+        string path = $"DataAssets/Missions/{currentMission.nextMissionId}";
+        MissionData nextMission = Resources.Load<MissionData>(path);
+        if (nextMission == null)
+        {
+            Debug.LogError($"Next mission with ID {currentMission.nextMissionId} not found in {path}.");
+            return;
+        }
+        Debug.Log($"Successfully Loaded next mission: {nextMission.missionName} ID: {nextMission.missionId}");
+        currentMission = nextMission;
+        missionComplete = false;
+        StartMission();
     }
     private void OnDestroy()
     {

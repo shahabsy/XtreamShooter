@@ -5,6 +5,8 @@ using UnityEngine.Rendering;
 
 public class BackgroundSpawner : MonoBehaviour
 {
+    public static BackgroundSpawner Instance { get; private set; }
+
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private int poolSize = 5;
     //public float scrollSpeedMultiplier = 100f;
@@ -15,6 +17,13 @@ public class BackgroundSpawner : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         int requiredPoolSize = CalculateRequiredPoolSize();
 
         BackgroundTilePool pool = FindAnyObjectByType<BackgroundTilePool>();
