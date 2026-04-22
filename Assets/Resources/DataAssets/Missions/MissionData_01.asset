@@ -168,7 +168,7 @@ MonoBehaviour:
     spawnId: 
     delayTime: 0
     floatValue: 0
-    scrollSpeedMultiplier: 100
+    scrollSpeedMultiplier: 30
     text: 
     openSFX: 
     closeSFX: 

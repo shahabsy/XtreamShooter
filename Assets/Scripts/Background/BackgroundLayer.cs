@@ -21,6 +21,19 @@ public class BackgroundLayer : MonoBehaviour
     }
     private float GetTileWidth()
     {
+        if (data.possibleTiles == null || data.possibleTiles.Count == 0) return 0f;
+        
+        BackgroundTileData firstTile = data.possibleTiles[0];
+        if (firstTile == null || firstTile.sprite == null)
+        {
+            Debug.LogWarning("First tile or its sprite is null for layer: " + data.name);
+            return 1f; // Default width
+        }
+        float width = firstTile.sprite.rect.width / firstTile.sprite.pixelsPerUnit;
+        return width;
+    }
+    private float GetTileWidth0()
+    {
         if(data.possibleTiles == null || data.possibleTiles.Count == 0)
         {
             Debug.LogWarning("No possible tiles defined for layer: " + data.name);
