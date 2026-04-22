@@ -15,9 +15,7 @@ MonoBehaviour:
   missionName: Mission1
   missionId: MIssion_Id1
   enabled: 1
-  nextMissionId: MissionData_02
-  tileSets: []
-  music: 
+  tileSet: {fileID: 11400000, guid: 0043fe8a3a81d284db4ecebb2e1df728, type: 2}
   introActions:
   - type: 1
     spawnId: 
@@ -224,3 +222,4 @@ MonoBehaviour:
   bossName: 
   bossIcon: 
   bossTaunts: []
+  nextMissionId: MissionData_02

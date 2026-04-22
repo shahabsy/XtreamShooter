@@ -5,217 +5,100 @@ using System;
 
 public class BackgroundLayer : MonoBehaviour
 {
-    [SerializeField] private BackgroundLayerData layerData;
+    private BackgroundLayerData data;
+    private float tileWidth;
+    private float offset = 0f;
 
-    private List<BackgroundTile> activeTiles = new List<BackgroundTile>();
-    private Camera mainCamera;
-    private float leftBoundary;
-    private float rightSpawnX;
+    private List<GameObject> activeTiles = new List<GameObject>();
 
-    private int layerIndex = 0;
-    private int layerSortingOrder = 0;
-    private float layerZ = 0f;
-    private const float layerZSpacing = 0.05f; // very small z space for parallax only
-    
-    private float fallbackWidth = 10f;
-    private float lastSpawnedWidth = 5f;
-
-    private bool scrollingEnabled = true;
-    private bool spawningEnabled = true;
-    private float speedMultiplier = 1f;
-
-    public void SetScrolling(bool enabled) => scrollingEnabled = enabled;
-    public void SetSpawning(bool enabled) => spawningEnabled = enabled;
-    public void SetScrollSpeedMultiplier(float multiplier) => speedMultiplier = multiplier;
-
-    public void Init(BackgroundLayerData data, int index, int sortingOrder)
+    public void Initialize(BackgroundLayerData layerData, int layerIndex)
     {
-        layerData = data;
-        layerIndex = index;
-        layerSortingOrder = sortingOrder;
-        mainCamera = Camera.main;
+        data = layerData;
+        tileWidth = GetTileWidth();
 
-        layerZ = layerData.zOffset - (layerIndex * layerZSpacing);
-        var p = transform.position;
-        p.z = layerZ;
-        transform.position = p;
+        int order = data.baseOrderInLayer + layerIndex * data.OrderGap;
+        SpawnInitialTiles(order);
+    }
+    private float GetTileWidth()
+    {
+        if(data.possibleTiles == null || data.possibleTiles.Count == 0)
+        {
+            Debug.LogWarning("No possible tiles defined for layer: " + data.name);
+            return 1f; // Default width
+        }
+        return data.possibleTiles[0].sprite.bounds.size.x;
     }
 
-    void Start()
+    private void SpawnInitialTiles(int sortingOrder)
     {
-        if (mainCamera == null) mainCamera = Camera.main;
-        
-        if (layerData == null) return;
+        Camera cam = Camera.main;
+        if(cam == null) return;
 
-        ComputeBoundaries();
-        
-        if (layerData.continuousSpawning)
+        float screenRight = cam.ViewportToWorldPoint(new Vector3(1f, 0, 0)).x;
+        float screenLeft = cam.ViewportToWorldPoint(new Vector3(0f, 0, 0)).x;
+        float screenWidth = screenRight - screenLeft;
+        int tilesNeeded = Mathf.CeilToInt(screenWidth / tileWidth) + 2;
+
+        for (int i = -1; i < tilesNeeded - 1; i++)
         {
-            float currentX = rightSpawnX;
-            while (currentX > leftBoundary)
+            GameObject tile = SpawnTile(i * tileWidth, sortingOrder);
+            activeTiles.Add(tile);
+        }
+    }
+
+    private GameObject SpawnTile(float xPos, int sortingOrder)
+    {
+        if(data.possibleTiles == null || data.possibleTiles.Count == 0)
+        {
+            Debug.LogWarning("No possible tiles defined for layer: " + data.name);
+            return null;
+        }
+        BackgroundTileData tileData = data.possibleTiles[UnityEngine.Random.Range(0, data.possibleTiles.Count)];
+        GameObject tileObj = new GameObject($"Tile_{tileData.name}");
+        tileObj.transform.SetParent(transform);
+        tileObj.transform.position = new Vector3(xPos, 0, data.zOffset);
+
+        SpriteRenderer sr = tileObj.AddComponent<SpriteRenderer>();
+        sr.sprite = tileData.sprite;
+        sr.sortingLayerName = data.sortingLayerName;
+        sr.sortingOrder = sortingOrder;
+
+        return tileObj;
+    }
+
+    public void Scroll(float delta)
+    {
+        offset += delta * data.scrollSpeed;
+        foreach(var tile in activeTiles)
+        {
+            if (tile == null) continue;
+            
+            Vector3 pos = tile.transform.position;
+            pos.x -= delta * data.scrollSpeed;
+            tile.transform.position = pos;
+
+            Camera cam = Camera.main;
+            if( cam != null)
             {
-                SpawnTileAt(currentX);
-                currentX -= GetAverageTileWidth();
-            }
-        }
-        else
-        {
-            StartCoroutine(SpawnRoutine());
-        }
-    }
+                float leftEdge = cam.ViewportToWorldPoint(Vector3.zero).x - tileWidth;
 
-    private void SpawnTileAt(float x)
-    {
-        if (BackgroundTilePool.Instance == null) return;
-
-        BackgroundTile tile = BackgroundTilePool.Instance.GetTile();
-        if (tile == null) return;
-
-        BackgroundTileData data = GetRandomTile();
-        if (data == null || data.sprite == null)
-        {
-            BackgroundTilePool.Instance.ReturnTile(tile);
-            return;
-        }
-        tile.SetTile(data);
-        lastSpawnedWidth = tile.Width;
-
-        tile.transform.SetParent(transform, worldPositionStays: false);
-        tile.transform.localScale = Vector3.one;
-        tile.transform.position = new Vector3(x, 0, layerZ);
-
-        var sr = tile.SpriteRenderer;
-        if (sr != null)
-        {
-            sr.sortingLayerName = layerData.sortingLayerName;
-            sr.sortingOrder = 0;
-        }
-
-        activeTiles.Add(tile);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (layerData == null) return;
-        if (scrollingEnabled)
-        {
-            float delta = layerData.scrollSpeed * speedMultiplier * Time.deltaTime;
-            foreach(var tile in activeTiles)
-            {
-                if (tile != null)
+                if(pos.x < leftEdge)
                 {
-                    tile.transform.position += Vector3.left * delta;
+                    float maxX = GetRightmostTileX();
+                    tile.transform.position = new Vector3(maxX + tileWidth, pos.y, pos.z);
                 }
             }
         }
-        // Recycle off-screen tiles
-        for (int i = activeTiles.Count -1; i >=0; i--)
-        {
-            var t = activeTiles[i];
-            if (t == null) 
-            {
-                activeTiles.RemoveAt(i);
-                continue;
-            }
-            if (t.transform.position.x + t.Width / 2 < leftBoundary)
-            {
-                BackgroundTilePool.Instance.ReturnTile(t);
-                activeTiles.RemoveAt(i);
-            }
-        }
-        // Spawning only if enabled
-        if (layerData.continuousSpawning && spawningEnabled)
-        {
-            float rightmostX = GetRightmostTileX();
-            //float avgWidth = GetAverageTileWidth();
-
-            while(rightmostX < rightSpawnX)
-            {
-                float spawnX = rightmostX + lastSpawnedWidth / 2f;
-                SpawnTileAt(spawnX);
-                rightmostX = GetRightmostTileX();
-            }
-        }
-    }
-
-    private void ComputeBoundaries()
-    {
-        if (mainCamera == null) mainCamera = Camera.main;
-        if (mainCamera == null) return;
-
-        float zDistance = Mathf.Abs(mainCamera.transform.position.z - transform.position.z);
-        Vector3 leftEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, zDistance));
-        leftBoundary = leftEdgeWorld.x - 1f;
-
-        Vector3 rightEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(1, 0, zDistance));
-        rightSpawnX = rightEdgeWorld.x + 2f;
-    }
-
-    private BackgroundTileData GetRandomTile()
-    {
-        if (layerData == null || layerData.possibleTiles == null || layerData.possibleTiles.Count == 0) return null;
-        
-        int totalWeight = 0;
-        foreach (var t in layerData.possibleTiles)
-        {
-            if (t != null) totalWeight += Mathf.Max(0, t.weight);
-        }
-        if (totalWeight <= 0) return layerData.possibleTiles[0];
-
-        int r = UnityEngine.Random.Range(0, totalWeight);
-        foreach (var t in layerData.possibleTiles)
-        {
-            if (t == null) continue;
-            if (r < t.weight) return t;
-            r -= t.weight;
-        }
-        return layerData.possibleTiles[0];
-    }
-
-    private float GetAverageTileWidth()
-    {
-        if (layerData == null || layerData.possibleTiles == null || layerData.possibleTiles.Count == 0) return fallbackWidth;
-        float sum = 0f;
-        int count = 0;
-        foreach(var pd in layerData.possibleTiles)
-        {
-            if (pd != null && pd.sprite != null)
-            {
-                sum += pd.sprite.bounds.size.x;
-                count++;
-            }
-        }
-        if (count == 0) return fallbackWidth;
-        return sum / count;
     }
 
     private float GetRightmostTileX()
     {
-        if (activeTiles == null || activeTiles.Count == 0)
-        {
-            return rightSpawnX - GetAverageTileWidth();
-        }
-
         float max = -Mathf.Infinity;
-        foreach (var t in activeTiles)
+        foreach (var tile in activeTiles)
         {
-            if (t == null) continue;
-            float rightEdge = t.transform.position.x + t.Width / 2;
-            if (rightEdge > max) max = rightEdge;
+            if (tile != null && tile.transform.position.x > max)
+                max = tile.transform.position.x;
         }
         return max;
-    }
-
-    private IEnumerator SpawnRoutine()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(layerData != null ? layerData.spawnInterval : 1f);
-            if(layerData != null && !layerData.continuousSpawning)
-            {
-                SpawnTileAt(rightSpawnX);
-            }
-        }
     }
 }

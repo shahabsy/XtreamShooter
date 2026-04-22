@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeb9a7ddbde54f3409a52721fe9339ea, type: 3}
+  m_Name: MissionTileSet1
+  m_EditorClassIdentifier: Assembly-CSharp::MissionTileSet
+  layers:
+  - {fileID: 11400000, guid: 387903a878623054698fe067bdd84f30, type: 2}
+  - {fileID: 11400000, guid: e9f413570d1d99642a7d2a4fe0e03c21, type: 2}
+  - {fileID: 11400000, guid: 887504a646fe46d4ea962f106ab4dfe0, type: 2}
+  - {fileID: 11400000, guid: e451230438b48cd42925de8411517122, type: 2}
+  - {fileID: 11400000, guid: 8f5e497144e47e9479b98664e6665193, type: 2}
+  - {fileID: 11400000, guid: 958e400b4607a8d44adfb93ea72920ce, type: 2}
+  - {fileID: 11400000, guid: 0eddbecad1a64d048a2ba4849c90cd5f, type: 2}
+  - {fileID: 11400000, guid: b9c9ac56ffd312b4b9c4b88a91c381d0, type: 2}
+  - {fileID: 11400000, guid: 5c6958cbf2d2f3c49a662110eebc4657, type: 2}
+  baseScrollSpeed: 5
+  ambientMusic: {fileID: 8300000, guid: 8b91caa62a0d8c7499615770dc899e08, type: 3}
+  bossMusic: {fileID: 8300000, guid: 830bd216f0961ec49990a558ae09f6c6, type: 3}
+  ambientLight: {r: 1, g: 1, b: 1, a: 1}

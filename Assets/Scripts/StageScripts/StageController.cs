@@ -58,8 +58,9 @@ public class StageController : MonoBehaviour
         // Play music
 
         // Begin intro phase
-        if (backgroundSpawner != null)
+        if (backgroundSpawner != null && currentMission.tileSet != null)
         {
+            backgroundSpawner.Initialize(currentMission.tileSet);
             backgroundSpawner.SetScrolling(true);
             backgroundSpawner.SetScrollingMultiplier(1);
         }

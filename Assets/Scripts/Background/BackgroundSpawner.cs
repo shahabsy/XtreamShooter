@@ -7,11 +7,12 @@ public class BackgroundSpawner : MonoBehaviour
 {
     public static BackgroundSpawner Instance { get; private set; }
 
-    [SerializeField] private GameObject tilePrefab;
-    [SerializeField] private int poolSize = 5;
-    //public float scrollSpeedMultiplier = 100f;
+    
+    private MissionTileSet currentTileSet;
+    private float globalScrollSpeed;
+    private bool scrollingEnabled = true;
+    private float scrollSpeedMultiplier = 1f;
 
-    private List<BackgroundLayerData> layers = new List<BackgroundLayerData>();
     [SerializeField] private List<BackgroundLayer> activeLayers = new List<BackgroundLayer>();
 
 
@@ -23,157 +24,63 @@ public class BackgroundSpawner : MonoBehaviour
             return;
         }
         Instance = this;
+    }
 
-        int requiredPoolSize = CalculateRequiredPoolSize();
+    public void Initialize(MissionTileSet tileSet)
+    {
+        if (tileSet == null) return;
 
-        BackgroundTilePool pool = FindAnyObjectByType<BackgroundTilePool>();
+        currentTileSet = tileSet;
+        globalScrollSpeed = tileSet.baseScrollSpeed;
 
-        if (pool != null && pool.tilePrefab != tilePrefab)
+
+        ClearAllLayer();
+        SpawnAllLayers();
+    }
+
+    private void ClearAllLayer()
+    {
+        foreach (Transform child in transform)
         {
-            Debug.LogWarning("Existing BackgroundTilePool uses a different tilePrefab. Destroying and recreating.");
-            Destroy(pool.gameObject);
-            pool = null;
+            Destroy(child.gameObject);   
         }
+        activeLayers.Clear();
+    }
 
-        if (pool == null)
+    private void SpawnAllLayers()
+    {
+        for(int i = 0; i < currentTileSet.layers.Length; i++)
         {
-            GameObject poolObj = new GameObject("BackgroundTilePool");
-            pool = poolObj.AddComponent<BackgroundTilePool>();
-            int initialSize = Mathf.Max(poolSize, requiredPoolSize);
-            pool.Initialize(tilePrefab, initialSize);
-            //Debug.Log($"BackgroundSpawner: Initialized BackgroundTilePool with size {initialSize}");
-        }
-        else
-        {
-            if (!pool.IsInitialized && tilePrefab != null)
-            {
-                int initialSize = Mathf.Max(poolSize, requiredPoolSize);
-                pool.Initialize(tilePrefab, initialSize);
-                Debug.Log($"BackgroundSpawner: Initialized BackgroundTilePool with size {initialSize}");
-            }
-            else if (pool.IsInitialized)
-            {
-                if (pool.TotalCount < requiredPoolSize)
-                {
-                    int expandBy = requiredPoolSize - pool.TotalCount;
-                    pool.ExpandPool(expandBy);
-                    Debug.Log($"BackgroundSpawner: Expanded backgroundtilepool by {expandBy} to reach required size {requiredPoolSize}");
-                }
-            }
+            BackgroundLayerData layerData = currentTileSet.layers[i];
+            if(layerData == null) continue;
+
+            GameObject layerObj = new GameObject($"Layer_{layerData.name}_{i}");
+            layerObj.transform.SetParent(transform);
+
+            BackgroundLayer layer = layerObj.AddComponent<BackgroundLayer>();
+            layer.Initialize(layerData, i);
+            activeLayers.Add(layer);
         }
     }
 
-    void Start()
+    private void Update()
     {
-        if (layers == null || layers.Count == 0)
+        if(!scrollingEnabled) return;
+        float scrollDelta = globalScrollSpeed * scrollSpeedMultiplier * Time.deltaTime;
+        foreach(var layer in activeLayers)
         {
-            //Debug.LogWarning("BackgroundSpawner: 'Layers' is empty. No background layers will be created.");
-            return;
-        }
-
-        for (int i = 0; i < layers.Count; ++i)
-        {
-            var layerData = layers[i];
-            if (layerData == null)
-            {
-                Debug.LogError("BackgroundSpawner: one of the 'layers' entries is null. Skipping.");
-                continue;
-            }
-
-            GameObject layerObj = new GameObject($"Layer_{i:00}_{layerData.name}");
-            layerObj.transform.SetParent(transform);
-
-            var sg = layerObj.AddComponent<SortingGroup>();
-            sg.sortingLayerName = layerData.sortingLayerName;
-
-            int layerOrder = layerData.baseOrderInLayer + (i * layerData.OrderGap);
-            sg.sortingOrder = layerOrder;
-
-            BackgroundLayer layer = layerObj.AddComponent<BackgroundLayer>();
-
-            layer.Init(layerData, i, layerOrder);
-            // store the runtime component for later control
-            activeLayers.Add(layer);
+            layer.Scroll(scrollDelta);
         }
     }
 
     public void SetScrolling(bool enabled)
     {
-        foreach (var layer in activeLayers)
-        {
-            layer.SetScrolling(enabled);
-        }
+        scrollingEnabled = enabled;
     }
 
-    public void SetSpawning(bool enabled)
-    {
-        foreach (var layer in activeLayers)
-        {
-            layer.SetSpawning(enabled);
-        }
-    }
 
     public void SetScrollingMultiplier(float multiplier)
     {
-        foreach (var layer in activeLayers)
-        {
-            if (layer != null)
-            {
-                layer.SetScrollSpeedMultiplier(multiplier);
-            }
-        }
+        scrollSpeedMultiplier = multiplier;
     }
-
-    public void ResetBackground()
-    {
-        foreach(var layer in activeLayers)
-        {
-            if (layer != null)
-            {
-                Destroy(layer.gameObject);
-            }
-        }
-        activeLayers.Clear();
-        Start();
-    }
-
-    private int CalculateRequiredPoolSize()
-    {
-        if (layers == null || layers.Count == 0) return poolSize;
-
-        Camera mainCamera = Camera.main;
-        if (mainCamera == null) return poolSize;
-
-        float zDistance = Mathf.Abs(Camera.main.transform.position.z - 0f);
-        Vector3 leftEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, zDistance));
-        Vector3 rightEdgeWorld = mainCamera.ViewportToWorldPoint(new Vector3(1, 0, zDistance));
-        float screenWidth = Mathf.Abs(rightEdgeWorld.x  - leftEdgeWorld.x);
-
-        int totalNeeded = 0;
-        foreach (var ld in layers)
-        {
-            if (ld == null) continue;
-
-            float avgWidth = 2f;
-            if (ld.possibleTiles != null && ld.possibleTiles.Count > 0)
-            {
-                float sum = 0f;
-                int cout = 0;
-                foreach (var pd in ld.possibleTiles)
-                {
-                    if (pd != null && pd.sprite != null)
-                    {
-                        sum += pd.sprite.bounds.size.x;
-                        cout++;
-                    }
-                }
-                if (cout > 0) avgWidth = sum / cout;
-            }
-            int neededForLayer = Mathf.CeilToInt(screenWidth / Mathf.Max(0.01f, avgWidth)) + 2;
-            if (!ld.continuousSpawning) neededForLayer = Mathf.Min(3, neededForLayer);
-            totalNeeded += neededForLayer;
-        }
-        return Mathf.Max(poolSize, totalNeeded);
-    }
-
 }
