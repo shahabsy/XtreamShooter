@@ -25,12 +25,14 @@ public class EntityTracker : MonoBehaviour
     public void RegisterEnemy(Enemy enemy)
     {
         if (enemy == null) return;
+        Debug.Log($"EntityTracker.RegisterEnemy: {enemy.name} (id={enemy.GetInstanceID()})");
         enemies.Add(enemy);
     }
 
     public void UnregisterEnemy(Enemy enemy)
     {
         if (enemy == null) return;
+        Debug.Log($"EntityTracker.UnregisterEnemy: {enemy.name} (id={enemy.GetInstanceID()})");
         enemies.Remove(enemy);
     }
 

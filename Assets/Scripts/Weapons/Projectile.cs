@@ -31,4 +31,18 @@ public class Projectile : MonoBehaviour
 
     public void SetSpeed(float newSpeed) => speed = newSpeed;
     public void SetPoolTag(string tag) => poolTag = tag;
+    /*
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        var damageable = collision.GetComponent<IDamageable>();
+        if (damageable != null)
+        {
+            damageable.TakeDamage(damage);
+            ReturnToPool();
+            return;
+        }
+
+        ReturnToPool();
+    }
+    */
 }

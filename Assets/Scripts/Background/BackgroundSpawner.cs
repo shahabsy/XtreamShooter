@@ -35,6 +35,10 @@ public class BackgroundSpawner : MonoBehaviour
 
 
         ClearAllLayer();
+        
+        currentTileSet = tileSet;
+        globalScrollSpeed = tileSet.baseScrollSpeed;
+
         SpawnAllLayers();
     }
 
@@ -42,9 +46,11 @@ public class BackgroundSpawner : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
+            Debug.Log(child.gameObject.name);
             Destroy(child.gameObject);   
         }
         activeLayers.Clear();
+        Debug.Log("Cleared all background layers.");
     }
 
     private void SpawnAllLayers()

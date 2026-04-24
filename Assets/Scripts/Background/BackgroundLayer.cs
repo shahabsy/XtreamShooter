@@ -2,22 +2,32 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Net.NetworkInformation;
 
 public class BackgroundLayer : MonoBehaviour
 {
     private BackgroundLayerData data;
     private float tileWidth;
-    private float offset = 0f;
+    private int sortingOrderBase;
 
     private List<GameObject> activeTiles = new List<GameObject>();
 
+    private bool isInitialized = false;
+
     public void Initialize(BackgroundLayerData layerData, int layerIndex)
     {
+        if (isInitialized)
+        {
+            Debug.LogWarning("BackgroundLayer is already initialized.");
+            return;
+        }
+        isInitialized = true;
         data = layerData;
+        sortingOrderBase = data.baseOrderInLayer + layerIndex * data.OrderGap;
         tileWidth = GetTileWidth();
+        if (tileWidth <= 0f) return;
 
-        int order = data.baseOrderInLayer + layerIndex * data.OrderGap;
-        SpawnInitialTiles(order);
+        SpawnInitialTiles();
     }
     private float GetTileWidth()
     {
@@ -42,7 +52,7 @@ public class BackgroundLayer : MonoBehaviour
         return data.possibleTiles[0].sprite.bounds.size.x;
     }
 
-    private void SpawnInitialTiles(int sortingOrder)
+    private void SpawnInitialTiles()
     {
         Camera cam = Camera.main;
         if(cam == null) return;
@@ -50,11 +60,13 @@ public class BackgroundLayer : MonoBehaviour
         float screenRight = cam.ViewportToWorldPoint(new Vector3(1f, 0, 0)).x;
         float screenLeft = cam.ViewportToWorldPoint(new Vector3(0f, 0, 0)).x;
         float screenWidth = screenRight - screenLeft;
+
         int tilesNeeded = Mathf.CeilToInt(screenWidth / tileWidth) + 2;
 
         for (int i = -1; i < tilesNeeded - 1; i++)
         {
-            GameObject tile = SpawnTile(i * tileWidth, sortingOrder);
+            float xPos = screenLeft + i * tileWidth;
+            GameObject tile = SpawnTile(xPos, sortingOrderBase);
             activeTiles.Add(tile);
         }
     }
@@ -81,8 +93,9 @@ public class BackgroundLayer : MonoBehaviour
 
     public void Scroll(float delta)
     {
-        offset += delta * data.scrollSpeed;
-        foreach(var tile in activeTiles)
+        if(activeTiles.Count == 0) return;
+
+        foreach (var tile in activeTiles)
         {
             if (tile == null) continue;
             
@@ -113,5 +126,19 @@ public class BackgroundLayer : MonoBehaviour
                 max = tile.transform.position.x;
         }
         return max;
+    }
+
+    private void ChangeTileSprite(GameObject tile)
+    {
+        if(data.possibleTiles.Count <= 1) return;
+        var newTileData = data.possibleTiles[UnityEngine.Random.Range(0, data.possibleTiles.Count)];
+        if (newTileData != null && newTileData.sprite != null)
+        {
+            var sr = tile.GetComponent<SpriteRenderer>();
+            if(sr != null)
+            {
+                sr.sprite = newTileData.sprite;
+            }
+        }
     }
 }

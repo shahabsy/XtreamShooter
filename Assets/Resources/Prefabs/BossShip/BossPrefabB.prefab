@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 4787827074947146252}
   - component: {fileID: 2185465660989538093}
   m_Layer: 6
-  m_Name: BossPrefab
+  m_Name: BossPrefabB
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

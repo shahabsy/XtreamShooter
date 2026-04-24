@@ -17,6 +17,8 @@ public class StageController : MonoBehaviour
     public PlayerController playerController;
     public BossEncounterController bossEncounter;
 
+    private bool isStartingMission = false;
+
     private enum MissionPhase
     {
         Intro,
@@ -55,11 +57,15 @@ public class StageController : MonoBehaviour
 
     private void StartMission()
     {
+        if (isStartingMission) return;
+        isStartingMission = true;
+        Debug.Log($"Starting mission: {currentMission.missionName} ID: {currentMission.missionId}");
         // Play music
 
         // Begin intro phase
         if (backgroundSpawner != null && currentMission.tileSet != null)
         {
+            Debug.Log($"Initializing background spawner with tile set: {currentMission.tileSet.name}");
             backgroundSpawner.Initialize(currentMission.tileSet);
             backgroundSpawner.SetScrolling(true);
             backgroundSpawner.SetScrollingMultiplier(1);
@@ -68,6 +74,7 @@ public class StageController : MonoBehaviour
         actionIndex = -1;
         missionComplete = false;
         ProceedToNextAction();
+        isStartingMission = false;
     }
     private void ProceedToNextAction()
     {
@@ -118,7 +125,7 @@ public class StageController : MonoBehaviour
             case StageAction.ActionType.StartBossEncounter:
                 Debug.Log("Stage: StartBossEncounter");
                 if (bossEncounter != null) 
-                    yield return bossEncounter.StartEncounter();
+                    yield return bossEncounter.StartEncounter(action.spawnId);
                 else 
                     Debug.LogError("BossEncounter component missing on StageController.");
                 break;

@@ -35,6 +35,7 @@ public class Boss : MonoBehaviour, IDamageable
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Debug.Log($"Initializing boss with initialized {initialized}");
         if (Camera.main != null)
         {
             data.leftBoundary = Camera.main.ViewportToWorldPoint(Vector3.zero).x - 1f;
@@ -48,7 +49,7 @@ public class Boss : MonoBehaviour, IDamageable
     public void Initialize(BossData bossData)
     {
         if (initialized) return;
-
+        Debug.Log($"Initializing boss with name: {bossData.bossName}");
         data = bossData;
         currentHealth = data.maxHealth;
 

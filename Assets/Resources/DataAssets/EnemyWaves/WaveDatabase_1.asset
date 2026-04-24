@@ -33,7 +33,11 @@ MonoBehaviour:
     count: 3
     spacing: 1.5
   bosses:
-  - bossId: TestBoss
-    bossName: TestBoss
+  - bossId: TestBoss1
+    bossName: TestBoss1
     bossPrefab: {fileID: 6468513381374726774, guid: 85df5e69d2def1b48972daa36f0a6ebb, type: 3}
     bossData: {fileID: 11400000, guid: b848a0769f4d6d944b779604ad081c6f, type: 2}
+  - bossId: TestBoss2
+    bossName: TestBoss2
+    bossPrefab: {fileID: 6468513381374726774, guid: 4b17ee18dc3d81540b530c605062c256, type: 3}
+    bossData: {fileID: 11400000, guid: 158c7485cc5dac84b9cf6051d9194081, type: 2}

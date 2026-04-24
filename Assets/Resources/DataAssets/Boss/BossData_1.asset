@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 879b7bbc205d062499d1425110de942d, type: 3}
   m_Name: BossData_1
   m_EditorClassIdentifier: Assembly-CSharp::BossData
-  bossName: TestBoss
-  bossId: TestBoss
+  bossName: TestBoss1
+  bossId: TestBoss1
   maxHealth: 100
   moveSpeed: 3
   sprite: {fileID: -1288456409569948990, guid: c616f60802325004f9e85bf07f655c0a, type: 3}
@@ -25,9 +25,9 @@ MonoBehaviour:
   bulletSpeed: 10
   phases:
   - healthThreshold: 0.75
-    dialog: take this shot
+    dialog: take this shot1
   - healthThreshold: 0.5
-    dialog: take that shot
+    dialog: take that shot1
   - healthThreshold: 0.25
-    dialog: take both shots now
+    dialog: take both shots now1
   leftBoundary: -12

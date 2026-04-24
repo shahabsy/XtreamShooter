@@ -58,19 +58,18 @@ public class EnemySpawner : MonoBehaviour
 
     public IEnumerator SpawnBossRoutine(string bossId)
     {
-        if(waveDatabase == null || cachedCamera == null) yield break;
-
+        if (waveDatabase == null || cachedCamera == null) yield break;
         BossData bossData = waveDatabase.GetBossData(bossId);
         GameObject bossPrefab = waveDatabase.GetBossPrefab(bossId);
 
         if (bossData == null || bossPrefab == null) yield break;
-
+        //Debug.Log("I should spawn boss: " + bossId);
         Vector3 spawnPos = cachedCamera.ViewportToWorldPoint(new Vector3(1.2f, 0.5f, 0));
         spawnPos.z = 0;
 
         GameObject bossObj = Instantiate(bossPrefab, spawnPos, Quaternion.identity);
         Boss boss = bossObj.GetComponent<Boss>();
-        boss?.Initialize(bossData);
+        boss.Initialize(bossData);
 
         yield return null;
     }
@@ -87,6 +86,7 @@ public class EnemySpawner : MonoBehaviour
             Vector3 spawnPos = cachedCamera.ViewportToWorldPoint(new Vector3(1.1f, Random.Range(0.2f, 0.8f), 0));
             spawnPos.z = 0;
             GameObject enemyObj = Instantiate(prefab, spawnPos, Quaternion.identity);
+            Debug.Log($"SpawnWaveCoroutine: spawned '{prefab.name}' at {spawnPos} for wave '{wave.waveName}'");
 
             // Register enemy with spawner
             var enemy = enemyObj.GetComponent<Enemy>();

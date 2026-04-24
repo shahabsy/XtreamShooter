@@ -3,9 +3,6 @@ using UnityEngine;
 
 public class BossEncounterController : MonoBehaviour
 {
-    [Header("Boss Settings")]
-    [SerializeField] private string bossId;
-
     [Header("Arena Controls")]
     [SerializeField] private bool freezeScrolling = true;
     [SerializeField] private bool freezePlayer = true;
@@ -23,7 +20,7 @@ public class BossEncounterController : MonoBehaviour
 
     private bool isRunning = false;
 
-    public IEnumerator StartEncounter()
+    public IEnumerator StartEncounter(string bossId)
     {
         if (isRunning) yield break;
 
@@ -39,7 +36,7 @@ public class BossEncounterController : MonoBehaviour
 
         if (showBossUI)
         {
-            string bossNmae = GetBossName();
+            string bossNmae = GetBossName(bossId);
             UIManager.Instance?.ShowBossUI(bossNmae);
         }
 
@@ -70,13 +67,15 @@ public class BossEncounterController : MonoBehaviour
     private IEnumerator WaitForBossDefeat()
     {
         EntityTracker tracker = EntityTracker.Instance;
-        while (tracker != null && tracker.HasBoss)
+        if (tracker == null) yield break;
+
+        while (tracker.HasBoss)
         {
             yield return null;
         }
     }
 
-    private string GetBossName()
+    private string GetBossName(string bossId)
     {
         WaveDatabase database = EnemySpawner.Instance?.waveDatabase;
         if (database == null) return "Unknown Boss";

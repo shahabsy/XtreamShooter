@@ -151,7 +151,20 @@ MonoBehaviour:
     skippable: 0
   bossFightActions:
   - type: 5
-    spawnId: TestBoss
+    spawnId: TestBoss1
+    delayTime: 0
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  - type: 9
+    spawnId: 
     delayTime: 0
     floatValue: 0
     scrollSpeedMultiplier: 0
@@ -180,7 +193,7 @@ MonoBehaviour:
   - type: 1
     spawnId: 
     delayTime: 0
-    floatValue: 0
+    floatValue: 2
     scrollSpeedMultiplier: 0
     text: Mission Completed!
     openSFX: 
@@ -189,7 +202,7 @@ MonoBehaviour:
     completeTrigger: 
     characterPortrait: 
     characterName: Command
-    skippable: 1
+    skippable: 0
   - type: 0
     spawnId: 
     delayTime: 2

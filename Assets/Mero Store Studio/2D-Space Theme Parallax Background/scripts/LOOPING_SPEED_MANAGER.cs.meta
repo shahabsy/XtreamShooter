@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 4f8136afcff63db4f9ca3587a8ddce23
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 309491
+  packageName: 2D-Space Theme Parallax Backgrounds
+  packageVersion: 1.0.0
+  assetPath: Assets/Mero Store Studio/2D-Space Theme Parallax Background/scripts/LOOPING_SPEED_MANAGER.cs
+  uploadId: 728675

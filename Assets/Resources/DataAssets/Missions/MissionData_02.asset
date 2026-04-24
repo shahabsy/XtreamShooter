@@ -15,14 +15,14 @@ MonoBehaviour:
   missionName: Mission2
   missionId: MIssion_Id2
   enabled: 1
-  tileSet: {fileID: 11400000, guid: 0043fe8a3a81d284db4ecebb2e1df728, type: 2}
+  tileSet: {fileID: 11400000, guid: bf5cffa4546d0654888e447a2c70f936, type: 2}
   introActions:
-  - type: 1
+  - type: 0
     spawnId: 
-    delayTime: 0
-    floatValue: 2
+    delayTime: 1
+    floatValue: 0
     scrollSpeedMultiplier: 0
-    text: Welcome to The Game
+    text: 
     openSFX: 
     closeSFX: 
     overridePrefab: 
@@ -30,10 +30,10 @@ MonoBehaviour:
     characterPortrait: 
     characterName: Command
     skippable: 0
-  - type: 0
+  - type: 1
     spawnId: 
-    delayTime: 1
-    floatValue: 0
+    delayTime: 0
+    floatValue: 2
     scrollSpeedMultiplier: 0
     text: Welcome to The Game
     openSFX: 
@@ -48,7 +48,7 @@ MonoBehaviour:
     delayTime: 1
     floatValue: 0
     scrollSpeedMultiplier: 0
-    text: Welcome to The Game
+    text: 
     openSFX: 
     closeSFX: 
     overridePrefab: 
@@ -177,7 +177,20 @@ MonoBehaviour:
     skippable: 0
   bossFightActions:
   - type: 5
-    spawnId: TestBoss
+    spawnId: TestBoss2
+    delayTime: 0
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  - type: 9
+    spawnId: TestBoss2
     delayTime: 0
     floatValue: 0
     scrollSpeedMultiplier: 0
@@ -206,7 +219,7 @@ MonoBehaviour:
   - type: 1
     spawnId: 
     delayTime: 0
-    floatValue: 0
+    floatValue: 2
     scrollSpeedMultiplier: 0
     text: Mission Completed!
     openSFX: 
@@ -215,7 +228,7 @@ MonoBehaviour:
     completeTrigger: 
     characterPortrait: 
     characterName: Command
-    skippable: 1
+    skippable: 0
   - type: 0
     spawnId: 
     delayTime: 2
@@ -248,4 +261,4 @@ MonoBehaviour:
   bossName: 
   bossIcon: 
   bossTaunts: []
-  nextMissionId: 
+  nextMissionId: MissionData_01
