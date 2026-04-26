@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BossEncounterController : MonoBehaviour
@@ -23,16 +24,14 @@ public class BossEncounterController : MonoBehaviour
     public IEnumerator StartEncounter(string bossId)
     {
         if (isRunning) yield break;
-
         isRunning = true;
+
         OnEncounterStart?.Invoke();
         OnPhaseChanged?.Invoke(0);// Phase 0 = Intro
 
-        if (freezeScrolling)
-            BackgroundSpawner.Instance?.SetScrolling(false);
+        if (freezeScrolling) BackgroundSpawner.Instance?.SetScrolling(false);
 
-        if (freezePlayer) 
-            PlayerController.Instance?.FreezeMovement(0.5f);
+        if (freezePlayer) PlayerController.Instance?.FreezeMovement(0.5f);
 
         if (showBossUI)
         {
@@ -43,36 +42,35 @@ public class BossEncounterController : MonoBehaviour
         yield return new WaitForSeconds(introDelay);
         OnPhaseChanged?.Invoke(1); // Phase 1 = Boss Spawned
 
-        yield return EnemySpawner.Instance.SpawnBossRoutine(bossId);
-
-        BindBossHealthEvent();
-
+        yield return SpawnAndWaitForBoss(bossId);
+        
         OnPhaseChanged?.Invoke(2); // Phase 2 = Boss Active - fight phase
-
-        yield return WaitForBossDefeat();
-        OnPhaseChanged?.Invoke(3); // Phase 3 = outro phase
         
         yield return new WaitForSeconds(outroDelay);
 
-        if (showBossUI)
-            UIManager.Instance?.HideBossUIAfterDelay();
+        if (showBossUI) UIManager.Instance?.HideBossUIAfterDelay();
 
-        if (freezeScrolling)
-            BackgroundSpawner.Instance?.SetScrolling(true);
+        if (freezeScrolling) BackgroundSpawner.Instance?.SetScrolling(true);
 
         OnEncounterEnd?.Invoke();
         isRunning = false;
     }
-
-    private IEnumerator WaitForBossDefeat()
+    private IEnumerator SpawnAndWaitForBoss(string bossId)
     {
-        EntityTracker tracker = EntityTracker.Instance;
-        if (tracker == null) yield break;
+        var spawner = EnemySpawner.Instance;
+        if (spawner == null) yield break;
 
-        while (tracker.HasBoss)
-        {
+        yield return spawner.SpawnBossRoutine(bossId);
+
+        while (EntityTracker.Instance != null && EntityTracker.Instance.HasBoss)
             yield return null;
-        }
+    }
+    private void BindBossHealthEvent(Boss boss)
+    {
+        if (boss == null || UIManager.Instance == null) return;
+
+        boss.OnHealthChanged -= UIManager.Instance.SetBossHealth;
+        boss.OnHealthChanged += UIManager.Instance.SetBossHealth;
     }
 
     private string GetBossName(string bossId)
@@ -84,15 +82,5 @@ public class BossEncounterController : MonoBehaviour
         return data != null ? data.bossName : "Unknown Boss";
     }
 
-    private void BindBossHealthEvent()
-    {
-        Boss boss = FindAnyObjectByType<Boss>();
-        if(boss != null && UIManager.Instance != null)
-        {
-            boss.OnHealthChanged -= UIManager.Instance.SetBossHealth;
-            boss.OnHealthChanged += UIManager.Instance.SetBossHealth;
-        }
-    }
-
-    public bool isComplete => !isRunning;
+    public bool IsRunning => isRunning;
 }

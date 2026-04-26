@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class EnemySpawner : MonoBehaviour
     public WaveDatabase waveDatabase;
     private Camera cachedCamera;
 
+    private HashSet<string> activeSpawningWaves = new HashSet<string>();
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -17,24 +20,80 @@ public class EnemySpawner : MonoBehaviour
         cachedCamera = Camera.main;
     }
 
+    private string NewWaveInstanceId(string baseName) => $"{baseName}_{DateTime.UtcNow.Ticks}";
+
     public void SpawnWave(string waveName)
     {
-        if(waveDatabase == null || cachedCamera == null) return;
-
+        if (waveDatabase == null || cachedCamera == null) return;
+        Debug.Log($"EnemySpawner: spawning wave '{waveName}'");
         WaveDefinition wave = waveDatabase.GetWave(waveName);
-        if (wave != null) 
-            StartCoroutine(SpawnWaveCoroutine(wave, false));
+        if (wave != null)
+        {
+            string waveInstanceId = NewWaveInstanceId(waveName);
+            StartCoroutine(SpawnWaveCoroutine(wave, false, waveInstanceId));
+        }
     }
 
     public void SpawnEliteWave(string waveName)
     {
         if (waveDatabase == null || cachedCamera == null) return;
-
+        Debug.Log($"Elite EnemySpawner: spawning ELITE wave '{waveName}'");
         WaveDefinition wave = waveDatabase.GetEliteWave(waveName);
         if (wave != null)
         {
-            StartCoroutine(SpawnWaveCoroutine(wave, true));
+            string waveInstanceId = NewWaveInstanceId(waveName);
+            StartCoroutine(SpawnWaveCoroutine(wave, true, waveInstanceId));
         }
+    }
+
+    public string SpawnWaveAndReturnId(string waveName)
+    {
+        if (waveDatabase == null || cachedCamera == null) return string.Empty;
+
+        WaveDefinition wave = waveDatabase.GetWave(waveName);
+        if (wave == null) return string.Empty;
+
+        string waveInstanceId = NewWaveInstanceId(waveName);
+        StartCoroutine(SpawnWaveCoroutine(wave, false, waveInstanceId));
+        return waveInstanceId;
+    }
+
+    public string SpawnEliteWaveAndReturnId(string waveName)
+    {
+        if (waveDatabase == null || cachedCamera == null) return string.Empty;
+
+        WaveDefinition wave = waveDatabase.GetEliteWave(waveName);
+        if (wave == null) return string.Empty;
+
+        string waveInstanceId = NewWaveInstanceId(waveName);
+        StartCoroutine(SpawnWaveCoroutine(wave, true, waveInstanceId));
+        return waveInstanceId;
+    }
+
+    private IEnumerator SpawnWaveCoroutine(WaveDefinition wave, bool isElite, string waveInstanceId)
+    {
+        activeSpawningWaves.Add(waveInstanceId);
+        Debug.Log($"Start spawning wave {waveInstanceId}");
+        for (int i = 0; i < wave.count; i++)
+        {
+            GameObject prefab = wave.enemyPrefabs[UnityEngine.Random.Range(0, wave.enemyPrefabs.Length)];
+            Vector3 spawnPos = cachedCamera.ViewportToWorldPoint(new Vector3(1.1f, UnityEngine.Random.Range(0.2f, 0.8f), 0));
+            spawnPos.z = 0;
+            GameObject enemyObj = Instantiate(prefab, spawnPos, Quaternion.identity);
+
+            // Register enemy with spawner / tracker
+            Enemy enemy = enemyObj.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.Initialize(wave.enemyData);
+                EntityTracker.Instance?.AssignEnemyToWave(enemy, waveInstanceId);
+            }
+
+            if (wave.spacing > 0 && i < wave.count - 1)
+                yield return new WaitForSeconds(wave.spacing);
+        }
+        activeSpawningWaves.Remove(waveInstanceId);
+        Debug.Log($"Finished spawning wave {waveInstanceId}");
     }
 
     public void SpawnBoss(string bossId)
@@ -61,45 +120,30 @@ public class EnemySpawner : MonoBehaviour
         if (waveDatabase == null || cachedCamera == null) yield break;
         BossData bossData = waveDatabase.GetBossData(bossId);
         GameObject bossPrefab = waveDatabase.GetBossPrefab(bossId);
-
         if (bossData == null || bossPrefab == null) yield break;
-        //Debug.Log("I should spawn boss: " + bossId);
+
         Vector3 spawnPos = cachedCamera.ViewportToWorldPoint(new Vector3(1.2f, 0.5f, 0));
         spawnPos.z = 0;
 
         GameObject bossObj = Instantiate(bossPrefab, spawnPos, Quaternion.identity);
+
         Boss boss = bossObj.GetComponent<Boss>();
-        boss.Initialize(bossData);
+        if (boss != null) boss.Initialize(bossData);
 
         yield return null;
     }
-    private IEnumerator SpawnWaveCoroutine(WaveDefinition wave, bool isElite)
-    {
-        if (cachedCamera == null) yield break;
 
-        for (int i = 0; i < wave.count; i++)
-        {
-            // Randomly pick a prefab from the wave's list
-            GameObject prefab = wave.enemyPrefabs[Random.Range(0, wave.enemyPrefabs.Length)];
-
-            // Spawn at right edge of screen
-            Vector3 spawnPos = cachedCamera.ViewportToWorldPoint(new Vector3(1.1f, Random.Range(0.2f, 0.8f), 0));
-            spawnPos.z = 0;
-            GameObject enemyObj = Instantiate(prefab, spawnPos, Quaternion.identity);
-            Debug.Log($"SpawnWaveCoroutine: spawned '{prefab.name}' at {spawnPos} for wave '{wave.waveName}'");
-
-            // Register enemy with spawner
-            var enemy = enemyObj.GetComponent<Enemy>();
-            if (enemy != null)
-                enemy.Initialize(wave.enemyData);
-
-            if (wave.spacing > 0 && i < wave.count - 1)
-                yield return new WaitForSeconds(wave.spacing);
-        }
-    }
+    public bool IsWaveSpawning(string waveId) => activeSpawningWaves.Contains(waveId);
 
     public void ClearAllEnemies()
     {
         EntityTracker.Instance?.ClearAllEntities();
+    }  
+    
+    public void ResetSpawner()
+    {
+        StopAllCoroutines();
+        activeSpawningWaves.Clear();
+        Debug.Log("EnemySpawner reset.");
     }
 }

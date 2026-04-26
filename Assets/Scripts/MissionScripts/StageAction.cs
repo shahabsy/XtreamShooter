@@ -8,15 +8,14 @@ public class StageAction
         Idle,
         Dialog,
         SpawnEnemy,
+        WaitUntilWaveDead,
         SpawnEliteEnemy,
-        SpawnBoss,
+        WaitUntilEliteWaveDead,
         StartBossEncounter,
         FreezeScrolling,
         UnfreezeScrolling,
         SetScrollSpeedMultiplier,
-        WaitUntilAllEnemiesDead,
         WaitForPlayerTrigger,
-        ClearAllenemies,
         CompleteMission
     }
 

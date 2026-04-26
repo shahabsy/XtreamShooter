@@ -187,6 +187,17 @@ public class PlayerController : MonoBehaviour
         movementFrozen = false;
     }
 
+    public void ResetPlayer()
+    {
+        // Reset health, shields, position, etc.
+        movementFrozen = false;
+        // Re-enable colliders if disabled
+        foreach (var col in GetComponents<Collider2D>()) col.enabled = true;
+        // Update UI
+        
+        Debug.Log("Player reset.");
+    }
+
     // Draw preview of computed bounds in Scene view when previewBounds is enabled (or when selected)
     private void OnDrawGizmos()
     {

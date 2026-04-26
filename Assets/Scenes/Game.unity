@@ -839,7 +839,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61806d895ffb704897612f8bd9fb73f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageController
-  currentMission: {fileID: 11400000, guid: 11aba906da76ef4459d27bf952bab35f, type: 2}
+  currentMission: {fileID: 11400000, guid: ee95ee56cd6f9b2429333764adb45b2e, type: 2}
   backgroundSpawner: {fileID: 1236166020}
   enemySpawner: {fileID: 1906335883}
   dialogManager: {fileID: 39783560}
@@ -3059,7 +3059,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4255e7bd0862c52428c149ec7eebab91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossEncounterController
-  bossId: TestBoss
   freezeScrolling: 1
   freezePlayer: 0
   introDelay: 1

@@ -43,19 +43,6 @@ MonoBehaviour:
     characterPortrait: 
     characterName: Command
     skippable: 0
-  - type: 10
-    spawnId: 
-    delayTime: 1
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: Welcome to The Game
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: Movement
-    characterPortrait: 
-    characterName: 
-    skippable: 0
   gameplayActions:
   - type: 2
     spawnId: NormalWave1
@@ -70,8 +57,21 @@ MonoBehaviour:
     characterPortrait: 
     characterName: 
     skippable: 0
-  - type: 9
+  - type: 3
     spawnId: 
+    delayTime: 0
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  - type: 2
+    spawnId: NormalWave2
     delayTime: 0
     floatValue: 0
     scrollSpeedMultiplier: 0
@@ -84,34 +84,34 @@ MonoBehaviour:
     characterName: 
     skippable: 0
   - type: 3
-    spawnId: EliteWave1
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
-  - type: 9
-    spawnId: EliteWave1
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
-  - type: 0
     spawnId: 
-    delayTime: 1
+    delayTime: 0
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  - type: 4
+    spawnId: EliteWave1
+    delayTime: 0
+    floatValue: 0
+    scrollSpeedMultiplier: 0
+    text: 
+    openSFX: 
+    closeSFX: 
+    overridePrefab: 
+    completeTrigger: 
+    characterPortrait: 
+    characterName: 
+    skippable: 0
+  - type: 5
+    spawnId: 
+    delayTime: 0
     floatValue: 0
     scrollSpeedMultiplier: 0
     text: 
@@ -136,35 +136,9 @@ MonoBehaviour:
     characterPortrait: 
     characterName: Command
     skippable: 0
-  - type: 8
-    spawnId: 
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 1
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
   bossFightActions:
-  - type: 5
-    spawnId: TestBoss1
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
-  - type: 9
-    spawnId: 
+  - type: 6
+    spawnId: TestBoss2
     delayTime: 0
     floatValue: 0
     scrollSpeedMultiplier: 0
@@ -177,11 +151,11 @@ MonoBehaviour:
     characterName: 
     skippable: 0
   outroActions:
-  - type: 8
+  - type: 11
     spawnId: 
     delayTime: 0
     floatValue: 0
-    scrollSpeedMultiplier: 30
+    scrollSpeedMultiplier: 0
     text: 
     openSFX: 
     closeSFX: 
@@ -202,32 +176,6 @@ MonoBehaviour:
     completeTrigger: 
     characterPortrait: 
     characterName: Command
-    skippable: 0
-  - type: 0
-    spawnId: 
-    delayTime: 2
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
-  - type: 12
-    spawnId: 
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
     skippable: 0
   rewards: []
   killCredit: 10

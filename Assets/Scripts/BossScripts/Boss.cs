@@ -191,4 +191,10 @@ public class Boss : MonoBehaviour, IDamageable
         }
 
     }
+
+    private void OnDestroy()
+    {
+        EntityTracker.Instance?.UnregisterBoss(this);
+        Destroy(gameObject);
+    }
 }

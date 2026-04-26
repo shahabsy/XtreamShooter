@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public class StageController : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class StageController : MonoBehaviour
     public PlayerController playerController;
     public BossEncounterController bossEncounter;
 
-    private bool isStartingMission = false;
+    //private bool isStartingMission = false;// Prevents re-entry
 
     private enum MissionPhase
     {
@@ -33,10 +34,11 @@ public class StageController : MonoBehaviour
 
     private int actionIndex = -1;
     private bool missionComplete = false;
-
-    private Dictionary<string, Action<string>> triggerHandlers =
-        new Dictionary<string, Action<string>>();
     
+    private Dictionary<string, Action<string>> triggerHandlers = new Dictionary<string, Action<string>>();
+
+    private string lastSpawnedWaveId = null;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -51,18 +53,26 @@ public class StageController : MonoBehaviour
         if (dialogManager == null) dialogManager = FindAnyObjectByType<DialogManager>();
         if (playerController == null) playerController = FindAnyObjectByType<PlayerController>();
         if (bossEncounter == null) bossEncounter = FindAnyObjectByType<BossEncounterController>();
-
         StartMission();
     }
 
     private void StartMission()
     {
-        if (isStartingMission) return;
-        isStartingMission = true;
+        //if (isStartingMission) return;
+        //isStartingMission = true;
+
         Debug.Log($"Starting mission: {currentMission.missionName} ID: {currentMission.missionId}");
         // Play music
 
         // Begin intro phase
+        ClearAllTriggerListeners();
+        EntityTracker.Instance?.ResetTracker();
+        enemySpawner.ResetSpawner();
+        backgroundSpawner.ResetSpawner();
+        playerController.ResetPlayer();
+        
+
+
         if (backgroundSpawner != null && currentMission.tileSet != null)
         {
             Debug.Log($"Initializing background spawner with tile set: {currentMission.tileSet.name}");
@@ -70,11 +80,14 @@ public class StageController : MonoBehaviour
             backgroundSpawner.SetScrolling(true);
             backgroundSpawner.SetScrollingMultiplier(1);
         }
+
         currentPhase = MissionPhase.Intro;
         actionIndex = -1;
         missionComplete = false;
+        lastSpawnedWaveId = null;
+
         ProceedToNextAction();
-        isStartingMission = false;
+        //isStartingMission = false;
     }
     private void ProceedToNextAction()
     {
@@ -87,7 +100,6 @@ public class StageController : MonoBehaviour
             OnPhaseComplete();
             return;
         }
-
         StartCoroutine(ExecuteActionWithDelay(actions[actionIndex]));
     }
 
@@ -110,25 +122,51 @@ public class StageController : MonoBehaviour
                 Debug.Log("Stage: Dialog");
                 yield return ExecuteDialog(action);
                 break;
+            // -------------------------------------
+            // Normal Wave
+            // ------------------------------------
             case StageAction.ActionType.SpawnEnemy:
                 Debug.Log("Stage: SpawnEnemy");
-                enemySpawner?.SpawnWave(action.spawnId);
+                lastSpawnedWaveId = enemySpawner.SpawnWaveAndReturnId(action.spawnId);
                 break;
+            case StageAction.ActionType.WaitUntilWaveDead:
+                {
+                    Debug.Log($"Stage: Waiting for wave {lastSpawnedWaveId}");
+                    if (!string.IsNullOrEmpty(lastSpawnedWaveId))
+                    {
+                        yield return WaitForWaveClear(lastSpawnedWaveId);
+                    }
+                    break;
+                }
+            // -------------------------------------
+            // Elite Wave
+            // ------------------------------------
             case StageAction.ActionType.SpawnEliteEnemy:
                 Debug.Log("Stage: SpawnEliteEnemy");
-                enemySpawner?.SpawnEliteWave(action.spawnId);
+                lastSpawnedWaveId = enemySpawner.SpawnEliteWaveAndReturnId(action.spawnId);
                 break;
-            case StageAction.ActionType.SpawnBoss:
-                Debug.Log("Stage: SpawnBoss");
-                enemySpawner?.SpawnBoss(action.spawnId);
-                break;
+            case StageAction.ActionType.WaitUntilEliteWaveDead:
+                {
+                    Debug.Log($"Stage: Waiting for elite wave {lastSpawnedWaveId}");
+                    if (!string.IsNullOrEmpty(lastSpawnedWaveId))
+                    {
+                        yield return WaitForWaveClear(lastSpawnedWaveId);
+                    }
+                    break;
+                }
+            // -------------------------------------
+            // Boss
+            // ------------------------------------
             case StageAction.ActionType.StartBossEncounter:
                 Debug.Log("Stage: StartBossEncounter");
-                if (bossEncounter != null) 
+                if (bossEncounter != null)
                     yield return bossEncounter.StartEncounter(action.spawnId);
-                else 
-                    Debug.LogError("BossEncounter component missing on StageController.");
+                else
+                    Debug.Log("BossEnounterController: missing");
                 break;
+            // -------------------------------------
+            // Environment
+            // ------------------------------------
             case StageAction.ActionType.FreezeScrolling:
                 Debug.Log("Stage: FreenzScrolling");
                 SetScrolling(false);
@@ -141,17 +179,12 @@ public class StageController : MonoBehaviour
                 Debug.Log("Stage: SetScrollSpeedMltiplier");
                 backgroundSpawner?.SetScrollingMultiplier(action.scrollSpeedMultiplier);
                 break;
-            case StageAction.ActionType.WaitUntilAllEnemiesDead:
-                Debug.Log("Stage: WaitUntilAllEnemiesDead");
-                yield return WaitForAllCombatEntitiesCleared();
-                break;
+            // -------------------------------------
+            // Flow Control
+            // ------------------------------------
             case StageAction.ActionType.WaitForPlayerTrigger:
                 Debug.Log("Stage: WaitForPlayerTrigger");
                 yield return WaitForPlayerTrigger(action.completeTrigger);
-                break;
-            case StageAction.ActionType.ClearAllenemies:
-                Debug.Log("Stage: Clear All enemies");
-                enemySpawner?.ClearAllEnemies();
                 break;
             case StageAction.ActionType.CompleteMission:
                 Debug.Log("Stage: CompleteMission");
@@ -159,6 +192,16 @@ public class StageController : MonoBehaviour
                 break;
         }
         ProceedToNextAction();
+    }
+    private IEnumerator WaitForWaveClear(string waveId)
+    {
+        if (EntityTracker.Instance == null) yield break;
+
+        while (enemySpawner.IsWaveSpawning(waveId) || EntityTracker.Instance.HasEnemiesInWave(waveId))
+        {
+            yield return null;
+        }
+        Debug.Log($"Wave {waveId} fully cleared.");
     }
 
     private StageAction[] GetCurrentPhaseActions()
@@ -212,18 +255,10 @@ public class StageController : MonoBehaviour
                 break;
         }
     }
-    private IEnumerator WaitForAllCombatEntitiesCleared()
-    {
-        while (EntityTracker.Instance != null &&
-              (EntityTracker.Instance.HasAnyEnemy ||
-              EntityTracker.Instance.HasBoss))
-        {
-            yield return null;
-        }   
-    }
-
     private IEnumerator WaitForPlayerTrigger(string triggerName)
     {
+        if (playerController == null) yield break;
+
         bool triggered = false;
         Action<string> handler = (t) =>
         {
@@ -265,18 +300,20 @@ public class StageController : MonoBehaviour
     private void MissionComplete()
     {
         if (missionComplete) return;
-
         missionComplete = true;
         currentPhase = MissionPhase.Completed;
-
         Debug.Log($"Mission: {currentMission.missionName} completed.");
+        ClearAllTriggerListeners();
+        enemySpawner?.ResetSpawner();
+        backgroundSpawner.ResetSpawner();
+        EntityTracker.Instance?.ClearAllEntities();
+        EntityTracker.Instance.ResetTracker();
         // show reward screen, load next mission etc...
         LoadNextMission();
     }
-
     private void LoadNextMission()
     {
-        if(string.IsNullOrEmpty(currentMission.nextMissionId))
+        if (string.IsNullOrEmpty(currentMission.nextMissionId))
         {
             Debug.LogWarning("No next mission specified. Cannot load next mission.");
             return;
@@ -291,10 +328,16 @@ public class StageController : MonoBehaviour
         }
         Debug.Log($"Successfully Loaded next mission: {nextMission.missionName} ID: {nextMission.missionId}");
         currentMission = nextMission;
-        missionComplete = false;
+        //missionComplete = false;
         StartMission();
     }
+
     private void OnDestroy()
+    {
+        ClearAllTriggerListeners();
+    }
+
+    private void ClearAllTriggerListeners()
     {
         if (playerController != null)
         {

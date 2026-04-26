@@ -89,4 +89,13 @@ public class BackgroundSpawner : MonoBehaviour
     {
         scrollSpeedMultiplier = multiplier;
     }
+
+    public void ResetSpawner()
+    {
+        ClearAllLayer();
+        scrollingEnabled = true;
+        scrollSpeedMultiplier = 1f;
+        globalScrollSpeed = 0f;
+        Debug.Log("BackgroundSpawner reset.");
+    }
 }

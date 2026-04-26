@@ -20,7 +20,6 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void OnEnable()
     {
-        Debug.Log($"Enemy OnEnable: {name} (instanceId={GetInstanceID()}) registering with EntityTracker.");
         EntityTracker.Instance?.RegisterEnemy(this);
     }
     private void OnDisable()
