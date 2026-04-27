@@ -14,143 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MissionData
   missionName: Mission2
   missionId: MIssion_Id2
+  phases:
+  - {fileID: 11400000, guid: 902f39da91d932f4290c27d8e7f19e6f, type: 2}
+  - {fileID: 11400000, guid: e3608a1fbba253c4496b8dce90344846, type: 2}
+  - {fileID: 11400000, guid: 3dbb956db7a34934b882f625470f3e7d, type: 2}
+  - {fileID: 11400000, guid: a43e5e98ad86f0c4da1b88d8dc240ed5, type: 2}
+  - {fileID: 11400000, guid: 9b9ffedbb9e75f542af05090c1269747, type: 2}
+  - {fileID: 11400000, guid: bfe49179786d8dc4494ffe0df5f3e3ff, type: 2}
   enabled: 1
   tileSet: {fileID: 11400000, guid: bf5cffa4546d0654888e447a2c70f936, type: 2}
-  introActions:
-  - type: 1
-    spawnId: 
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: Welcome to The Game
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: Command
-    skippable: 0
-  - type: 0
-    spawnId: 
-    delayTime: 1
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
-  gameplayActions:
-  - type: 2
-    spawnId: NormalWave2
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
-  - type: 3
-    spawnId: 
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
-  - type: 4
-    spawnId: EliteWave1
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
-  - type: 5
-    spawnId: 
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
-  bossIntroActions:
-  - type: 1
-    spawnId: 
-    delayTime: 2
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: Boss is approaching...
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: Command
-    skippable: 0
-  bossFightActions:
-  - type: 6
-    spawnId: TestBoss2
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
-  outroActions:
-  - type: 11
-    spawnId: 
-    delayTime: 0
-    floatValue: 0
-    scrollSpeedMultiplier: 0
-    text: 
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: 
-    skippable: 0
-  - type: 1
-    spawnId: 
-    delayTime: 0
-    floatValue: 2
-    scrollSpeedMultiplier: 0
-    text: Mission Completed!
-    openSFX: 
-    closeSFX: 
-    overridePrefab: 
-    completeTrigger: 
-    characterPortrait: 
-    characterName: Command
-    skippable: 0
   rewards: []
   killCredit: 10
   levelCompleteCredit: 200

@@ -88,6 +88,7 @@ public class BackgroundSpawner : MonoBehaviour
     public void SetScrollingMultiplier(float multiplier)
     {
         scrollSpeedMultiplier = multiplier;
+        Debug.Log($"Background Speed Multiplier set to {multiplier}");
     }
 
     public void ResetSpawner()

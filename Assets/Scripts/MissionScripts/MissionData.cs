@@ -6,17 +6,11 @@ public class MissionData : ScriptableObject
     [Header("Mission Info")]
     public string missionName;
     public string missionId;
+    public PhaseData[] phases;
     public bool enabled = true;
 
     [Header("Visuals & Audio")]
     public MissionTileSet tileSet;
-
-    [Header("Mission Sequence")]
-    public StageAction[] introActions;
-    public StageAction[] gameplayActions;
-    public StageAction[] bossIntroActions;
-    public StageAction[] bossFightActions;
-    public StageAction[] outroActions;
 
     [Header("Rewards")]
     public string[] rewards;

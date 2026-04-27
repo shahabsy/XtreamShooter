@@ -97,7 +97,10 @@ public class EntityTracker : MonoBehaviour
         if (boss == null) return;
         bosses.Remove(boss);
     }
-
+    public void ResetTracker()
+    {
+        ClearAllEntities();
+    }
     public void ClearAllEntities()
     {
         var enemiesCopy = new List<Enemy>(enemies);
@@ -113,13 +116,6 @@ public class EntityTracker : MonoBehaviour
             if (b != null)
                 Destroy(b.gameObject);
         }
-        enemies.Clear();
-        bosses.Clear();
-        waveMap.Clear();
-        enemyToWave.Clear();
-    }
-    public void ResetTracker()
-    {
         enemies.Clear();
         bosses.Clear();
         waveMap.Clear();
