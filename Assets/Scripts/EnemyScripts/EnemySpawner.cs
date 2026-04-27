@@ -21,7 +21,7 @@ public class EnemySpawner : MonoBehaviour
     }
 
     private string NewWaveInstanceId(string baseName) => $"{baseName}_{DateTime.UtcNow.Ticks}";
-
+    /*
     public void SpawnWave(string waveName)
     {
         if (waveDatabase == null || cachedCamera == null) return;
@@ -45,7 +45,7 @@ public class EnemySpawner : MonoBehaviour
             StartCoroutine(SpawnWaveCoroutine(wave, true, waveInstanceId));
         }
     }
-
+    */
     public string SpawnWaveAndReturnId(string waveName)
     {
         if (waveDatabase == null || cachedCamera == null) return string.Empty;
@@ -87,13 +87,14 @@ public class EnemySpawner : MonoBehaviour
             {
                 enemy.Initialize(wave.enemyData);
                 EntityTracker.Instance?.AssignEnemyToWave(enemy, waveInstanceId);
+                
             }
 
             if (wave.spacing > 0 && i < wave.count - 1)
                 yield return new WaitForSeconds(wave.spacing);
         }
         activeSpawningWaves.Remove(waveInstanceId);
-        Debug.Log($"Finished spawning wave {waveInstanceId}");
+        //Debug.Log($"Finished spawning wave {waveInstanceId}");
     }
 
     public void SpawnBoss(string bossId)
@@ -134,16 +135,11 @@ public class EnemySpawner : MonoBehaviour
     }
 
     public bool IsWaveSpawning(string waveId) => activeSpawningWaves.Contains(waveId);
-
-    public void ClearAllEnemies()
-    {
-        EntityTracker.Instance?.ClearAllEntities();
-    }  
     
     public void ResetSpawner()
     {
         StopAllCoroutines();
         activeSpawningWaves.Clear();
-        Debug.Log("EnemySpawner reset.");
+        //Debug.Log("EnemySpawner reset.");
     }
 }

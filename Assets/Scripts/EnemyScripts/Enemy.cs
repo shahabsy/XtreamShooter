@@ -48,6 +48,7 @@ public class Enemy : MonoBehaviour, IDamageable
         SetupFirePoint();
         SetupBehavior();
         ApplyVisuals();
+        EntityTracker.Instance?.RegisterEnemy(this);
     }
     private void SetupBehavior()
     {
@@ -167,7 +168,7 @@ public class Enemy : MonoBehaviour, IDamageable
         runtimeBehavior = null;
 
         OnDeath?.Invoke();
-        Debug.Log($"Enemy Die: {name} (instanceId={GetInstanceID()}) calling OnDeath and Destroy.");
+        //Debug.Log($"Enemy Die: {name} (instanceId={GetInstanceID()}) calling OnDeath and Destroy.");
         Destroy(gameObject);
     }
 

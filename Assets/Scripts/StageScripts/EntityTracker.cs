@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.Mathematics;
 
 public class EntityTracker : MonoBehaviour
 {
@@ -99,14 +100,17 @@ public class EntityTracker : MonoBehaviour
 
     public void ClearAllEntities()
     {
-        foreach(var e in enemies)
+        var enemiesCopy = new List<Enemy>(enemies);
+        var bossesCopy = new List<Boss>(bosses);
+
+        foreach (var e in enemiesCopy)
         {
-            if(e != null) 
+            if (e != null)
                 Destroy(e.gameObject);
         }
-        foreach(var b in bosses)
+        foreach (var b in bossesCopy)
         {
-            if(b != null) 
+            if (b != null)
                 Destroy(b.gameObject);
         }
         enemies.Clear();
@@ -120,9 +124,8 @@ public class EntityTracker : MonoBehaviour
         bosses.Clear();
         waveMap.Clear();
         enemyToWave.Clear();
-        Debug.Log("EntityTracker reset.");
     }
-
+    
     private void LateUpdate()
     {
         enemies.RemoveWhere(e => e == null);
@@ -139,4 +142,5 @@ public class EntityTracker : MonoBehaviour
             waveMap.Remove(waveId);
         }
     }
+    
 }

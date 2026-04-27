@@ -35,13 +35,13 @@ MonoBehaviour:
     delayTime: 1
     floatValue: 0
     scrollSpeedMultiplier: 0
-    text: Welcome to The Game
+    text: 
     openSFX: 
     closeSFX: 
     overridePrefab: 
     completeTrigger: 
     characterPortrait: 
-    characterName: Command
+    characterName: 
     skippable: 0
   gameplayActions:
   - type: 2
@@ -138,7 +138,7 @@ MonoBehaviour:
     skippable: 0
   bossFightActions:
   - type: 6
-    spawnId: TestBoss2
+    spawnId: TestBoss1
     delayTime: 0
     floatValue: 0
     scrollSpeedMultiplier: 0

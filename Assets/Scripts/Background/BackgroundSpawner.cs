@@ -46,11 +46,11 @@ public class BackgroundSpawner : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
-            Debug.Log(child.gameObject.name);
+            //Debug.Log(child.gameObject.name);
             Destroy(child.gameObject);   
         }
         activeLayers.Clear();
-        Debug.Log("Cleared all background layers.");
+        //Debug.Log("Cleared all background layers.");
     }
 
     private void SpawnAllLayers()
@@ -96,6 +96,6 @@ public class BackgroundSpawner : MonoBehaviour
         scrollingEnabled = true;
         scrollSpeedMultiplier = 1f;
         globalScrollSpeed = 0f;
-        Debug.Log("BackgroundSpawner reset.");
+        //Debug.Log("BackgroundSpawner reset.");
     }
 }

@@ -195,7 +195,7 @@ public class PlayerController : MonoBehaviour
         foreach (var col in GetComponents<Collider2D>()) col.enabled = true;
         // Update UI
         
-        Debug.Log("Player reset.");
+        //Debug.Log("Player reset.");
     }
 
     // Draw preview of computed bounds in Scene view when previewBounds is enabled (or when selected)

@@ -20,7 +20,7 @@ MonoBehaviour:
   - type: 1
     spawnId: 
     delayTime: 0
-    floatValue: 2
+    floatValue: 0
     scrollSpeedMultiplier: 0
     text: Welcome to The Game
     openSFX: 
@@ -35,17 +35,17 @@ MonoBehaviour:
     delayTime: 1
     floatValue: 0
     scrollSpeedMultiplier: 0
-    text: Welcome to The Game
+    text: 
     openSFX: 
     closeSFX: 
     overridePrefab: 
     completeTrigger: 
     characterPortrait: 
-    characterName: Command
+    characterName: 
     skippable: 0
   gameplayActions:
   - type: 2
-    spawnId: NormalWave1
+    spawnId: NormalWave2
     delayTime: 0
     floatValue: 0
     scrollSpeedMultiplier: 0
@@ -112,7 +112,7 @@ MonoBehaviour:
     skippable: 0
   bossFightActions:
   - type: 6
-    spawnId: TestBoss1
+    spawnId: TestBoss2
     delayTime: 0
     floatValue: 0
     scrollSpeedMultiplier: 0
