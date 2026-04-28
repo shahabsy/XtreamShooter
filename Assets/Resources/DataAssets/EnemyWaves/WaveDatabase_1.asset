@@ -14,24 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaveDatabase
   normalWaves:
   - waveName: NormalWave1
-    enemyPrefabs:
-    - {fileID: 6468513381374726774, guid: 54f1bcca6b1cddc49898c5b8f3189745, type: 3}
-    enemyData: {fileID: 11400000, guid: 33dd66f920b6eda4182aa87c735b0ed6, type: 2}
-    count: 3
-    spacing: 1.5
+    spawnPattern: {fileID: 11400000, guid: b360e8db8ef4b1345b7e2e4bc648809d, type: 2}
+    spawnType: 0
   - waveName: NormalWave2
-    enemyPrefabs:
-    - {fileID: 6468513381374726774, guid: 6c44e472d96322a4f870a7c856b206ea, type: 3}
-    enemyData: {fileID: 11400000, guid: 01c549ac48af4644bb5baa323389dad9, type: 2}
-    count: 3
-    spacing: 1.5
+    spawnPattern: {fileID: 11400000, guid: b360e8db8ef4b1345b7e2e4bc648809d, type: 2}
+    spawnType: 0
+  - waveName: NormalWave3
+    spawnPattern: {fileID: 11400000, guid: b360e8db8ef4b1345b7e2e4bc648809d, type: 2}
+    spawnType: 0
   eliteWaves:
   - waveName: EliteWave1
-    enemyPrefabs:
-    - {fileID: 6468513381374726774, guid: 187f8cc0d68d83b418b51b6a9083d816, type: 3}
-    enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
-    count: 3
-    spacing: 1.5
+    spawnPattern: {fileID: 11400000, guid: fa95a5e92f6382b4cbe3aaf52931005a, type: 2}
+    spawnType: 3
   bosses:
   - bossId: TestBoss1
     bossName: TestBoss1

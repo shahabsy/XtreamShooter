@@ -49,19 +49,6 @@ public class WaveDatabase : ScriptableObject
 }
 
 [System.Serializable]
-public class WaveDefinition
-{
-    public string waveName;
-    public GameObject[] enemyPrefabs;
-    public EnemyData enemyData;
-
-    //public EnemyAIBehavior behavior;
-
-    public int count = 5;
-    public float spacing = 0.5f;
-}
-
-[System.Serializable]
 public class BossEntry
 {
     public string bossId;

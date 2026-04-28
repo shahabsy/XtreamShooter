@@ -9,8 +9,8 @@ public class EnemySpawner : MonoBehaviour
 
     [Header("Spawn Settings")]
     public WaveDatabase waveDatabase;
-    private Camera cachedCamera;
 
+    private Camera cachedCamera;
     private HashSet<string> activeSpawningWaves = new HashSet<string>();
 
     private void Awake()
@@ -21,80 +21,78 @@ public class EnemySpawner : MonoBehaviour
     }
 
     private string NewWaveInstanceId(string baseName) => $"{baseName}_{DateTime.UtcNow.Ticks}";
-    /*
-    public void SpawnWave(string waveName)
-    {
-        if (waveDatabase == null || cachedCamera == null) return;
-        Debug.Log($"EnemySpawner: spawning wave '{waveName}'");
-        WaveDefinition wave = waveDatabase.GetWave(waveName);
-        if (wave != null)
-        {
-            string waveInstanceId = NewWaveInstanceId(waveName);
-            StartCoroutine(SpawnWaveCoroutine(wave, false, waveInstanceId));
-        }
-    }
 
-    public void SpawnEliteWave(string waveName)
+    public string SpawnWaveAndReturnId(string waveName, bool isElite = false)
     {
-        if (waveDatabase == null || cachedCamera == null) return;
-        Debug.Log($"Elite EnemySpawner: spawning ELITE wave '{waveName}'");
-        WaveDefinition wave = waveDatabase.GetEliteWave(waveName);
-        if (wave != null)
-        {
-            string waveInstanceId = NewWaveInstanceId(waveName);
-            StartCoroutine(SpawnWaveCoroutine(wave, true, waveInstanceId));
-        }
-    }
-    */
-    public string SpawnWaveAndReturnId(string waveName)
-    {
+        WaveDefinition wave = isElite
+            ? waveDatabase.GetEliteWave(waveName) : waveDatabase.GetWave(waveName);
+
         if (waveDatabase == null || cachedCamera == null) return string.Empty;
 
-        WaveDefinition wave = waveDatabase.GetWave(waveName);
         if (wave == null) return string.Empty;
 
-        string waveInstanceId = NewWaveInstanceId(waveName);
-        StartCoroutine(SpawnWaveCoroutine(wave, false, waveInstanceId));
-        return waveInstanceId;
+        string waveId = NewWaveInstanceId(waveName);
+        StartCoroutine(SpawnWaveCoroutine(wave, isElite, waveId));
+        return waveId;
     }
 
-    public string SpawnEliteWaveAndReturnId(string waveName)
+    public string SpawnEliteWaveAndReturnId(string waveName) => SpawnWaveAndReturnId(waveName, true);
+    
+
+    private IEnumerator SpawnWaveCoroutine(WaveDefinition wave, bool isElite, string waveId)
     {
-        if (waveDatabase == null || cachedCamera == null) return string.Empty;
+        activeSpawningWaves.Add(waveId);
+        Debug.Log($"spawning wave {waveId}");
+        
+        BaseEnemySpawner spawner = CreateSpawner(wave.spawnPattern,
+            wave.spawnType, isElite, false, waveId);
 
-        WaveDefinition wave = waveDatabase.GetEliteWave(waveName);
-        if (wave == null) return string.Empty;
+        spawner.StartSpawn();
 
-        string waveInstanceId = NewWaveInstanceId(waveName);
-        StartCoroutine(SpawnWaveCoroutine(wave, true, waveInstanceId));
-        return waveInstanceId;
-    }
-
-    private IEnumerator SpawnWaveCoroutine(WaveDefinition wave, bool isElite, string waveInstanceId)
-    {
-        activeSpawningWaves.Add(waveInstanceId);
-        Debug.Log($"Start spawning wave {waveInstanceId}");
-        for (int i = 0; i < wave.count; i++)
+        while(!spawner.IsDone)
         {
-            GameObject prefab = wave.enemyPrefabs[UnityEngine.Random.Range(0, wave.enemyPrefabs.Length)];
-            Vector3 spawnPos = cachedCamera.ViewportToWorldPoint(new Vector3(1.1f, UnityEngine.Random.Range(0.2f, 0.8f), 0));
-            spawnPos.z = 0;
-            GameObject enemyObj = Instantiate(prefab, spawnPos, Quaternion.identity);
-
-            // Register enemy with spawner / tracker
-            Enemy enemy = enemyObj.GetComponent<Enemy>();
-            if (enemy != null)
-            {
-                enemy.Initialize(wave.enemyData);
-                EntityTracker.Instance?.AssignEnemyToWave(enemy, waveInstanceId);
-                
-            }
-
-            if (wave.spacing > 0 && i < wave.count - 1)
-                yield return new WaitForSeconds(wave.spacing);
+            spawner.Tick(Time.deltaTime);
+            yield return null;
         }
-        activeSpawningWaves.Remove(waveInstanceId);
-        //Debug.Log($"Finished spawning wave {waveInstanceId}");
+        activeSpawningWaves.Remove(waveId);
+        //Debug.Log($"Finished spawning wave {waveId}");
+    }
+    private BaseEnemySpawner CreateSpawner(DataEnemySpawnPattern pattern, SpawnerType type, bool isElite, bool isBoss, string waveId)
+    {
+        PRNG pRNG = new PRNG(UnityEngine.Random.Range(0, int.MaxValue));
+        BaseEnemySpawner spawner;
+
+        switch(type)
+        {
+            case SpawnerType.Positioned:
+                spawner = new PositionedEnemySpawner();
+                break;
+            case SpawnerType.RapidFire:
+                spawner = new RapidFireEnemySpawner();
+                break;
+            case SpawnerType.Simultaneous:
+                spawner = new SimultaneousEnemySpawner();
+                break;
+            default:
+                spawner = new StandardEnemySpawner();
+                break;
+        }
+        spawner.Initialize(pattern, pRNG, waveId, isElite, isBoss);
+        return spawner;
+    }
+    public static void GenericSpawnEnemyAtPosition(EnemyData enemyData, int pRNGSeed,
+        float x, float y, bool isElite, bool isBoss, int overrideId, string waveInstanceId, DataEnemySpawnPattern sourcePattern)
+    {
+        if(enemyData == null) return;
+        if(enemyData.prefab == null) return;
+        GameObject enemyObj = Instantiate(enemyData.prefab, new Vector2(x, y), Quaternion.identity);
+        Enemy enemy = enemyObj.GetComponent<Enemy>();
+        if (enemy != null)
+        {
+            enemy.Initialize(enemyData, isElite, isBoss);
+            enemy.sourceSpawnPattern = sourcePattern;
+            EntityTracker.Instance.AssignEnemyToWave(enemy, waveInstanceId);
+        }
     }
 
     public void SpawnBoss(string bossId)

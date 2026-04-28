@@ -6,6 +6,10 @@ public class Enemy : MonoBehaviour, IDamageable
 {
     [Header("Data")]
     [SerializeField] private EnemyData data;
+    [Header("Spawn Info")]
+    public DataEnemySpawnPattern sourceSpawnPattern;
+    public bool isElite;
+    public bool isBoss;
 
     private float currentHealth;
     private float nextFireTime;
@@ -39,15 +43,31 @@ public class Enemy : MonoBehaviour, IDamageable
         }
     }
 
-    public void Initialize(EnemyData enemyData)
+    public void Initialize(EnemyData enemyData, bool elite = false, bool boss = false)
     {
         data = enemyData;
-        currentHealth = data.health;
+        ApplyVisuals();
+
+        if (elite)
+        {
+            currentHealth = data.health * 2;
+            transform.localScale *= 1.2f;
+        }
+        else if (boss)
+        {
+            currentHealth = data.health * 5f;
+            transform.localScale *= 1.5f;
+        }
+        else
+            currentHealth = data.health;
+        
         isDead = false;
+        isElite = elite;
+        isBoss = boss;
 
         SetupFirePoint();
         SetupBehavior();
-        ApplyVisuals();
+        
         EntityTracker.Instance?.RegisterEnemy(this);
     }
     private void SetupBehavior()

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15ae10f1806e08e45aa87aa367a0a42d, type: 3}
+  m_Name: DataEnemySpawnPattern_Simultaneous
+  m_EditorClassIdentifier: Assembly-CSharp::DataEnemySpawnPattern
+  patternName: Simultaneous
+  spawnSequence:
+  - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    delayBeforeNext: 0
+  - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    delayBeforeNext: 0
+  - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    delayBeforeNext: 0
+  - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    delayBeforeNext: 0
+  - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    delayBeforeNext: 0
+  - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    delayBeforeNext: 0
+  spawnerType: 3
+  spawnMinX: 12
+  spawnMaxX: 15
+  spawnMinY: -5
+  spawnMaxY: 5
+  uniformSpaceing: 1
+  minSpawnInterval: 0.2
+  maxSpawnInterval: 0.5

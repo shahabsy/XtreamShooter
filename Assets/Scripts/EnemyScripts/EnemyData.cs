@@ -23,6 +23,8 @@ public class EnemyData : ScriptableObject
     [Header("Rendering")]
     public string sortingLayerName = "Default";
     public int orderInLayer = 0;
+    [Header("Prefab (required for spawning")]
+    public GameObject prefab;
 
     
 

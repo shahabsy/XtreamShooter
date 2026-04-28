@@ -24,3 +24,4 @@ MonoBehaviour:
   spriteScale: {x: 1, y: 1}
   sortingLayerName: Character
   orderInLayer: 11
+  prefab: {fileID: 6468513381374726774, guid: 6c44e472d96322a4f870a7c856b206ea, type: 3}
