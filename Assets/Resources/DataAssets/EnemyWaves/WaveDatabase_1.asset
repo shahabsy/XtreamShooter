@@ -17,11 +17,11 @@ MonoBehaviour:
     spawnPattern: {fileID: 11400000, guid: b360e8db8ef4b1345b7e2e4bc648809d, type: 2}
     spawnType: 0
   - waveName: NormalWave2
-    spawnPattern: {fileID: 11400000, guid: b360e8db8ef4b1345b7e2e4bc648809d, type: 2}
-    spawnType: 0
+    spawnPattern: {fileID: 11400000, guid: 1cedb309df35d8046aca47e6dc4a1b3d, type: 2}
+    spawnType: 1
   - waveName: NormalWave3
-    spawnPattern: {fileID: 11400000, guid: b360e8db8ef4b1345b7e2e4bc648809d, type: 2}
-    spawnType: 0
+    spawnPattern: {fileID: 11400000, guid: e4c287abed8e9864ba6d4ffb787d8a8b, type: 2}
+    spawnType: 2
   eliteWaves:
   - waveName: EliteWave1
     spawnPattern: {fileID: 11400000, guid: fa95a5e92f6382b4cbe3aaf52931005a, type: 2}

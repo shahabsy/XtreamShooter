@@ -21,8 +21,12 @@ public class DataEnemySpawnPattern : ScriptableObject
     public float uniformSpaceing = 0.5f; // seconds between each spawn
 
     [Header("RapidFire Spawner(Random Edge + Random Interval")]
-    [Tooltip("Minimum seconds between spawns")]
     public float minSpawnInterval = 0.2f;
-    [Tooltip("Maximum seconds between spawns")]
     public float maxSpawnInterval = 0.5f;
+    [Header("RapidFire Spawn Positions")]
+    public Vector2[] rapidFireSpawnPoints;
+
+    [Header("Simultaneous spawner settings")]
+    public SpawnEdge[] allowedEdges;
 }
+public enum SpawnEdge { Top, Bottom, Right }

@@ -38,3 +38,5 @@ MonoBehaviour:
   uniformSpaceing: 1
   minSpawnInterval: 0.2
   maxSpawnInterval: 0.5
+  rapidFireSpawnPoints: []
+  allowedEdges: 

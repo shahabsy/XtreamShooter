@@ -15,14 +15,24 @@ MonoBehaviour:
   patternName: Positioned
   spawnSequence:
   - enemyData: {fileID: 11400000, guid: 33dd66f920b6eda4182aa87c735b0ed6, type: 2}
+    useExactPosition: 1
+    exactPosition: {x: 13, y: 3}
     delayBeforeNext: 1
   - enemyData: {fileID: 11400000, guid: 33dd66f920b6eda4182aa87c735b0ed6, type: 2}
+    useExactPosition: 1
+    exactPosition: {x: 13, y: -3}
     delayBeforeNext: 1
   - enemyData: {fileID: 11400000, guid: 33dd66f920b6eda4182aa87c735b0ed6, type: 2}
+    useExactPosition: 1
+    exactPosition: {x: 13, y: 3}
     delayBeforeNext: 1
   - enemyData: {fileID: 11400000, guid: 33dd66f920b6eda4182aa87c735b0ed6, type: 2}
+    useExactPosition: 1
+    exactPosition: {x: 13, y: -3}
     delayBeforeNext: 1
   - enemyData: {fileID: 11400000, guid: 33dd66f920b6eda4182aa87c735b0ed6, type: 2}
+    useExactPosition: 1
+    exactPosition: {x: 13, y: 3}
     delayBeforeNext: 1
   spawnerType: 1
   spawnMinX: 10
@@ -32,3 +42,5 @@ MonoBehaviour:
   uniformSpaceing: 0.5
   minSpawnInterval: 0.2
   maxSpawnInterval: 0.5
+  rapidFireSpawnPoints: []
+  allowedEdges: 000000000100000002000000
