@@ -26,11 +26,13 @@ MonoBehaviour:
     entryStyle: 0
     slideInDuration: 0.5
     offscreenOffset: {x: 2, y: 0}
+  spawnPositionType: 0
   spawnMinX: 12
   spawnMaxX: 15
-  spawnMinY: -5
-  spawnMaxY: 5
-  uniformSpacing: 0.5
+  spawnMinY: -4
+  spawnMaxY: 4
+  uniformSpacing: 1
+  fixedSpawnPositions: []
   minSpawnInterval: 0.2
   maxSpawnInterval: 0.5
   rapidFireSpawnPoints: []

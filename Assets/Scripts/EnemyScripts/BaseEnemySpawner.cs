@@ -10,8 +10,9 @@ public abstract class BaseEnemySpawner
     protected string waveInstanceId;
     protected bool isElite;
     protected bool isBoss;
+    protected Camera cachedCamera;
 
-    public virtual void Initialize(DataEnemySpawnPattern spawnPattern, PRNG random, string waveId, bool elite, bool boss)
+    public virtual void Initialize(DataEnemySpawnPattern spawnPattern, PRNG random, string waveId, bool elite, bool boss, Camera camera)
     {
         pattern = spawnPattern;
         prng = random;
@@ -19,6 +20,7 @@ public abstract class BaseEnemySpawner
         isElite = elite;
         isBoss = boss;
         isDone = false;
+        cachedCamera = camera;
     }
     protected bool IsPatternValid()
     {
@@ -56,6 +58,18 @@ public abstract class BaseEnemySpawner
             default:
                 return Vector2.zero;
         }
+    }
+    protected Vector2 GetViewportPosition(float vx, float vy)
+    {
+
+        if(cachedCamera == null)
+        {
+            cachedCamera = Camera.main;
+            if (cachedCamera == null) return Vector2.zero;
+        }
+        Vector3 vp = new Vector3(vx, vy, Mathf.Abs(cachedCamera.transform.position.z));
+        Vector3 world = cachedCamera.ViewportToWorldPoint(vp);
+        return world;
     }
 
     public virtual void StartSpawn() { }

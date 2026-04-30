@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: BasicEnemyC
   health: 30
-  moveSpeed: 3
+  moveSpeed: 5
   fireRate: 1
   scoreValue: 10
   bulletPoolTag: EnemyBullet

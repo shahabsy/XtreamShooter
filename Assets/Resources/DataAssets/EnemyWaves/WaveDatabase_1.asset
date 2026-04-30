@@ -14,22 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaveDatabase
   normalWaves:
   - waveName: NormalWave1
-    spawnPattern: {fileID: 11400000, guid: 798bf2ad2a69bc34a82f8220b7b3b7e8, type: 2}
-    spawnType: 0
-  - waveName: NormalWave2
     spawnPattern: {fileID: 11400000, guid: b360e8db8ef4b1345b7e2e4bc648809d, type: 2}
     spawnType: 0
-  - waveName: NormalWave3
+  - waveName: NormalWave2
     spawnPattern: {fileID: 11400000, guid: 434857997e91ef64a907b74ba643cd3c, type: 2}
     spawnType: 0
-  - waveName: NormalWave4
+  - waveName: NormalWave3
     spawnPattern: {fileID: 11400000, guid: 41d1455cce34dae459d8d8b099d951e1, type: 2}
     spawnType: 0
-  - waveName: NormalWave5
+  - waveName: NormalWave4
     spawnPattern: {fileID: 11400000, guid: 5a7db7c1bb9c5ab4c82b2668d8728f1b, type: 2}
     spawnType: 0
-  - waveName: NormalWave6
+  - waveName: NormalWave5
     spawnPattern: {fileID: 11400000, guid: 07e379d3bc449524a93694d0f882cd07, type: 2}
+    spawnType: 0
+  - waveName: NormalWave6
+    spawnPattern: {fileID: 11400000, guid: 798bf2ad2a69bc34a82f8220b7b3b7e8, type: 2}
     spawnType: 0
   eliteWaves:
   - waveName: EliteWave1

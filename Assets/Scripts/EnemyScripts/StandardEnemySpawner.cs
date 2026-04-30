@@ -72,9 +72,27 @@ public class StandardEnemySpawner : BaseEnemySpawner
     {
         if (entry.useExactPosition) return entry.exactPosition;
 
+        switch (pattern.spawnPositionType)
+        {
+            case StandardSpawnPosition.MidScreen:
+                return GetViewportPosition(1f, 0.5f);
+            case StandardSpawnPosition.UpperMiddle:
+                return GetViewportPosition(1f, 0.75f);
+            case StandardSpawnPosition.LowerMiddle:
+                return GetViewportPosition(1f, 0.25f);
+            case StandardSpawnPosition.CustomFixed:
+                if (pattern.fixedSpawnPositions != null && pattern.fixedSpawnPositions.Length > 0)
+                {
+                    int idx = prng.GetPseudoRandomInt(0, pattern.fixedSpawnPositions.Length);
+                    return pattern.fixedSpawnPositions[idx];
+                }
+                break;
+        }
+        //Default: RandomRect
         float x = prng.GetPseudoRandomNumber(pattern.spawnMinX, pattern.spawnMaxX);
         float y = prng.GetPseudoRandomNumber(pattern.spawnMinY, pattern.spawnMaxY);
         return new Vector2(x, y);
+        
     }
     private Enemy SpawnSingleEnemy(EnemySpawnEntry entry, float x, float y)
     {

@@ -77,7 +77,7 @@ public class EnemySpawner : MonoBehaviour
                 spawner = new StandardEnemySpawner();
                 break;
         }
-        spawner.Initialize(pattern, pRNG, waveId, isElite, isBoss);
+        spawner.Initialize(pattern, pRNG, waveId, isElite, isBoss, cachedCamera);
         return spawner;
     }
     public static GameObject GenericSpawnEnemyAtPositionReturn(EnemyData enemyData, int prngSeed, float x, float y, bool isElite, bool isBoss, int overrideId, string waveInstanceId, DataEnemySpawnPattern sourcePattern)

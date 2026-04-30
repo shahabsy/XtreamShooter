@@ -20,17 +20,19 @@ MonoBehaviour:
     exactPosition: {x: 0, y: 0}
     delayBeforeNext: 0
     formation: 5
-    formationSize: 10
-    formationSpacing: 5
+    formationSize: 4
+    formationSpacing: 6
     formationDirection: {x: 1, y: 0}
     entryStyle: 0
     slideInDuration: 0.5
     offscreenOffset: {x: 2, y: 0}
+  spawnPositionType: 0
   spawnMinX: 12
   spawnMaxX: 15
-  spawnMinY: -5
-  spawnMaxY: 5
+  spawnMinY: -4
+  spawnMaxY: 4
   uniformSpacing: 0.5
+  fixedSpawnPositions: []
   minSpawnInterval: 0.2
   maxSpawnInterval: 0.5
   rapidFireSpawnPoints: []

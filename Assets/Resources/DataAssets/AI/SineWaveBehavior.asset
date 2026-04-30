@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 855c32c3229dfc741a99bb75dd87e4ca, type: 3}
   m_Name: SineWaveBehavior
   m_EditorClassIdentifier: Assembly-CSharp::SineWaveBehavior
-  amplitudeRange: {x: 1, y: 2}
+  amplitudeRange: {x: -0.5, y: 0.5}
   frequencyRange: {x: 1, y: 3}
