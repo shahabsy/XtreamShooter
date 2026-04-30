@@ -29,6 +29,34 @@ public abstract class BaseEnemySpawner
         
         return true;
     }
+    protected Vector2 GetFormationOffset(EnemySpawnEntry entry, int index)
+    {
+        float halfSize = (entry.formationSize - 1) / 2f;
+        float spacing = entry.formationSpacing;
+
+        switch (entry.formation)
+        {
+            case SpawnFormation.LineHorizontal:
+                return new Vector2((index - halfSize) * spacing, 0);
+            case SpawnFormation.LineVertical:
+                return new Vector2(0, (index - halfSize) * spacing);
+            case SpawnFormation.LineDiagonal:
+                float diagonal = (index - halfSize) * spacing;
+                return new Vector2(diagonal, diagonal);
+            case SpawnFormation.VShape:
+                if (index == 0) return Vector2.zero;
+                int armIndex = (index +1) / 2;
+                int side = (index % 2 == 0) ? 1 : -1;
+                Vector2 vOffset = new Vector2(side * armIndex * spacing, armIndex * spacing);
+                return new Vector2(vOffset.y, -vOffset.x);
+            case SpawnFormation.Clustered:
+                float angle = prng.GetPseudoRandomNumber(0, Mathf.PI * 2f);
+                float radius = prng.GetPseudoRandomNumber(0, spacing);
+                return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+            default:
+                return Vector2.zero;
+        }
+    }
 
     public virtual void StartSpawn() { }
 

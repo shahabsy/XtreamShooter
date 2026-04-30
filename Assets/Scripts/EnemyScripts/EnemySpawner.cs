@@ -5,7 +5,7 @@ using System;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public static EnemySpawner Instance {  get; private set; }
+    public static EnemySpawner Instance { get; private set; }
 
     [Header("Spawn Settings")]
     public WaveDatabase waveDatabase;
@@ -37,19 +37,19 @@ public class EnemySpawner : MonoBehaviour
     }
 
     public string SpawnEliteWaveAndReturnId(string waveName) => SpawnWaveAndReturnId(waveName, true);
-    
+
 
     private IEnumerator SpawnWaveCoroutine(WaveDefinition wave, bool isElite, string waveId)
     {
         activeSpawningWaves.Add(waveId);
         Debug.Log($"spawning wave {waveId}");
-        
+
         BaseEnemySpawner spawner = CreateSpawner(wave.spawnPattern,
             wave.spawnType, isElite, false, waveId);
 
         spawner.StartSpawn();
 
-        while(!spawner.IsDone)
+        while (!spawner.IsDone)
         {
             spawner.Tick(Time.deltaTime);
             yield return null;
@@ -62,7 +62,7 @@ public class EnemySpawner : MonoBehaviour
         PRNG pRNG = new PRNG(UnityEngine.Random.Range(0, int.MaxValue));
         BaseEnemySpawner spawner;
 
-        switch(type)
+        switch (type)
         {
             case SpawnerType.Positioned:
                 spawner = new PositionedEnemySpawner();
@@ -79,6 +79,19 @@ public class EnemySpawner : MonoBehaviour
         }
         spawner.Initialize(pattern, pRNG, waveId, isElite, isBoss);
         return spawner;
+    }
+    public static GameObject GenericSpawnEnemyAtPositionReturn(EnemyData enemyData, int prngSeed, float x, float y, bool isElite, bool isBoss, int overrideId, string waveInstanceId, DataEnemySpawnPattern sourcePattern)
+    {
+        if (enemyData == null || enemyData.prefab == null) return null;
+        GameObject obj = Instantiate(enemyData.prefab, new Vector2(x, y), Quaternion.identity);
+        Enemy enemy = obj.GetComponent<Enemy>();
+        if(enemy != null)
+        {
+            enemy.Initialize(enemyData, isElite, isBoss);
+            enemy.sourceSpawnPattern = sourcePattern;
+            EntityTracker.Instance?.AssignEnemyToWave(enemy, waveInstanceId);
+        }
+        return obj;
     }
     public static void GenericSpawnEnemyAtPosition(EnemyData enemyData, int pRNGSeed,
         float x, float y, bool isElite, bool isBoss, int overrideId, string waveInstanceId, DataEnemySpawnPattern sourcePattern)

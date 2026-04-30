@@ -13,24 +13,102 @@ MonoBehaviour:
   m_Name: DataEnemySpawnPattern_Simultaneous
   m_EditorClassIdentifier: Assembly-CSharp::DataEnemySpawnPattern
   patternName: Simultaneous
+  spawnerType: 3
   spawnSequence:
   - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    useExactPosition: 0
+    exactPosition: {x: 0, y: 0}
     delayBeforeNext: 0
+    formation: 0
+    formationSize: 1
+    formationSpacing: 1
+    formationDirection: {x: 1, y: 0}
+    entryStyle: 0
+    slideInDuration: 0.5
+    offscreenOffset: {x: 2, y: 0}
   - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    useExactPosition: 0
+    exactPosition: {x: 0, y: 0}
     delayBeforeNext: 0
+    formation: 0
+    formationSize: 1
+    formationSpacing: 1
+    formationDirection: {x: 1, y: 0}
+    entryStyle: 0
+    slideInDuration: 0.5
+    offscreenOffset: {x: 2, y: 0}
   - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    useExactPosition: 0
+    exactPosition: {x: 0, y: 0}
     delayBeforeNext: 0
+    formation: 0
+    formationSize: 1
+    formationSpacing: 1
+    formationDirection: {x: 1, y: 0}
+    entryStyle: 0
+    slideInDuration: 0.5
+    offscreenOffset: {x: 2, y: 0}
   - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    useExactPosition: 0
+    exactPosition: {x: 0, y: 0}
     delayBeforeNext: 0
+    formation: 0
+    formationSize: 1
+    formationSpacing: 1
+    formationDirection: {x: 1, y: 0}
+    entryStyle: 0
+    slideInDuration: 0.5
+    offscreenOffset: {x: 2, y: 0}
   - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    useExactPosition: 0
+    exactPosition: {x: 0, y: 0}
     delayBeforeNext: 0
+    formation: 0
+    formationSize: 1
+    formationSpacing: 1
+    formationDirection: {x: 1, y: 0}
+    entryStyle: 0
+    slideInDuration: 0.5
+    offscreenOffset: {x: 2, y: 0}
   - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    useExactPosition: 0
+    exactPosition: {x: 0, y: 0}
     delayBeforeNext: 0
-  spawnerType: 3
+    formation: 0
+    formationSize: 1
+    formationSpacing: 1
+    formationDirection: {x: 1, y: 0}
+    entryStyle: 0
+    slideInDuration: 0.5
+    offscreenOffset: {x: 2, y: 0}
+  - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    useExactPosition: 0
+    exactPosition: {x: 0, y: 0}
+    delayBeforeNext: 0
+    formation: 0
+    formationSize: 1
+    formationSpacing: 1
+    formationDirection: {x: 1, y: 0}
+    entryStyle: 0
+    slideInDuration: 0.5
+    offscreenOffset: {x: 2, y: 0}
+  - enemyData: {fileID: 11400000, guid: bf9ac97a7d289364099e7db6e0be1c5d, type: 2}
+    useExactPosition: 0
+    exactPosition: {x: 0, y: 0}
+    delayBeforeNext: 0
+    formation: 0
+    formationSize: 1
+    formationSpacing: 1
+    formationDirection: {x: 1, y: 0}
+    entryStyle: 0
+    slideInDuration: 0.5
+    offscreenOffset: {x: 2, y: 0}
   spawnMinX: 12
   spawnMaxX: 15
   spawnMinY: -5
   spawnMaxY: 5
-  uniformSpaceing: 1
+  uniformSpacing: 0.5
   minSpawnInterval: 0.2
   maxSpawnInterval: 0.5
+  rapidFireSpawnPoints: []
+  allowedEdges: 000000000100000002000000

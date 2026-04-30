@@ -1,10 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
+    [Header("Mission UI")]
+    public TextMeshProUGUI missionNameText;
+    public TextMeshProUGUI timerText;
+    private float currentTime = 0f;
+
+    private bool isTiming = false;
 
     [Header("Boss UI")]
     public GameObject bossHealthBarPanel;
@@ -23,6 +30,50 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         if(bossHealthBarPanel != null) bossHealthBarPanel.SetActive(false);
+    }
+    private void Update()
+    {
+        if(isTiming)
+        {
+            currentTime += Time.deltaTime;
+            UpdateTimerDisplay();
+        }
+    }
+
+    public void StartTimer()
+    {
+        currentTime = 0f;
+        isTiming = true;
+        UpdateTimerDisplay();
+        Debug.Log("Timer started.");
+    }
+    public void StopTimer()
+    {
+        isTiming = false;
+        Debug.Log($"Timer stopped. Final time: {FormatTime(currentTime)}");
+    }
+
+    public void ResetTimer()
+    {
+        currentTime = 0f;
+        UpdateTimerDisplay();
+        if (isTiming) return;
+    }
+    private void UpdateTimerDisplay()
+    {
+        if (timerText != null) timerText.text = FormatTime(currentTime);
+    }
+    private string FormatTime(float time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60);
+        int seconds = Mathf.FloorToInt(time % 60);
+        int milliseconds = Mathf.FloorToInt((time * 100f) % 100f);
+        return $"{minutes:00}:{seconds:00}:{milliseconds:00}";
+    }
+
+    public void SetMissionName(string name)
+    {
+        if(missionNameText != null) missionNameText.text = name;
     }
 
     public void ShowBossUI(string bossName)

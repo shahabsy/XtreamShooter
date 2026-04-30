@@ -10,39 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 15ae10f1806e08e45aa87aa367a0a42d, type: 3}
-  m_Name: DataEnemySpawnPattern_Positioned
+  m_Name: DataEnemySpawnPattern_Standard_Solo_Instant
   m_EditorClassIdentifier: Assembly-CSharp::DataEnemySpawnPattern
-  patternName: Positioned
-  spawnerType: 1
+  patternName: Standard
+  spawnerType: 0
   spawnSequence:
   - enemyData: {fileID: 11400000, guid: 33dd66f920b6eda4182aa87c735b0ed6, type: 2}
-    useExactPosition: 1
-    exactPosition: {x: 13, y: 3}
-    delayBeforeNext: 1
+    useExactPosition: 0
+    exactPosition: {x: 0, y: 0}
+    delayBeforeNext: 0
     formation: 0
-    formationSize: 3
+    formationSize: 1
     formationSpacing: 1
     formationDirection: {x: 1, y: 0}
     entryStyle: 0
     slideInDuration: 0.5
     offscreenOffset: {x: 2, y: 0}
-  - enemyData: {fileID: 11400000, guid: 33dd66f920b6eda4182aa87c735b0ed6, type: 2}
-    useExactPosition: 1
-    exactPosition: {x: 13, y: -3}
-    delayBeforeNext: 1
-    formation: 0
-    formationSize: 3
-    formationSpacing: 1
-    formationDirection: {x: 1, y: 0}
-    entryStyle: 0
-    slideInDuration: 0.5
-    offscreenOffset: {x: 2, y: 0}
-  spawnMinX: 10
-  spawnMaxX: 12
-  spawnMinY: -3
-  spawnMaxY: 3
+  spawnMinX: 12
+  spawnMaxX: 15
+  spawnMinY: -5
+  spawnMaxY: 5
   uniformSpacing: 0.5
   minSpawnInterval: 0.2
   maxSpawnInterval: 0.5
   rapidFireSpawnPoints: []
-  allowedEdges: 000000000100000002000000
+  allowedEdges: 

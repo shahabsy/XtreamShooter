@@ -18,6 +18,7 @@ public class StageController : MonoBehaviour
     public DialogManager dialogManager;
     public PlayerController playerController;
     public BossEncounterController bossEncounter;
+    public UIManager uiManager;
     public EntityTracker entityTracker;
 
     private Coroutine missionRoutine;
@@ -46,6 +47,7 @@ public class StageController : MonoBehaviour
         if (dialogManager == null) dialogManager = FindAnyObjectByType<DialogManager>();
         if (playerController == null) playerController = FindAnyObjectByType<PlayerController>();
         if (bossEncounter == null) bossEncounter = FindAnyObjectByType<BossEncounterController>();
+        if (uiManager == null) uiManager = FindAnyObjectByType<UIManager>();
         if (entityTracker == null) entityTracker = EntityTracker.Instance;
     }
 
@@ -61,6 +63,11 @@ public class StageController : MonoBehaviour
         StopAllCoroutines();
         CancelInvoke();
         ClearAllTriggerListeners();
+
+        // UI Timer System
+        uiManager.ResetTimer();
+        uiManager.StartTimer();
+        uiManager.SetMissionName(currentMission.missionName);
 
         entityTracker.ResetTracker();
         enemySpawner.ResetSpawner();
@@ -261,7 +268,10 @@ public class StageController : MonoBehaviour
         StopAllCoroutines();
         CancelInvoke();
         ClearAllTriggerListeners();
-        
+
+        uiManager.StopTimer();
+        uiManager.SetMissionName("");
+
         enemySpawner?.ResetSpawner();
         backgroundSpawner.ResetSpawner();
         EntityTracker.Instance?.ResetTracker();

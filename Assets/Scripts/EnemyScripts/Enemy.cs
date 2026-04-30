@@ -11,6 +11,11 @@ public class Enemy : MonoBehaviour, IDamageable
     public bool isElite;
     public bool isBoss;
 
+    private bool isEntering;
+    private Vector2 entryTarget;
+    private float entryDuration;
+    private float entryElapsed;
+
     private float currentHealth;
     private float nextFireTime;
     private Transform firePoint;
@@ -108,17 +113,33 @@ public class Enemy : MonoBehaviour, IDamageable
         }
         transform.localScale = new Vector3(data.spriteScale.x, data.spriteScale.y, 1f);
     }
+
+    public void BeginSlideIn(Vector2 startPos, Vector2 targetPos, float duration)
+    {
+        transform.position = startPos;
+        entryTarget = targetPos;
+        entryDuration = duration;
+        entryElapsed = 0f;
+        isEntering = true;
+    }
     // Update is called once per frame
     void Update()
     {
         //Debug.Log($"Enemy {name} position {transform.position.x}, speed: {data.moveSpeed}");
-        if (data == null || isDead) return;
+        if (isDead) return;
         
         float deltaTime = Time.deltaTime;
 
+        if(isEntering)
+        {
+            entryElapsed += deltaTime;
+            float t = Mathf.Clamp01(entryElapsed / entryDuration);
+            transform.position = Vector2.Lerp(transform.position, entryTarget, t);
+            if (t >= 1f) isEntering = false;
+            return;
+        }
         // Update AI behavior
         runtimeBehavior?.UpdateLogic(deltaTime);
-
         // Get Velocity from AI behavior
         Vector2 velocity = runtimeBehavior != null
             ? runtimeBehavior.GetVelocity()
@@ -130,6 +151,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
         HandleShooting();
 
+        // Off screen check and other stuff if()
         if (transform.position.x < leftBoundary)
         {
             Die();
