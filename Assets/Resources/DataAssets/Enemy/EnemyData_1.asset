@@ -15,11 +15,10 @@ MonoBehaviour:
   enemyName: BasicEnemyB
   health: 30
   moveSpeed: 3
-  fireRate: 1
   scoreValue: 10
-  bulletPoolTag: EnemyBullet
-  bulletSpeed: 10
   aiBehavior: {fileID: 11400000, guid: 6229c9888beb09a438fefecbf8f41068, type: 2}
+  shootBehavior:
+  - {fileID: 11400000, guid: 148e4a1560745b642b388cd709d7f1f4, type: 2}
   sprite: {fileID: 7723652632321733531, guid: e73b0a8a840f83a4394c93efdfc82592, type: 3}
   spriteScale: {x: 1, y: 1}
   sortingLayerName: Character

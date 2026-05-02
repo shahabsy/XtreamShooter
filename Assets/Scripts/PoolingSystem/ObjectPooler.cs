@@ -40,11 +40,19 @@ public class ObjectPooler : MonoBehaviour
     public GameObject SpawnFromPool(string tag, Vector2 position, Quaternion rotation)
     {
         if (!poolDictionary.ContainsKey(tag)) return null;
+        if (poolDictionary[tag].Count == 0) return null;
+
         GameObject objectToSpawn = poolDictionary[tag].Dequeue();
         objectToSpawn.SetActive(true);
         objectToSpawn.transform.position = position;
         objectToSpawn.transform.rotation = rotation;
         poolDictionary[tag].Enqueue(objectToSpawn);
         return objectToSpawn;
+    }
+    public void ReturnToPool(GameObject obj, string tag)
+    {
+        if (!poolDictionary.ContainsKey(tag)) return;
+        obj.SetActive(false);
+        poolDictionary[tag].Enqueue(obj);
     }
 }

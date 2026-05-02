@@ -1,31 +1,28 @@
 using UnityEngine;
+using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "EnemyData_", menuName = "Game/EnemyData")]
+[CreateAssetMenu(fileName = "EnemyData_", menuName = "Game/Enemy/EnemyData")]
 public class EnemyData : ScriptableObject
 {
+    [Header("Identity")]
     public string enemyName;
+    [Header("Stats")]
     public float health = 30f;
     public float moveSpeed = 2f;
-    public float fireRate = 1f;
     public int scoreValue = 10;
 
-    [Header("Bullet Settings")]
-    public string bulletPoolTag = "EnemyBullet";
-    public float bulletSpeed = 10f;
-
-    [Header("AI")]
+    [Header("AI Behavior")]
     public EnemyAIBehavior aiBehavior;
+
+    [Header("Shooting Settings (multiple allowed")]
+    public List<EnemyShootBehavior> shootBehavior;
 
     [Header("Visuals")]
     public Sprite sprite;
     public Vector2 spriteScale = Vector2.one;
-
-    [Header("Rendering")]
     public string sortingLayerName = "Default";
     public int orderInLayer = 0;
+
     [Header("Prefab (required for spawning")]
     public GameObject prefab;
-
-    
-
 }

@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 3770801303623254269}
   - component: {fileID: 6667228073599065979}
   - component: {fileID: 6895219638747513013}
-  - component: {fileID: 5996664101729976328}
-  m_Layer: 6
+  - component: {fileID: -3562944995178084547}
+  - component: {fileID: -8696339100742124971}
+  m_Layer: 8
   m_Name: EnemyBullet
   m_TagString: EnemyBullet
   m_Icon: {fileID: 0}
@@ -139,7 +140,34 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &5996664101729976328
+--- !u!50 &-3562944995178084547
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4985660262813206287}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &-8696339100742124971
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,8 +176,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 4985660262813206287}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57ea2f4c6aab44846ab16e8cdb09fe86, type: 3}
+  m_Script: {fileID: 11500000, guid: d02d31fb72ee1974daa87bcbd49299da, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Projectile
-  speed: 20
-  lifeTime: 3
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyProjectile

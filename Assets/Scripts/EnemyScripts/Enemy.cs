@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -8,6 +9,9 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] private EnemyData data;
     [Header("Spawn Info")]
     public DataEnemySpawnPattern sourceSpawnPattern;
+    public Transform firePoint;
+    
+
     public bool isElite;
     public bool isBoss;
 
@@ -17,13 +21,13 @@ public class Enemy : MonoBehaviour, IDamageable
     private float entryElapsed;
 
     private float currentHealth;
-    private float nextFireTime;
-    private Transform firePoint;
+    
     private float leftBoundary = -12f;
     
     private bool isDead = false;
 
     private EnemyAIBehavior runtimeBehavior;
+    private List<EnemyShootBehavior> runtimeShoots = new List<EnemyShootBehavior>();
 
     public event Action OnDeath;
 
@@ -34,6 +38,9 @@ public class Enemy : MonoBehaviour, IDamageable
     private void OnDisable()
     {
         EntityTracker.Instance?.UnregisterEnemy(this);
+        if(runtimeBehavior != null) Destroy(runtimeBehavior);
+        foreach (var s in runtimeShoots) if (s != null) Destroy(s);
+        runtimeShoots.Clear();
     }
 
     private void Start()
@@ -41,6 +48,8 @@ public class Enemy : MonoBehaviour, IDamageable
         if(Camera.main != null)
         {
             leftBoundary = Camera.main.ViewportToWorldPoint(Vector3.zero).x - 1f;
+            Debug.Log($"LeftBoundary for enemy: {leftBoundary}");
+
         }
         else
         {
@@ -72,8 +81,20 @@ public class Enemy : MonoBehaviour, IDamageable
 
         SetupFirePoint();
         SetupBehavior();
+        SetupShoot();
         
         EntityTracker.Instance?.RegisterEnemy(this);
+    }
+    private void SetupShoot()
+    {
+        if (data.shootBehavior == null) return;
+        foreach(EnemyShootBehavior shootBehavior in data.shootBehavior)
+        {
+            if (shootBehavior == null) continue;
+            EnemyShootBehavior clone = Instantiate(shootBehavior);
+            clone.Initialize(this, firePoint);
+            runtimeShoots.Add(clone);
+        }
     }
     private void SetupBehavior()
     {
@@ -154,6 +175,7 @@ public class Enemy : MonoBehaviour, IDamageable
         // Off screen check and other stuff if()
         if (transform.position.x < leftBoundary)
         {
+            Debug.Log("Die is called at boundary.");
             Die();
         }
     }
@@ -165,28 +187,9 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void HandleShooting()
     {
-        if (data.fireRate <= 0) return;
-
-        if (Time.time >= nextFireTime)
-        {
-            nextFireTime = Time.time + (1f / data.fireRate);
-            Shoot();
-        }
-    }
-
-    void Shoot()
-    {
-        if (ObjectPooler.Instance == null) return;
-        if (string.IsNullOrEmpty(data.bulletPoolTag)) return;
-
-        GameObject bullet = ObjectPooler.Instance.SpawnFromPool(
-            data.bulletPoolTag, firePoint.position, Quaternion.identity);
-        if (bullet == null) return;
-        var proj = bullet.GetComponent<Projectile>();
-        if (proj != null)
-        {
-            proj.SetSpeed(-data.bulletSpeed);
-        }
+        // Shooting - all weapons
+        foreach (var shoot in runtimeShoots)
+            shoot.TryShoot(Time.deltaTime);
     }
 
     public void TakeDamage(float damage)
