@@ -6,9 +6,9 @@ public class StraightShoot : EnemyShootBehavior
     {
         float interval = fireRate > 0f ? 1f / fireRate : float.MaxValue;
         elapsedTime += deltaTime;
-        if(elapsedTime >= interval)
+        while(elapsedTime >= interval)
         {
-            elapsedTime = 0f;
+            elapsedTime -= interval;
             Fire();
         }
     }

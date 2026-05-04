@@ -13,16 +13,39 @@ MonoBehaviour:
   m_Name: Patrol
   m_EditorClassIdentifier: Assembly-CSharp::StateMachineBehavior
   states:
-  - stateName: Patrol
+  - stateName: PatrolEnter
     duration: -1
-    nextState: 
-    targetVelocity: {x: -2, y: 0}
+    nextState: Patrol
+    targetVelocity: {x: 0, y: 0}
     useDestination: 1
-    destinationMin: {x: 10, y: -3}
-    destinationMax: {x: 5, y: 3}
+    destinationMin: {x: 6, y: -2}
+    destinationMax: {x: 8, y: 3}
     pauseWeaponIndices: 
     fireWeaponImmediately: 0
     weaponIndexToFire: 0
+    isExitState: 0
+  - stateName: Patrol
+    duration: 8
+    nextState: PatrolExit
+    targetVelocity: {x: 0, y: 0}
+    useDestination: 1
+    destinationMin: {x: -6, y: -4}
+    destinationMax: {x: 6, y: 4}
+    pauseWeaponIndices: 
+    fireWeaponImmediately: 0
+    weaponIndexToFire: 0
+    isExitState: 0
+  - stateName: PatrolExit
+    duration: -1
+    nextState: 
+    targetVelocity: {x: 0, y: 0}
+    useDestination: 1
+    destinationMin: {x: 0, y: 0}
+    destinationMax: {x: 0, y: 0}
+    pauseWeaponIndices: 
+    fireWeaponImmediately: 0
+    weaponIndexToFire: 0
+    isExitState: 1
   acceleration: 10
-  seperationRadius: 2
-  seperationStrength: 2
+  seperationRadius: 3
+  seperationStrength: 5

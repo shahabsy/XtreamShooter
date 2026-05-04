@@ -26,10 +26,14 @@ public class Enemy : MonoBehaviour, IDamageable
     private Vector2 entryTarget;
     private float entryDuration;
     private float entryElapsed;
-    
+
     public event Action<Enemy> OnDeath;
 
+    private Vector2 slideStart;
+    //private float softBoundaryForce = 5f;
+
     private float leftBoundary;
+    private bool isExitingFlag = false;
 
     private void Awake()
     {
@@ -45,17 +49,17 @@ public class Enemy : MonoBehaviour, IDamageable
     private void OnDisable()
     {
         EntityTracker.Instance?.UnregisterEnemy(this);
-        if(runtimeAIBehavior != null) Destroy(runtimeAIBehavior);
+        if (runtimeAIBehavior != null) Destroy(runtimeAIBehavior);
         foreach (var s in runtimeShoots) if (s != null) Destroy(s);
         runtimeShoots.Clear();
     }
 
     private void Start()
     {
-        if(Camera.main != null)
+        if (Camera.main != null)
         {
             leftBoundary = Camera.main.ViewportToWorldPoint(Vector3.zero).x - 1f;
-            Debug.Log($"LeftBoundary for enemy: {leftBoundary}");
+            //Debug.Log($"LeftBoundary for enemy: {leftBoundary}");
 
         }
         else
@@ -81,7 +85,7 @@ public class Enemy : MonoBehaviour, IDamageable
         }
         else
             currentHealth = data.health;
-        
+
         isDead = false;
         isElite = elite;
         isBoss = boss;
@@ -89,7 +93,7 @@ public class Enemy : MonoBehaviour, IDamageable
         //SetupFirePoint();
         SetupAIBehavior();
         SetupShoot();
-        
+
         EntityTracker.Instance?.RegisterEnemy(this);
     }
     private void SetupAIBehavior()
@@ -103,7 +107,7 @@ public class Enemy : MonoBehaviour, IDamageable
     private void SetupShoot()
     {
         if (data.shootBehavior == null) return;
-        foreach(EnemyShootBehavior shootBehavior in data.shootBehavior)
+        foreach (EnemyShootBehavior shootBehavior in data.shootBehavior)
         {
             if (shootBehavior == null) continue;
             EnemyShootBehavior clone = Instantiate(shootBehavior);
@@ -115,13 +119,13 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void SetupFirePoint()
     {
-        if(firePoint != null) return;
+        if (firePoint != null) return;
 
         firePoint = new GameObject("FirePoint").transform;
         firePoint.SetParent(transform);
 
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if(sr != null)
+        if (sr != null)
         {
             float spriteWidth = sr.bounds.size.x;
             firePoint.localPosition = new Vector3(spriteWidth / 2f, 0f, 0f);
@@ -147,6 +151,7 @@ public class Enemy : MonoBehaviour, IDamageable
     public void BeginSlideIn(Vector2 startPos, Vector2 targetPos, float duration)
     {
         transform.position = startPos;
+        slideStart = startPos;
         entryTarget = targetPos;
         entryDuration = duration;
         entryElapsed = 0f;
@@ -159,7 +164,7 @@ public class Enemy : MonoBehaviour, IDamageable
         if (isDead) return;
         float deltaTime = Time.deltaTime;
 
-        if(isEntering)
+        if (isEntering)
         {
             entryElapsed += deltaTime;
             float t = Mathf.Clamp01(entryElapsed / entryDuration);
@@ -169,21 +174,31 @@ public class Enemy : MonoBehaviour, IDamageable
         }
         // Update AI behavior
         runtimeAIBehavior?.UpdateLogic(deltaTime);
-        Vector2 desiredVelocity = runtimeAIBehavior?.GetVelocity() ?? (-transform.right * data.moveSpeed);
+        //Vector2 desiredVelocity = runtimeAIBehavior?.GetVelocity() ?? (-transform.right * data.moveSpeed);
 
-        rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, desiredVelocity, data.acceleration * deltaTime);
-        for(int i = 0; i < runtimeShoots.Count; i++)
+        //rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, desiredVelocity, data.acceleration * deltaTime);
+        for (int i = 0; i < runtimeShoots.Count; i++)
         {
             if (!weaponsPaused[i])
                 runtimeShoots[i].TryShoot(deltaTime);
         }
 
         // Off screen check and other stuff if()
-        if (transform.position.x < leftBoundary)
+        if (!isExitingFlag && transform.position.x < leftBoundary)
         {
             Debug.Log("Die is called at boundary.");
             Die();
         }
+    }
+    private void FixedUpdate()
+    {
+        if (isDead || isEntering) return;
+        Vector2 desiredVel = runtimeAIBehavior?.GetVelocity() ?? (-transform.right * data.moveSpeed);
+        rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, desiredVel, data.acceleration * Time.fixedDeltaTime);
+    }
+    public void BeginExit()
+    {
+        isExitingFlag = true;
     }
 
     public void SetWeaponsPaused(List<int> indices, bool paused)
@@ -210,7 +225,7 @@ public class Enemy : MonoBehaviour, IDamageable
         }
     }
 
-    void Die()
+    public void Die()
     {
         if (isDead) return;
         isDead = true;

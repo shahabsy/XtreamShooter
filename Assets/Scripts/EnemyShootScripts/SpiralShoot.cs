@@ -12,24 +12,27 @@ public class SpiralShoot : EnemyShootBehavior
         if(elapsedTime >= interval)
         {
             elapsedTime -= interval;
-            Fire();
+            FireWithSafety();
         }
     }
 
     public override void ForceFire()
     {
-        Fire();
+        FireWithSafety();
     }
 
-    private void Fire()
+    private void FireWithSafety()
     {
+        int bulletsSpawned = 0;
         Vector2 baseDir = GetForwardDirection();
         for (int i = 0; i < bulletsPerShot; i++)
         {
+            if (bulletsSpawned >= MaxBulletsPerFrame) break;
             float angle = currentAngle + i * angleStep;
             Quaternion rot = Quaternion.AngleAxis(angle, Vector3.forward);
             Vector2 dir = rot * baseDir;
             SpawnBullet(dir);
+            bulletsSpawned++;
         }
         currentAngle += angleStep;
     }

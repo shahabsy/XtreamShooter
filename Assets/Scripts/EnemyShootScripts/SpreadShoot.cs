@@ -12,24 +12,27 @@ public class SpreadShoot : EnemyShootBehavior
         while(elapsedTime >= interval)
         {
             elapsedTime -= interval;
-            Fire();
+            FireWithSafety();
         }
     }
     public override void ForceFire()
     {
-        Fire();
+        FireWithSafety();
     }
-    private void Fire()
+    private void FireWithSafety()
     {
+        int bulletSpawned = 0;
         Vector2 baseDir = GetForwardDirection();
         float startAngle = -spreadAngle * 0.5f;
         float step = bulletCount > 1 ? spreadAngle / (bulletCount - 1) : 0;
         for(int i = 0; i < bulletCount; i++)
         {
+            if (bulletSpawned >= MaxBulletsPerFrame) break;
             float angle = startAngle + i * step + angleOffset;
             Quaternion rot = Quaternion.AngleAxis(angle, Vector3.forward);
             Vector2 dir = rot * baseDir;
-            SpawnBullet(dir.normalized);
+            SpawnBullet(dir);
+            bulletSpawned++;
         }
     }
 }
