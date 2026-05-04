@@ -15,8 +15,9 @@ MonoBehaviour:
   fireRate: 2
   bullet:
     poolTag: EnemyBullet
-    speed: 1
+    speed: 5
     damage: 10
     lifeTime: 3
+  shootImmediately: 1
   shotsPerBurst: 3
   burstDelay: 0.15

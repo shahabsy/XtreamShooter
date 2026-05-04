@@ -1,5 +1,5 @@
 using UnityEngine;
-[CreateAssetMenu(fileName = "BurstShoot", menuName = "Game/Enemy/BurstShoot")]
+[CreateAssetMenu(fileName = "BurstShoot", menuName = "Game/Enemy/Shoot/BurstShoot")]
 public class BurstShoot : EnemyShootBehavior
 {
     public int shotsPerBurst = 3;
@@ -12,16 +12,17 @@ public class BurstShoot : EnemyShootBehavior
         if(remainingShots > 0)
         {
             burstTimer += deltaTime;
-            if(burstTimer > burstDelay )
+            while(burstTimer > burstDelay )
             {
-                burstTimer = 0;
+                burstTimer -= burstDelay;
                 FireOne();
                 remainingShots--;
                 if(remainingShots == 0 )
                 {
-                    elapsedTime = 0;
+                    break;
                 }
             }
+            if (remainingShots == 0) elapsedTime = 0;
             return;
         }
 
@@ -29,9 +30,18 @@ public class BurstShoot : EnemyShootBehavior
         elapsedTime += deltaTime;
         if(elapsedTime >= interval)
         {
-            elapsedTime = 0f;
+            elapsedTime -= interval;
             remainingShots = shotsPerBurst;
-            burstTimer = burstDelay;
+            burstTimer = 0;
+            FireOne();
+            remainingShots--;
+        }
+    }
+    public override void ForceFire()
+    {
+        for(int i = 0; i < shotsPerBurst; i++)
+        {
+            FireOne();
         }
     }
 

@@ -2,34 +2,41 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-
+[RequireComponent(typeof(Rigidbody2D))]
 public class Enemy : MonoBehaviour, IDamageable
 {
     [Header("Data")]
     [SerializeField] private EnemyData data;
     [Header("Spawn Info")]
     public DataEnemySpawnPattern sourceSpawnPattern;
-    public Transform firePoint;
-    
-
     public bool isElite;
     public bool isBoss;
+
+    private bool isDead = false;
+    private float currentHealth;
+    public Transform firePoint;
+    private Rigidbody2D rb;
+
+    private EnemyAIBehavior runtimeAIBehavior;
+    private List<EnemyShootBehavior> runtimeShoots = new List<EnemyShootBehavior>();
+
+    private bool[] weaponsPaused;
 
     private bool isEntering;
     private Vector2 entryTarget;
     private float entryDuration;
     private float entryElapsed;
-
-    private float currentHealth;
     
-    private float leftBoundary = -12f;
-    
-    private bool isDead = false;
+    public event Action<Enemy> OnDeath;
 
-    private EnemyAIBehavior runtimeBehavior;
-    private List<EnemyShootBehavior> runtimeShoots = new List<EnemyShootBehavior>();
+    private float leftBoundary;
 
-    public event Action OnDeath;
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0f;
+        rb.bodyType = RigidbodyType2D.Dynamic;
+    }
 
     private void OnEnable()
     {
@@ -38,7 +45,7 @@ public class Enemy : MonoBehaviour, IDamageable
     private void OnDisable()
     {
         EntityTracker.Instance?.UnregisterEnemy(this);
-        if(runtimeBehavior != null) Destroy(runtimeBehavior);
+        if(runtimeAIBehavior != null) Destroy(runtimeAIBehavior);
         foreach (var s in runtimeShoots) if (s != null) Destroy(s);
         runtimeShoots.Clear();
     }
@@ -79,11 +86,19 @@ public class Enemy : MonoBehaviour, IDamageable
         isElite = elite;
         isBoss = boss;
 
-        SetupFirePoint();
-        SetupBehavior();
+        //SetupFirePoint();
+        SetupAIBehavior();
         SetupShoot();
         
         EntityTracker.Instance?.RegisterEnemy(this);
+    }
+    private void SetupAIBehavior()
+    {
+        if (data.aiBehavior == null) return;
+
+        runtimeAIBehavior = Instantiate(data.aiBehavior);
+        runtimeAIBehavior.hideFlags = HideFlags.HideAndDontSave;
+        runtimeAIBehavior.Initialize(this, data);
     }
     private void SetupShoot()
     {
@@ -95,15 +110,9 @@ public class Enemy : MonoBehaviour, IDamageable
             clone.Initialize(this, firePoint);
             runtimeShoots.Add(clone);
         }
+        weaponsPaused = new bool[runtimeShoots.Count];
     }
-    private void SetupBehavior()
-    {
-        if (data.aiBehavior == null) return;
 
-        runtimeBehavior = Instantiate(data.aiBehavior);
-        runtimeBehavior.hideFlags = HideFlags.HideAndDontSave;
-        runtimeBehavior.Initialize(this, data);
-    }
     private void SetupFirePoint()
     {
         if(firePoint != null) return;
@@ -148,7 +157,6 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         //Debug.Log($"Enemy {name} position {transform.position.x}, speed: {data.moveSpeed}");
         if (isDead) return;
-        
         float deltaTime = Time.deltaTime;
 
         if(isEntering)
@@ -160,17 +168,15 @@ public class Enemy : MonoBehaviour, IDamageable
             return;
         }
         // Update AI behavior
-        runtimeBehavior?.UpdateLogic(deltaTime);
-        // Get Velocity from AI behavior
-        Vector2 velocity = runtimeBehavior != null
-            ? runtimeBehavior.GetVelocity()
-            : Vector2.left * data.moveSpeed;
+        runtimeAIBehavior?.UpdateLogic(deltaTime);
+        Vector2 desiredVelocity = runtimeAIBehavior?.GetVelocity() ?? (-transform.right * data.moveSpeed);
 
-        // Apply movement
-
-        ApplyMovement(velocity, deltaTime);
-
-        HandleShooting();
+        rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, desiredVelocity, data.acceleration * deltaTime);
+        for(int i = 0; i < runtimeShoots.Count; i++)
+        {
+            if (!weaponsPaused[i])
+                runtimeShoots[i].TryShoot(deltaTime);
+        }
 
         // Off screen check and other stuff if()
         if (transform.position.x < leftBoundary)
@@ -180,18 +186,18 @@ public class Enemy : MonoBehaviour, IDamageable
         }
     }
 
-    private void ApplyMovement(Vector2 velocity, float deltaTime)
+    public void SetWeaponsPaused(List<int> indices, bool paused)
     {
-        transform.position += (Vector3)(velocity * deltaTime);
+        foreach(int index in indices)
+            if(index >= 0 && index < weaponsPaused.Length)
+                weaponsPaused[index] = paused;
     }
 
-    private void HandleShooting()
+    public void FireWeaponImmediately(int index)
     {
-        // Shooting - all weapons
-        foreach (var shoot in runtimeShoots)
-            shoot.TryShoot(Time.deltaTime);
+        if (index >= 0 && index < runtimeShoots.Count)
+            runtimeShoots[index].ForceFire();
     }
-
     public void TakeDamage(float damage)
     {
         if (isDead) return;
@@ -208,14 +214,12 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         isDead = true;
-
-        runtimeBehavior?.OnDeath();
-        runtimeBehavior = null;
-
-        OnDeath?.Invoke();
-        //Debug.Log($"Enemy Die: {name} (instanceId={GetInstanceID()}) calling OnDeath and Destroy.");
+        runtimeAIBehavior?.OnDeath();
+        OnDeath?.Invoke(this);
         Destroy(gameObject);
     }
+
+    public Transform CurrentTarget => PlayerController.Instance?.transform;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -225,7 +229,7 @@ public class Enemy : MonoBehaviour, IDamageable
         if (proj != null)
         {
             TakeDamage(proj.damage);
-            proj.OnHit();
+            //proj.OnHit();
         }
     }
 }

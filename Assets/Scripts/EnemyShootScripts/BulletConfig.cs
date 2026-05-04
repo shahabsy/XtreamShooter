@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-[System.Serializable]
+[Serializable]
 public struct BulletConfig
 {
     public string poolTag;

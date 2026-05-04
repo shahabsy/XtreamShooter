@@ -9,6 +9,7 @@ public class EnemyData : ScriptableObject
     [Header("Stats")]
     public float health = 30f;
     public float moveSpeed = 2f;
+    public float acceleration = 10f;
     public int scoreValue = 10;
 
     [Header("AI Behavior")]

@@ -6,18 +6,24 @@ public abstract class EnemyShootBehavior : ScriptableObject
     public float fireRate = 1f;
     public BulletConfig bullet;
 
+    public bool shootImmediately = true;
+    
+    protected const int MaxBulletsPerFrame = 50;
     protected Enemy enemy;
     protected Transform firePoint;
     protected float elapsedTime;
 
+    
+
     public virtual void Initialize(Enemy ower, Transform point)
     {
         enemy = ower;
-        firePoint = point;
+        firePoint = point;    
         elapsedTime = 0f;
     }
 
     public abstract void TryShoot(float deltaTime);
+    public virtual void ForceFire() { }
 
     protected virtual void SpawnBullet(Vector2 direction)
     {

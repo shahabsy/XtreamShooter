@@ -8,6 +8,7 @@ public class EntityTracker : MonoBehaviour
 
     private readonly HashSet<Enemy> enemies = new HashSet<Enemy>();
     private readonly HashSet<Boss> bosses = new HashSet<Boss>();
+
     private readonly Dictionary<string, HashSet<Enemy>> waveMap = new Dictionary<string, HashSet<Enemy>>();
     private readonly Dictionary<Enemy, string> enemyToWave = new Dictionary<Enemy, string>();
 

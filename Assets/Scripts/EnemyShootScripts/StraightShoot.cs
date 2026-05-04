@@ -1,5 +1,5 @@
 using UnityEngine;
-[CreateAssetMenu(fileName = "StraightShoot", menuName = "Game/Enemy/StraightShoot")]
+[CreateAssetMenu(fileName = "StraightShoot", menuName = "Game/Enemy/Shoot/StraightShoot")]
 public class StraightShoot : EnemyShootBehavior
 {
     public override void TryShoot(float deltaTime)
@@ -11,6 +11,10 @@ public class StraightShoot : EnemyShootBehavior
             elapsedTime = 0f;
             Fire();
         }
+    }
+    public override void ForceFire()
+    {
+        Fire();
     }
     private void Fire()
     {

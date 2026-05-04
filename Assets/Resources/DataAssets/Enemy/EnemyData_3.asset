@@ -15,8 +15,9 @@ MonoBehaviour:
   enemyName: BasicEnemyC
   health: 30
   moveSpeed: 5
+  acceleration: 10
   scoreValue: 10
-  aiBehavior: {fileID: 11400000, guid: 73a5d264ff0911b4aa5b28ef0619a2a4, type: 2}
+  aiBehavior: {fileID: 11400000, guid: 10ead57be7b37ac4593813d0b3982a87, type: 2}
   shootBehavior:
   - {fileID: 11400000, guid: 148e4a1560745b642b388cd709d7f1f4, type: 2}
   sprite: {fileID: 21300000, guid: 195436fc8759070408ec5ee166776fd7, type: 3}

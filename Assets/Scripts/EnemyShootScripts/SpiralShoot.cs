@@ -1,5 +1,5 @@
 using UnityEngine;
-[CreateAssetMenu(fileName = "SpiralShoot", menuName = "Game/Enemy/SpiralShoot")]
+[CreateAssetMenu(fileName = "SpiralShoot", menuName = "Game/Enemy/Shoot/SpiralShoot")]
 public class SpiralShoot : EnemyShootBehavior
 {
     public int bulletsPerShot = 1;
@@ -11,9 +11,14 @@ public class SpiralShoot : EnemyShootBehavior
         elapsedTime += deltaTime;
         if(elapsedTime >= interval)
         {
-            elapsedTime = 0f;
+            elapsedTime -= interval;
             Fire();
         }
+    }
+
+    public override void ForceFire()
+    {
+        Fire();
     }
 
     private void Fire()

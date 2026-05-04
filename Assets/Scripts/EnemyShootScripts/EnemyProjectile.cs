@@ -3,6 +3,10 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyProjectile : MonoBehaviour
 {
+    [Header("Advanced")]
+    public float acceleration = 0f;
+    public bool rotateToVelocity = true;
+
     private Rigidbody2D rb;
     private float lifeTime;
     private float lifeTimer;
@@ -22,6 +26,12 @@ public class EnemyProjectile : MonoBehaviour
         rb.gravityScale = 0f;
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+    }
+    private void OnEnable()
+    {
+        isHoming = false;
+        homingTarget = null;
+        homingTimer = 0f;
     }
     public void Initialize(Vector2 velocity, float life, float dmg, string tag, Enemy ownerEnemy)
     {
@@ -51,6 +61,12 @@ public class EnemyProjectile : MonoBehaviour
             ReturnToPool();
             return;
         }
+
+        if(acceleration != 0f)
+        {
+            Vector2 dir = rb.linearVelocity.normalized;
+            rb.linearVelocity += dir * acceleration * Time.fixedDeltaTime;
+        }
         
         if(isHoming && homingTarget != null)
         {
@@ -62,8 +78,14 @@ public class EnemyProjectile : MonoBehaviour
 
                 float maxRotate = homingTurnSpeed * Mathf.Deg2Rad * Time.fixedDeltaTime;
                 Vector2 newDir = Vector3.RotateTowards(currentDir, targetDir, maxRotate, 1f).normalized;
-                rb.linearVelocity = newDir * initialiVelocity.magnitude;
+                rb.linearVelocity = newDir * rb.linearVelocity.magnitude;
             }
+        }
+
+        if(rotateToVelocity && rb.linearVelocity.sqrMagnitude > 0.01f)
+        {
+            float angle = Mathf.Atan2(rb.linearVelocity.y, rb.linearVelocity.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
         }
     }
     private void OnTriggerEnter2D(Collider2D other)

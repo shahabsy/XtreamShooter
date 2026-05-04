@@ -15,8 +15,9 @@ MonoBehaviour:
   fireRate: 0.5
   bullet:
     poolTag: EnemyBullet
-    speed: 1
+    speed: 5
     damage: 10
     lifeTime: 3
+  shootImmediately: 1
   homingDelay: 0.2
   homingTurnSpeed: 180

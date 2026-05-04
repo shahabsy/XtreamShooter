@@ -15,8 +15,10 @@ MonoBehaviour:
   fireRate: 0.8
   bullet:
     poolTag: EnemyBullet
-    speed: 8
+    speed: 5
     damage: 10
     lifeTime: 3
+  shootImmediately: 1
   bulletCount: 5
-  spreadAngle: 45
+  spreadAngle: 20
+  angleOffset: 0

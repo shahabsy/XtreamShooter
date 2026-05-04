@@ -1,5 +1,5 @@
 using UnityEngine;
-[CreateAssetMenu(fileName = "HomingShoot", menuName = "Game/Enemy/HomingShoot")]
+[CreateAssetMenu(fileName = "HomingShoot", menuName = "Game/Enemy/Shoot/HomingShoot")]
 public class HomingShoot : EnemyShootBehavior
 {
     public float homingDelay = 0.2f;
@@ -11,13 +11,20 @@ public class HomingShoot : EnemyShootBehavior
         elapsedTime += deltaTime;
         if(elapsedTime >= interval)
         {
-            elapsedTime = 0f;
+            elapsedTime -= interval;
             Fire();
         }
+    }
+    public override void ForceFire()
+    {
+        Fire();
     }
 
     private void Fire()
     {
+        Transform target = enemy.CurrentTarget;
+        if (target == null) return;
+
         Vector2 dir = GetForwardDirection();
         GameObject obj = ObjectPooler.Instance.SpawnFromPool(bullet.poolTag, firePoint.position, Quaternion.identity);
         if (obj == null) return;
