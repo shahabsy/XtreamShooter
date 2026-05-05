@@ -21,6 +21,11 @@ public class UIManager : MonoBehaviour
 
     private Coroutine hideCoroutine;
 
+    [Header("Player UI")]
+    public Slider healthSlider;
+    public Slider shieldSlider;
+    public Slider energySlider;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -107,5 +112,20 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         if (bossHealthBarPanel != null)
             bossHealthBarPanel.SetActive(false);
+    }
+
+    public void UpdatePlayerHealth(float current, float max)
+    {
+        if (healthSlider != null) healthSlider.value = current / max;
+    }
+
+    public void UpdatePlayerShield(float current, float max)
+    {
+        if(shieldSlider != null) shieldSlider.value = current / max;
+    }
+
+    public void UpdatePlayerEnergy(float current, float max)
+    {
+        if (energySlider != null) energySlider.value = current / max;
     }
 }

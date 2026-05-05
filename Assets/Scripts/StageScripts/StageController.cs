@@ -214,11 +214,11 @@ public class StageController : MonoBehaviour
         };
 
         triggerHandlers[triggerName] = handler;
-        playerController?.RegisterTriggerListener(handler);
+        //playerController?.RegisterTriggerListener(handler);
 
         while (!triggered) yield return null;
 
-        playerController?.UnregisterTriggerListener(handler);
+        //playerController?.UnregisterTriggerListener(handler);
         triggerHandlers.Remove(triggerName);
     }
     private IEnumerator WaitForGlobalTrigger(string triggerName)
@@ -226,9 +226,9 @@ public class StageController : MonoBehaviour
         bool triggered = false;
         Action<string> handler = (t) => { if (t == triggerName) triggered = true; };
         triggerHandlers[triggerName] = handler;
-        playerController?.RegisterTriggerListener(handler);
+        //playerController?.RegisterTriggerListener(handler);
         while (!triggered) yield return null;
-        playerController?.UnregisterTriggerListener(handler);
+        //playerController?.UnregisterTriggerListener(handler);
         triggerHandlers.Remove(triggerName);
     }
     private IEnumerator ExecuteDialog(StageAction action)
@@ -251,8 +251,8 @@ public class StageController : MonoBehaviour
     {
         if (playerController != null)
         {
-            foreach (var trigger in triggerHandlers.Values)
-                playerController.UnregisterTriggerListener(trigger);
+            //foreach (var trigger in triggerHandlers.Values)
+                //playerController.UnregisterTriggerListener(trigger);
         }
         triggerHandlers.Clear();
     }

@@ -717,37 +717,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 132313839}
   m_CullTransparentMesh: 1
---- !u!1 &147339729
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 147339730}
-  m_Layer: 0
-  m_Name: GameObject (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &147339730
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 147339729}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13, y: -3, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &166035064
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,7 +840,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61806d895ffb704897612f8bd9fb73f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageController
-  currentMission: {fileID: 11400000, guid: ee95ee56cd6f9b2429333764adb45b2e, type: 2}
+  currentMission: {fileID: 11400000, guid: 02383a66dd4404a4f8242d11b2a49a3b, type: 2}
   backgroundSpawner: {fileID: 1236166020}
   enemySpawner: {fileID: 1906335883}
   dialogManager: {fileID: 39783560}
@@ -1432,37 +1401,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 383059212}
   m_CullTransparentMesh: 1
---- !u!1 &417543798
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 417543799}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &417543799
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 417543798}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13, y: 3, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &474771560
 GameObject:
   m_ObjectHideFlags: 0
@@ -2334,6 +2272,9 @@ MonoBehaviour:
   bossHealthBarFill: {fileID: 0}
   bossNameText: {fileID: 0}
   autoHideDelay: 2
+  healthSlider: {fileID: 2057005651}
+  shieldSlider: {fileID: 1677811081}
+  energySlider: {fileID: 1074200433}
 --- !u!4 &874780075
 Transform:
   m_ObjectHideFlags: 0
@@ -3514,7 +3455,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossEncounterController
   freezeScrolling: 1
-  freezePlayer: 0
   introDelay: 1
   outroDelay: 1
   showBossUI: 1
@@ -3763,84 +3703,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1595333715}
   m_CullTransparentMesh: 1
---- !u!1 &1618679118
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1618679120}
-  - component: {fileID: 1618679119}
-  m_Layer: 0
-  m_Name: GameObject (2)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!61 &1618679119
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1618679118}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 5, y: 10}
-  m_EdgeRadius: 0
---- !u!4 &1618679120
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1618679118}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1651325191
 GameObject:
   m_ObjectHideFlags: 0
@@ -4334,7 +4196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e11ac4f1af094ed4fb9d1ea668e3336c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  waveDatabase: {fileID: 11400000, guid: 3444e7b4952be504087a5ec6330cb2e3, type: 2}
+  waveDatabase: {fileID: 11400000, guid: 54b6b05140e868d458c64b60369da6c0, type: 2}
 --- !u!1 &1942467959
 GameObject:
   m_ObjectHideFlags: 0
@@ -4840,6 +4702,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1408813251512291250, guid: 3479d04740b4bb44fbc5183b6ada8bd2, type: 3}
+      propertyPath: data
+      value: 
+      objectReference: {fileID: 11400000, guid: ecc27b3567274414083e867bd89ddc40, type: 2}
     - target: {fileID: 1858566140251558467, guid: 3479d04740b4bb44fbc5183b6ada8bd2, type: 3}
       propertyPath: m_BodyType
       value: 1
@@ -4915,6 +4781,3 @@ SceneRoots:
   - {fileID: 874780075}
   - {fileID: 1768677558}
   - {fileID: 695913932}
-  - {fileID: 417543799}
-  - {fileID: 147339730}
-  - {fileID: 1618679120}

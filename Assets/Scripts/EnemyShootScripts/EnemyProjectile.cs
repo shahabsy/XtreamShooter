@@ -58,6 +58,7 @@ public class EnemyProjectile : MonoBehaviour
         lifeTimer -= Time.fixedDeltaTime;
         if(lifeTimer <= 0)
         {
+            Debug.Log($"{name} retuned to pool after {lifeTime} secs.");
             ReturnToPool();
             return;
         }
@@ -91,7 +92,7 @@ public class EnemyProjectile : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.GetComponent<Enemy>() == owner) return;
-
+        Debug.Log($"{other.name}");
         IDamageable damageable = other.GetComponent<IDamageable>();
         if(damageable != null)
         {

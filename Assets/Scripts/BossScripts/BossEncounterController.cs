@@ -6,7 +6,7 @@ public class BossEncounterController : MonoBehaviour
 {
     [Header("Arena Controls")]
     [SerializeField] private bool freezeScrolling = true;
-    [SerializeField] private bool freezePlayer = true;
+    //[SerializeField] private bool freezePlayer = true;
 
     [Header("Timing")]
     [SerializeField] private float introDelay = 1f;
@@ -31,7 +31,7 @@ public class BossEncounterController : MonoBehaviour
 
         if (freezeScrolling) BackgroundSpawner.Instance?.SetScrolling(false);
 
-        if (freezePlayer) PlayerController.Instance?.FreezeMovement(0.5f);
+        //if (freezePlayer) PlayerController.Instance?.FreezeMovement(0.5f);
 
         if (showBossUI)
         {

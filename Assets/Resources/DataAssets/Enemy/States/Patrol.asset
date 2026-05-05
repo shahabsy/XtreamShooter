@@ -18,8 +18,8 @@ MonoBehaviour:
     nextState: Patrol
     targetVelocity: {x: 0, y: 0}
     useDestination: 1
-    destinationMin: {x: 6, y: -2}
-    destinationMax: {x: 8, y: 3}
+    destinationMin: {x: 6, y: -4}
+    destinationMax: {x: 10, y: 4}
     pauseWeaponIndices: 
     fireWeaponImmediately: 0
     weaponIndexToFire: 0
@@ -29,8 +29,8 @@ MonoBehaviour:
     nextState: PatrolExit
     targetVelocity: {x: 0, y: 0}
     useDestination: 1
-    destinationMin: {x: -6, y: -4}
-    destinationMax: {x: 6, y: 4}
+    destinationMin: {x: -10, y: -5}
+    destinationMax: {x: 10, y: 5}
     pauseWeaponIndices: 
     fireWeaponImmediately: 0
     weaponIndexToFire: 0

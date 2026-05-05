@@ -1,228 +1,259 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+[RequireComponent(typeof(Rigidbody2D))]
+public class PlayerController : MonoBehaviour, IDamageable
 {
-    public static PlayerController Instance {  get; private set; }
+    public static PlayerController Instance { get; private set; }
 
-    [Header("MovementSettings")]
-    [SerializeField] private float moveSpeed = 8f;
-    private float leftBoundary, rightBoundary, topBoundary, bottomBoundary;
+    [Header("Data")]
+    [SerializeField] private PlayerData data;
 
-    [Header("Auto Bounds (Camera)")]
-    [SerializeField] private Vector2 screenPadding = new Vector2(0.5f, 0.5f); // world units padding from edges
+    private float currentHealth;
+    private float currentShield;
+    private float currentEnergy;
+    private bool isInvincible = false;
+    private bool isDead = false;
+    private float lastDamageTime = -999f;
 
-    // Use collider for extents if present, otherwise fall back to sprite renderer
-    [Header("Extent Calculation")]
-    [SerializeField] private bool useColliderForExtents = true;
-    [SerializeField] private bool previewBounds = false;
+    private float shieldRegenTimer;
+    private float energyRegenTimer;
 
-    [Header("Shooting Settings")]
-    //[SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private Transform firePoint;
-    [SerializeField] private float fireRate = 0.2f;
-
-    private InputSystem_Actions inputActions;
+    private Rigidbody2D rb;
     private Vector2 moveInput;
-    private float nextFireTime;
 
-    private bool movementFrozen = false;
+    private List<PlayerShootBehavior> runtimeWeapons = new List<PlayerShootBehavior>();
 
-    private event Action<string> OnTriggerEvent;
+    private Transform firePoint;
 
-    //private Camera mainCamera;
-    private float halfWidth = 0.5f;
-    private float halfHeight = 0.5f;
+    public event Action<float, float> OnHealthChanged;
+    public event Action<float, float> OnShieldChanged;
+    public event Action<float, float> OnEnergyChanged;
+    public event Action OnPlayerDeath;
 
-    // runtime computed bounds
-    
+    //private event Action<string> onTriggerEvent;
+
+    //public void RegisterTriggerListener(Action<string> listener) => onTriggerEvent += listener;
+    //public void UnregisterTriggerListener(Action<string> listener) => onTriggerEvent -= listener;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-
-        inputActions = new InputSystem_Actions();
+        rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0f;
+        rb.bodyType = RigidbodyType2D.Dynamic;
     }
 
-    private void OnEnable()
+    private void Start()
     {
-        inputActions.Enable();
-        //inputActions.Player.Attack.performed += OnAttack;
-    }
+        if (Instance != null && Instance != this) Destroy(gameObject);
+        else Instance = this;
 
-    private void OnDisable()
-    {
-        inputActions.Disable();
-        //inputActions.Player.Attack.performed -= OnAttack;
-    }
+        ApplyVisuals();
+        SetupFirePoint();
+        SetupWeapons();
+        ResetStats();
 
-    void Update()
+        UIManager.Instance?.UpdatePlayerHealth(currentHealth, data.maxHealth);
+        UIManager.Instance?.UpdatePlayerShield(currentShield, data.maxShield);
+        UIManager.Instance?.UpdatePlayerEnergy(currentEnergy, data.maxEnergy);
+    }
+    private void SetupFirePoint()
     {
-        if (!movementFrozen)
+        firePoint = new GameObject("FirePoint").transform;
+        firePoint.SetParent(transform);
+        firePoint.localPosition = data.shotSpawnOffset;
+    }
+    private void SetupWeapons()
+    {
+        if (data.startingWeapons == null) return;
+        foreach(var weapon in data.startingWeapons)
         {
-            moveInput = inputActions.Player.Move.ReadValue<Vector2>();
-            HandleMovement();
-        }
-        
-        bool isAttacking = inputActions.Player.Attack.IsPressed();
-        if (isAttacking && Time.time >= nextFireTime)
-        {
-            nextFireTime = Time.time + fireRate;
-            Shoot();
-        }
-    }
-
-    private void LateUpdate()
-    {
-        UpdateBoundsFromCamera();
-        ClampPlayerPosition();
-    }
-
-    private void HandleMovement()
-    {
-        Vector2 movement = moveInput * moveSpeed * Time.deltaTime;
-        transform.Translate(movement);
-        if (moveInput.magnitude > 0.1) FireTrigger("Movement");
-    }
-
-    private void UpdateBoundsFromCamera()
-    {
-        if (Camera.main == null) return;
-
-        // Use distance from camera to player for proper viewport 
-        float zDistance = Mathf.Abs(Camera.main.transform.position.x - transform.position.z);
-        Vector3 leftBottom = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, zDistance));
-        Vector3 rightTop = Camera.main.ViewportToWorldPoint(new Vector3(1f, 1f, zDistance));
-
-        // Apply padding and account for player sprite/collider extents
-        leftBoundary = leftBottom.x + halfWidth + screenPadding.x;
-        rightBoundary = rightTop.x - halfWidth - screenPadding.x;
-        bottomBoundary = leftBottom.y + halfHeight + screenPadding.y;
-        topBoundary = rightTop.y - halfHeight - screenPadding.y;
-    }
-
-    private void ClampPlayerPosition()
-    {
-        Vector3 pos = transform.position;
-        pos.x = Mathf.Clamp(pos.x, leftBoundary, rightBoundary);
-        pos.y = Mathf.Clamp(pos.y, bottomBoundary, topBoundary);
-        transform.position = pos;
-    }
-
-    private void OnAttack(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            Shoot();
-            FireTrigger("Weapon1");
+            if(weapon == null) continue;
+            var clone = Instantiate(weapon);
+            clone.Initialize(this, firePoint);
+            runtimeWeapons.Add(clone);
         }
     }
-
-    private void Shoot()
+    private void ApplyVisuals()
     {
-        if (ObjectPooler.Instance != null && firePoint != null)
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if(sr != null && data.sprite != null)
         {
-            ObjectPooler.Instance.SpawnFromPool("PlayerBullet", firePoint.position, Quaternion.identity);
+            sr.sprite = data.sprite;
+            sr.sortingLayerName = data.sortingLayerName;
+            sr.sortingOrder = data.orderInLayer;
         }
+        transform.localScale = new Vector3(data.spriteScale.x, data.spriteScale.y, 1f);
+    }
+    public void ResetPlayer()
+    {
+        ResetStats();
+        transform.position = Vector3.zero;
+        //Reset weapons if needed
+        StopAllCoroutines();
+    }
+    private void ResetStats()
+    {
+        currentHealth = data.maxHealth;
+        currentShield = data.maxShield;
+        currentEnergy = data.maxEnergy;
+        isDead = false;
+        isInvincible = false;
+        lastDamageTime = -999f;
+        shieldRegenTimer = 0f;
+        energyRegenTimer = 0f;
     }
 
-    public void RecalculateExtents()
+    private void Update()
     {
-        if(useColliderForExtents)
+        if(isDead) return;
+
+        //moveInput = new Vector2()
+
+        UpdateRegeneration();
+    }
+
+    private void FixedUpdate()
+    {
+        if(isDead) return;
+        Vector2 targetVelocity = moveInput * data.speed;
+        rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, targetVelocity, data.acceleration * Time.fixedDeltaTime);
+    }
+
+    private void UpdateRegeneration()
+    {
+        shieldRegenTimer += Time.deltaTime;
+        if(shieldRegenTimer >= data.shieldRegenInterval)
         {
-            Collider col2d = GetComponent<Collider>();
-            if(col2d != null)
+            shieldRegenTimer -= data.shieldRegenInterval;
+            if(currentShield < data.maxShield && Time.time > lastDamageTime + data.shieldRegenStartTime)
             {
-                var size = col2d.bounds.size;
-                halfWidth = size.x * 0.5f;
-                halfHeight = size.y * 0.5f;
-                return;
+                currentShield += data.shieldRegen;
+                currentShield = Mathf.Min(currentShield, data.maxShield);
+                OnShieldChanged?.Invoke(currentShield, data.maxShield);
+                UIManager.Instance?.UpdatePlayerShield(currentShield, data.maxShield);
             }
         }
 
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
+        energyRegenTimer += Time.deltaTime;
+        if(energyRegenTimer >= data.energyRegenInterval)
         {
-            var size = sr.bounds.size;
-            halfWidth = size.x * 0.5f;
-            halfHeight = size.y * 0.5f;
-            return;
+            energyRegenTimer -= data.energyRegenInterval;
+            if(currentEnergy < data.maxEnergy)
+            {
+                currentEnergy += data.energyRegen;
+                currentEnergy = Mathf.Min(currentEnergy, data.maxEnergy);
+                OnEnergyChanged?.Invoke(currentEnergy, data.maxEnergy);
+                UIManager.Instance?.UpdatePlayerEnergy(currentEnergy, data.maxEnergy);
+
+            }
         }
-        // default
-        halfWidth = 0.5f;
-        halfHeight = 0.5f;
     }
 
-    public void RegisterTriggerListener(Action<string> listener)
+    public bool TryConsumeEnergy(float amount)
     {
-        OnTriggerEvent += listener;
+        if(currentEnergy < amount) return false;
+        currentEnergy -= amount;
+        OnEnergyChanged?.Invoke(currentEnergy, data.maxEnergy);
+        UIManager.Instance?.UpdatePlayerEnergy(currentEnergy, data.maxEnergy);
+        return true;
     }
-    public void UnregisterTriggerListener(Action<string> listener)
+    public void TakeDamage(float damage)
     {
-        OnTriggerEvent -= listener;
-    }
+        if (isDead || isInvincible) return;
+        lastDamageTime = Time.time;
+        float remainingDamage = damage;
 
-    public void UnregisterAllListeners(string trigger)
-    {
-        OnTriggerEvent = null;
-    }
-
-    private void FireTrigger(string triggerName)
-    {
-        OnTriggerEvent?.Invoke(triggerName);
-    }
-
-    public void FreezeMovement(float duration)
-    {
-        StartCoroutine(FreezeMovementRoutine(duration));
-    }
-
-    private IEnumerator FreezeMovementRoutine(float duration)
-    {
-        movementFrozen = true;
-        yield return new WaitForSeconds(duration);
-        movementFrozen = false;
-    }
-
-    public void ResetPlayer()
-    {
-        // Reset health, shields, position, etc.
-        movementFrozen = false;
-        // Re-enable colliders if disabled
-        foreach (var col in GetComponents<Collider2D>()) col.enabled = true;
-        // Update UI
-        
-        //Debug.Log("Player reset.");
+        if(currentShield > 0)
+        {
+            float shieldAbsord = Mathf.Min(currentShield, remainingDamage);
+            currentShield -= shieldAbsord;
+            remainingDamage -= shieldAbsord;
+            OnShieldChanged?.Invoke(currentShield, data.maxShield);
+            UIManager.Instance?.UpdatePlayerShield(currentShield, data.maxShield);
+            PlayShieldHitEffect();
+            if (currentShield <= 0) PlayShieldBreakEffect();
+        }
+        if(remainingDamage > 0)
+        {
+            currentHealth -= remainingDamage;
+            OnHealthChanged?.Invoke(currentHealth, data.maxHealth);
+            UIManager.Instance?.UpdatePlayerHealth(currentHealth, data.maxHealth);
+            PlayHitEffect();
+            if (currentHealth <= 0) Die();
+            else StartCoroutine(InvincibilityRoutine());
+        }
     }
 
-    // Draw preview of computed bounds in Scene view when previewBounds is enabled (or when selected)
-    private void OnDrawGizmos()
+    private IEnumerator InvincibilityRoutine()
     {
-        if (!previewBounds) return;
-        if (Camera.main == null) return;
+        isInvincible = true;
+        yield return new WaitForSeconds(data.invincibilityDuration);
+        isInvincible = false;
+    }
+    private void Die()
+    {
+        if(isDead) return;
+        isDead = true;
+        OnPlayerDeath?.Invoke();
+        PlayDeathEffect();
+        Destroy(gameObject, 1f);
+    }
 
-        float zDistance = Mathf.Abs(Camera.main.transform.position.z - transform.position.z);
-        Vector3 leftBottom = Camera.main.ViewportToWorldPoint(new Vector3(0f, 0f, zDistance));
-        Vector3 rightTop = Camera.main.ViewportToWorldPoint(new Vector3(1f, 1f, zDistance));
+    private void PlayHitEffect()
+    {
+        if (data.hitVFX != null) Instantiate(data.hitVFX, transform.position, Quaternion.identity);
+        if (data.hitSFX != null) AudioManager.Instance?.PlaySFX(data.hitSFX, transform.position);
+    }
 
-        float l = leftBottom.x + halfWidth + screenPadding.x;
-        float r = rightTop.x - halfWidth - screenPadding.x;
-        float b = leftBottom.y + halfHeight + screenPadding.y;
-        float t = rightTop.y - halfHeight - screenPadding.y;
+    private void PlayShieldHitEffect()
+    {
+        if(data.shieldHitVFX != null) Instantiate(data.shieldHitVFX, transform.position, Quaternion.identity);
+        if (data.shieldHitSFX != null) AudioManager.Instance?.PlaySFX(data.shieldHitSFX, transform.position); 
+    }
 
-        Vector3 center = new Vector3((l + r) * 0.5f, (b + t) * 0.5f, transform.position.z);
-        Vector3 size = new Vector3(Mathf.Abs(r - l), Mathf.Abs(t - b), 0.01f);
+    private void PlayShieldBreakEffect()
+    {
+        if (data.shieldBreakVFX != null) Instantiate(data.shieldBreakVFX, transform.position, Quaternion.identity);
+        if (data.shieldBreakSFX != null) AudioManager.Instance?.PlaySFX(data.shieldBreakSFX, transform.position);
+    }
 
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(center, size);
+    private void PlayDeathEffect()
+    {
+        if(data.deathVFX != null) Instantiate(data.deathVFX, transform.position, Quaternion.identity);
+        if (data.deathSFX != null) AudioManager.Instance?.PlaySFX(data.deathSFX, transform.position);
+    }
 
-        // Also draw player extents at its current position
-        Gizmos.color = Color.yellow;
-        Vector3 playerCenter = transform.position;
-        Vector3 playerSize = new Vector3(halfWidth * 2f, halfHeight * 2f, 0.01f);
-        Gizmos.DrawWireCube(playerCenter, playerSize);
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.CompareTag("EnemyBullet"))
+        {
+            var projectile = other.GetComponent<PlayerProjectile>();
+            if (projectile != null)
+            {
+                TakeDamage(projectile.damage);
+            }
+        }
+        else if(other.CompareTag("Enemy"))
+        {
+            TakeDamage(data.collisionDamage);
+            StartCoroutine(CollisionCooldown());
+        }
+    }
+    private IEnumerator CollisionCooldown()
+    {
+        yield return new WaitForSeconds(data.collisionDamageCooldown);
+    }
+    public void Respawn()
+    {
+        ResetStats();
+        isDead = false;
+        isInvincible = true;
+        transform.position = Vector3.zero;
+        StartCoroutine(InvincibilityRoutine());
     }
 }

@@ -13,9 +13,31 @@ MonoBehaviour:
   m_Name: Idle
   m_EditorClassIdentifier: Assembly-CSharp::StateMachineBehavior
   states:
+  - stateName: IdleEnter
+    duration: -1
+    nextState: Patrol
+    targetVelocity: {x: 0, y: 0}
+    useDestination: 1
+    destinationMin: {x: 6, y: -4}
+    destinationMax: {x: 10, y: 4}
+    pauseWeaponIndices: 
+    fireWeaponImmediately: 0
+    weaponIndexToFire: 0
+    isExitState: 0
   - stateName: Idle
     duration: 2
-    nextState: PositionCannon
+    nextState: IdleExit
+    targetVelocity: {x: 0, y: 0}
+    useDestination: 0
+    destinationMin: {x: -10, y: -5}
+    destinationMax: {x: 10, y: 5}
+    pauseWeaponIndices: 
+    fireWeaponImmediately: 0
+    weaponIndexToFire: 0
+    isExitState: 0
+  - stateName: IdleExit
+    duration: 3
+    nextState: 
     targetVelocity: {x: 0, y: 0}
     useDestination: 0
     destinationMin: {x: 0, y: 0}
@@ -23,6 +45,7 @@ MonoBehaviour:
     pauseWeaponIndices: 
     fireWeaponImmediately: 0
     weaponIndexToFire: 0
+    isExitState: 1
   acceleration: 10
-  seperationRadius: 2
+  seperationRadius: 3
   seperationStrength: 5

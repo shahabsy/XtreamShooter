@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98390cf0c8b0f594793bea4c325dbc1f, type: 3}
+  m_Name: WaveDatabase_1V1
+  m_EditorClassIdentifier: Assembly-CSharp::WaveDatabase
+  normalWaves:
+  - waveName: Wave_Calm
+    spawnPattern: {fileID: 11400000, guid: 49e481b24a8c03c46b12cbe52d5a0b7a, type: 2}
+    spawnType: 0
+  - waveName: Wave_LightSwarm
+    spawnPattern: {fileID: 11400000, guid: 490811df7ef1b54479cd0ddac0188530, type: 2}
+    spawnType: 0
+  - waveName: Wave_Mixed
+    spawnPattern: {fileID: 11400000, guid: 6b6b03d1dc3f770448ad545b569b4ed1, type: 2}
+    spawnType: 0
+  - waveName: Wave_Pressure
+    spawnPattern: {fileID: 11400000, guid: b562d1ca20ded344b9da12153f40f192, type: 2}
+    spawnType: 0
+  - waveName: Wave_Breathing
+    spawnPattern: {fileID: 11400000, guid: 2526f3ca70a90d84c906903b8def523a, type: 2}
+    spawnType: 0
+  - waveName: Wave_EliteIntro
+    spawnPattern: {fileID: 11400000, guid: b58fd304ee8d50946a4c6e1a2b568973, type: 2}
+    spawnType: 0
+  - waveName: Wave_Chaos
+    spawnPattern: {fileID: 11400000, guid: 953834784764b97468be5abc9252b1a3, type: 2}
+    spawnType: 0
+  - waveName: Wave_Recovery
+    spawnPattern: {fileID: 11400000, guid: 10e3aac3053cf34409457835b8ca303d, type: 2}
+    spawnType: 0
+  - waveName: Wave_FinalAssault
+    spawnPattern: {fileID: 11400000, guid: 10e3aac3053cf34409457835b8ca303d, type: 2}
+    spawnType: 0
+  eliteWaves:
+  - waveName: EliteWave1
+    spawnPattern: {fileID: 11400000, guid: fa95a5e92f6382b4cbe3aaf52931005a, type: 2}
+    spawnType: 3
+  bosses:
+  - bossId: TestBoss1
+    bossName: TestBoss1
+    bossPrefab: {fileID: 6468513381374726774, guid: 85df5e69d2def1b48972daa36f0a6ebb, type: 3}
+    bossData: {fileID: 11400000, guid: b848a0769f4d6d944b779604ad081c6f, type: 2}
+  - bossId: TestBoss2
+    bossName: TestBoss2
+    bossPrefab: {fileID: 6468513381374726774, guid: 4b17ee18dc3d81540b530c605062c256, type: 3}
+    bossData: {fileID: 11400000, guid: 158c7485cc5dac84b9cf6051d9194081, type: 2}

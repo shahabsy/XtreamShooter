@@ -30,4 +30,4 @@ MonoBehaviour:
   bossName: 
   bossIcon: 
   bossTaunts: []
-  nextMissionId: MissionData_01
+  nextMissionId: MissionData_01V1

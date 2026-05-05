@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "DataEnemySpawnPattern_", menuName = "Game/DataEnemySpawnPattern")]
+[CreateAssetMenu(fileName = "DataEnemySpawnPattern_", menuName = "Game/Enemy/DataEnemySpawnPattern")]
 public class DataEnemySpawnPattern : ScriptableObject
 {
     [Header("Identity")]

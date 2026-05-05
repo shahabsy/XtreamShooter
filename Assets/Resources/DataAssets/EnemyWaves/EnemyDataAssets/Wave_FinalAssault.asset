@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15ae10f1806e08e45aa87aa367a0a42d, type: 3}
+  m_Name: Wave_FinalAssault
+  m_EditorClassIdentifier: Assembly-CSharp::DataEnemySpawnPattern
+  patternName: Standard
+  spawnerType: 0
+  spawnSequence:
+  - enemyData: {fileID: 11400000, guid: 33dd66f920b6eda4182aa87c735b0ed6, type: 2}
+    useExactPosition: 0
+    exactPosition: {x: 0, y: 0}
+    delayBeforeNext: 0
+    formation: 4
+    formationSize: 4
+    formationSpacing: 1
+    formationDirection: {x: 1, y: 0}
+    entryStyle: 1
+    slideInDuration: 0.5
+    offscreenOffset: {x: 2, y: 0}
+  - enemyData: {fileID: 11400000, guid: 361e4c5cc18dc114eb0d64a94e9ac559, type: 2}
+    useExactPosition: 0
+    exactPosition: {x: 0, y: 0}
+    delayBeforeNext: 0
+    formation: 5
+    formationSize: 6
+    formationSpacing: 1
+    formationDirection: {x: 1, y: 0}
+    entryStyle: 1
+    slideInDuration: 0.5
+    offscreenOffset: {x: 2, y: 0}
+  spawnPositionType: 0
+  spawnMinX: 12
+  spawnMaxX: 15
+  spawnMinY: -4
+  spawnMaxY: 4
+  uniformSpacing: 0.5
+  fixedSpawnPositions: []
+  minSpawnInterval: 0.2
+  maxSpawnInterval: 0.5
+  rapidFireSpawnPoints: []
+  allowedEdges: 
