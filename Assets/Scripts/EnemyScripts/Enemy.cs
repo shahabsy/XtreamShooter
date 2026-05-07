@@ -234,7 +234,7 @@ public class Enemy : MonoBehaviour, IDamageable
         Destroy(gameObject);
     }
 
-    public Transform CurrentTarget => PlayerController.Instance?.transform;
+    public Transform CurrentTarget => GameManager.Instance?.CurrentPlayer?.transform;
 
     private void OnTriggerEnter2D(Collider2D other)
     {

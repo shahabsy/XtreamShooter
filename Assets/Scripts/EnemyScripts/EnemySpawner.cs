@@ -153,4 +153,9 @@ public class EnemySpawner : MonoBehaviour
         activeSpawningWaves.Clear();
         //Debug.Log("EnemySpawner reset.");
     }
+
+    public void ClearAllEnemies()
+    {
+        EntityTracker.Instance?.ClearAllEntities();
+    }
 }

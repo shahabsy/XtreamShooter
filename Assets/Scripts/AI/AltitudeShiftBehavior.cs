@@ -8,9 +8,10 @@ public class AltitudeShiftBehavior : EnemyAIBehavior
     public override Vector2 GetVelocity()
     {
         float yTarget = 0f;
-        if(enemy != null && PlayerController.Instance != null )
+        var player = CurrentPlayer;
+        if(enemy != null && player != null )
         {
-            float playerY = PlayerController.Instance.transform.position.y;
+            float playerY = player.transform.position.y;
             float currentY = enemy.transform.position.y;
             float deltaY = playerY - currentY;
 
@@ -19,4 +20,5 @@ public class AltitudeShiftBehavior : EnemyAIBehavior
         }
         return new Vector2(horizontalSpeed, yTarget);
     }
+    public Transform CurrentPlayer => GameManager.Instance?.CurrentPlayer.transform;
 }

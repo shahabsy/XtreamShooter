@@ -180,12 +180,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 940df1841492f7f4fbccec742b05ce03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 8
-  screenPadding: {x: 0.5, y: 0.5}
-  useColliderForExtents: 1
-  previewBounds: 1
-  firePoint: {fileID: 3805962243659026194}
-  fireRate: 0.1
+  data: {fileID: 11400000, guid: ecc27b3567274414083e867bd89ddc40, type: 2}
+  defaultWeapon: {fileID: 11400000, guid: 9c52e421ee8e72f46b95fc66f4fb415b, type: 2}
 --- !u!1 &8468528681728882824
 GameObject:
   m_ObjectHideFlags: 0

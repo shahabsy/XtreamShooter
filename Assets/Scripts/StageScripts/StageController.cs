@@ -2,7 +2,8 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
+using Unity.Multiplayer.PlayMode;
+
 
 
 public class StageController : MonoBehaviour
@@ -20,6 +21,7 @@ public class StageController : MonoBehaviour
     public BossEncounterController bossEncounter;
     public UIManager uiManager;
     public EntityTracker entityTracker;
+    
 
     private Coroutine missionRoutine;
     private bool missionComplete = false;
@@ -62,7 +64,6 @@ public class StageController : MonoBehaviour
         
         StopAllCoroutines();
         CancelInvoke();
-        ClearAllTriggerListeners();
 
         // UI Timer System
         uiManager.ResetTimer();
@@ -72,7 +73,6 @@ public class StageController : MonoBehaviour
         entityTracker.ResetTracker();
         enemySpawner.ResetSpawner();
         backgroundSpawner.ResetSpawner();
-        playerController.ResetPlayer();
 
         if (backgroundSpawner != null && currentMission.tileSet != null)
         {
@@ -125,7 +125,7 @@ public class StageController : MonoBehaviour
         if(!phase.autoComplete && !string.IsNullOrEmpty(phase.completeTrigger))
         {
             Debug.Log($"Phase {phase.phaseId} waiting for trigger: {phase.completeTrigger}");
-            yield return WaitForGlobalTrigger(phase.completeTrigger);
+            yield return WaitForPlayerTrigger(phase.completeTrigger);
         }
         Debug.Log($"=== PhaseCompleted: {phase.phaseId}");
     }
@@ -208,29 +208,27 @@ public class StageController : MonoBehaviour
     private IEnumerator WaitForPlayerTrigger(string triggerName)
     {
         bool triggered = false;
-        Action<string> handler = (t) =>
+        Action<PlayerTriggerType> handler = (t) =>
         {
-            if (t == triggerName) triggered = true;
+            if (t.ToString() == triggerName) triggered = true;
         };
 
-        triggerHandlers[triggerName] = handler;
-        //playerController?.RegisterTriggerListener(handler);
-
+        playerController?.RegisterTriggerListener(handler);
         while (!triggered) yield return null;
-
-        //playerController?.UnregisterTriggerListener(handler);
-        triggerHandlers.Remove(triggerName);
+        playerController?.UnregisterTriggerListener(handler);
     }
+    /*
     private IEnumerator WaitForGlobalTrigger(string triggerName)
     {
         bool triggered = false;
         Action<string> handler = (t) => { if (t == triggerName) triggered = true; };
         triggerHandlers[triggerName] = handler;
-        //playerController?.RegisterTriggerListener(handler);
+        playerController?.RegisterTriggerListener(handler);
         while (!triggered) yield return null;
-        //playerController?.UnregisterTriggerListener(handler);
+        playerController?.UnregisterTriggerListener(handler);
         triggerHandlers.Remove(triggerName);
     }
+    */
     private IEnumerator ExecuteDialog(StageAction action)
     {
         if (dialogManager == null)
@@ -247,15 +245,6 @@ public class StageController : MonoBehaviour
     {
         if (backgroundSpawner != null) backgroundSpawner?.SetScrolling(enabled);
     }
-    private void ClearAllTriggerListeners()
-    {
-        if (playerController != null)
-        {
-            //foreach (var trigger in triggerHandlers.Values)
-                //playerController.UnregisterTriggerListener(trigger);
-        }
-        triggerHandlers.Clear();
-    }
     private void MissionComplete()
     {
         if (missionComplete || isLoadingNext) return;
@@ -267,7 +256,6 @@ public class StageController : MonoBehaviour
         //Cleanup
         StopAllCoroutines();
         CancelInvoke();
-        ClearAllTriggerListeners();
 
         uiManager.StopTimer();
         uiManager.SetMissionName("");
@@ -299,11 +287,36 @@ public class StageController : MonoBehaviour
         isLoadingNext = false;
         StartMission();
     }
-
-    private void OnDestroy()
+    public void RestartMission()
     {
-        ClearAllTriggerListeners();
-    }
+        StopAllCoroutines();
+        CancelInvoke();
 
-    
+        enemySpawner?.ClearAllEnemies();
+        EntityTracker.Instance?.ResetTracker();
+
+        // Reset background
+        if (backgroundSpawner != null && currentMission.tileSet != null)
+            backgroundSpawner.Initialize(currentMission.tileSet);
+        backgroundSpawner.SetScrolling(true);
+        backgroundSpawner.SetScrollingMultiplier(1f);
+        // Reset background and scrolling
+        var spawner = FindAnyObjectByType<PlayerSpawner>();
+        if (spawner != null)
+            spawner.SpawnPlayer();
+        else
+            Debug.LogError("PlayerSpawner not found in scene.");
+
+        RefreshReferences();
+
+        // Reset UI
+        uiManager.ResetTimer();
+        uiManager.StartTimer();
+
+        missionComplete = false;
+        pendingWaveId = null;
+        isLoadingNext = false;
+
+        StartMission();
+    }
 }

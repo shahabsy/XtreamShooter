@@ -30,7 +30,8 @@ MonoBehaviour:
   collisionDamage: 40
   collisionDamageCooldown: 0.5
   invincibilityDuration: 1.5
-  startingWeapons: []
+  startingWeapons:
+  - {fileID: 11400000, guid: 9c52e421ee8e72f46b95fc66f4fb415b, type: 2}
   sprite: {fileID: 0}
   spriteScale: {x: 1, y: 1}
   sortingLayerName: Default

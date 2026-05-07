@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PlayerShootBehavior", menuName = "Game/Player/ShootBehavior/PlayerShootBehavior")]
+//[CreateAssetMenu(fileName = "PlayerShootBehavior", menuName = "Game/Player/ShootBehavior/PlayerShootBehavior")]
 public abstract class PlayerShootBehavior : ScriptableObject
 {
     [Header("Weapon")]
@@ -26,6 +26,10 @@ public abstract class PlayerShootBehavior : ScriptableObject
 
     public abstract void TryShoot(float deltaTime);
     public virtual void ForceFire() { }
+    public virtual void ResetTimer()
+    {
+        elapsedTime = 0f;
+    }
 
     protected virtual bool CanShoot()
     {

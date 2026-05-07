@@ -6,11 +6,12 @@ public class EnemyProjectile : MonoBehaviour
     [Header("Advanced")]
     public float acceleration = 0f;
     public bool rotateToVelocity = true;
+    public float damage;
 
     private Rigidbody2D rb;
     private float lifeTime;
     private float lifeTimer;
-    private float damage;
+    
     private bool isHoming = false;
     private Transform homingTarget;
     private float homingDelay;

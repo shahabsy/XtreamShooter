@@ -4,14 +4,18 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour, IDamageable
 {
-    public static PlayerController Instance { get; private set; }
+    //public static PlayerController Instance { get; private set; }
 
     [Header("Data")]
     [SerializeField] private PlayerData data;
+
+    [Header("Fallback Weapon (if none assigned")]
+    [SerializeField] private PlayerShootBehavior defaultWeapon;
 
     private float currentHealth;
     private float currentShield;
@@ -19,6 +23,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private bool isInvincible = false;
     private bool isDead = false;
     private float lastDamageTime = -999f;
+    private bool collisionLocked = false;
 
     private float shieldRegenTimer;
     private float energyRegenTimer;
@@ -27,31 +32,38 @@ public class PlayerController : MonoBehaviour, IDamageable
     private Vector2 moveInput;
 
     private List<PlayerShootBehavior> runtimeWeapons = new List<PlayerShootBehavior>();
-
+    private int currentWeaponIndex = 0;
     private Transform firePoint;
+
+    private InputSystem_Actions inputActions;
+    private bool isFiring = false;
 
     public event Action<float, float> OnHealthChanged;
     public event Action<float, float> OnShieldChanged;
     public event Action<float, float> OnEnergyChanged;
     public event Action OnPlayerDeath;
+    public event Action<int, PlayerShootBehavior> OnWeaponChanged;
 
-    //private event Action<string> onTriggerEvent;
+    private event Action<PlayerTriggerType> onTriggerEvent;
 
-    //public void RegisterTriggerListener(Action<string> listener) => onTriggerEvent += listener;
-    //public void UnregisterTriggerListener(Action<string> listener) => onTriggerEvent -= listener;
+    public void RegisterTriggerListener(Action<PlayerTriggerType> listener) => onTriggerEvent += listener;
+    public void UnregisterTriggerListener(Action<PlayerTriggerType> listener) => onTriggerEvent -= listener;
 
     private void Awake()
     {
+        //if (Instance != null && Instance != this) Destroy(gameObject);
+        //else Instance = this;
+
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
         rb.bodyType = RigidbodyType2D.Dynamic;
+
+        inputActions = new InputSystem_Actions();
     }
 
     private void Start()
     {
-        if (Instance != null && Instance != this) Destroy(gameObject);
-        else Instance = this;
-
+        GameManager.Instance?.RegisterPlayer(this);
         ApplyVisuals();
         SetupFirePoint();
         SetupWeapons();
@@ -61,21 +73,107 @@ public class PlayerController : MonoBehaviour, IDamageable
         UIManager.Instance?.UpdatePlayerShield(currentShield, data.maxShield);
         UIManager.Instance?.UpdatePlayerEnergy(currentEnergy, data.maxEnergy);
     }
+    private void OnEnable()
+    {
+        inputActions.Enable();
+        inputActions.Player.Move.performed += OnMove;
+        inputActions.Player.Move.canceled += OnMoveCanceled;
+        inputActions.Player.Attack.performed += OnAttackPerformed;
+        inputActions.Player.Attack.canceled += OnAttackCanceled;
+        inputActions.Player.Next.performed += OnNext;
+        inputActions.Player.Previous.performed += OnPrevious;
+    }
+
+    private void OnDisable()
+    {
+        inputActions.Player.Move.performed -= OnMove;
+        inputActions.Player.Move.canceled -= OnMoveCanceled;
+        inputActions.Player.Attack.performed -= OnAttackPerformed;
+        inputActions.Player.Attack.canceled -= OnAttackCanceled;
+        inputActions.Player.Next.performed -= OnNext;
+        inputActions.Player.Previous.performed -= OnPrevious;
+        inputActions.Disable();
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var w in runtimeWeapons)
+            if (w != null) Destroy(w);
+        runtimeWeapons.Clear();
+    }
+
+    private void OnMove(InputAction.CallbackContext context)
+    {
+        moveInput = context.ReadValue<Vector2>();
+    }
+    private void OnMoveCanceled(InputAction.CallbackContext context)
+    {
+        moveInput = Vector2.zero;
+    }
+    private void OnAttackPerformed(InputAction.CallbackContext context)
+    {
+        isFiring = true;
+        FireTrigger(PlayerTriggerType.Attack);
+    }
+    private void OnAttackCanceled(InputAction.CallbackContext context)
+    {
+        isFiring = false;
+    }
+    private void OnNext(InputAction.CallbackContext context)
+    {
+        if(context.performed && runtimeWeapons.Count > 0)
+        {
+            runtimeWeapons[currentWeaponIndex].ResetTimer();
+
+            currentWeaponIndex = (currentWeaponIndex + 1) % runtimeWeapons.Count;
+            runtimeWeapons[currentWeaponIndex].ResetTimer();
+            OnWeaponChanged?.Invoke(currentWeaponIndex, runtimeWeapons[currentWeaponIndex]);
+            Debug.Log($"Switch to weapon: {runtimeWeapons[currentWeaponIndex].weaponName}");
+        }
+    }
+    private void OnPrevious(InputAction.CallbackContext context)
+    {
+        if(context.performed && runtimeWeapons.Count > 0)
+        {
+            runtimeWeapons[currentWeaponIndex].ResetTimer();
+            currentWeaponIndex = (currentWeaponIndex - 1 + runtimeWeapons.Count) % runtimeWeapons.Count;
+            runtimeWeapons[currentWeaponIndex].ResetTimer();
+            OnWeaponChanged?.Invoke(currentWeaponIndex, runtimeWeapons[currentWeaponIndex]);
+            Debug.Log($"Switch to weapon: {runtimeWeapons[currentWeaponIndex].weaponName}");
+        }
+    }
+    
     private void SetupFirePoint()
     {
-        firePoint = new GameObject("FirePoint").transform;
-        firePoint.SetParent(transform);
+        if(firePoint == null)
+        {
+            firePoint = new GameObject("FirePoint").transform;
+            firePoint.SetParent(transform);
+        }
         firePoint.localPosition = data.shotSpawnOffset;
     }
     private void SetupWeapons()
     {
-        if (data.startingWeapons == null) return;
-        foreach(var weapon in data.startingWeapons)
+        if(data.startingWeapons != null)
         {
-            if(weapon == null) continue;
-            var clone = Instantiate(weapon);
+            foreach(var weapon in data.startingWeapons)
+            {
+                if (weapon == null) continue;
+                var clone = Instantiate(weapon);
+                clone.Initialize(this, firePoint);
+                runtimeWeapons.Add(clone);
+            }
+        }
+        if(runtimeWeapons.Count == 0 && defaultWeapon != null)
+        {
+            var clone = Instantiate(defaultWeapon);
             clone.Initialize(this, firePoint);
             runtimeWeapons.Add(clone);
+            Debug.Log("Using default fallback weapon");
+        }
+        else if(runtimeWeapons.Count == 0)
+        {
+            Debug.LogError("No weapons availble and no fallback assigned.");
         }
     }
     private void ApplyVisuals()
@@ -89,48 +187,39 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
         transform.localScale = new Vector3(data.spriteScale.x, data.spriteScale.y, 1f);
     }
-    public void ResetPlayer()
+    private void FireTrigger(PlayerTriggerType triggerName)
     {
-        ResetStats();
-        transform.position = Vector3.zero;
-        //Reset weapons if needed
-        StopAllCoroutines();
+        onTriggerEvent?.Invoke(triggerName);
     }
-    private void ResetStats()
-    {
-        currentHealth = data.maxHealth;
-        currentShield = data.maxShield;
-        currentEnergy = data.maxEnergy;
-        isDead = false;
-        isInvincible = false;
-        lastDamageTime = -999f;
-        shieldRegenTimer = 0f;
-        energyRegenTimer = 0f;
-    }
-
     private void Update()
     {
-        if(isDead) return;
+        if (isDead) return;
 
-        //moveInput = new Vector2()
+        if (moveInput.sqrMagnitude > 0.01)
+        {
+            FireTrigger(PlayerTriggerType.Movement);
+        }
+
+        if (isFiring && runtimeWeapons.Count > 0)
+        {
+            runtimeWeapons[currentWeaponIndex].TryShoot(Time.deltaTime);
+        }
 
         UpdateRegeneration();
     }
-
     private void FixedUpdate()
     {
-        if(isDead) return;
+        if (isDead) return;
         Vector2 targetVelocity = moveInput * data.speed;
         rb.linearVelocity = Vector2.MoveTowards(rb.linearVelocity, targetVelocity, data.acceleration * Time.fixedDeltaTime);
     }
-
     private void UpdateRegeneration()
     {
         shieldRegenTimer += Time.deltaTime;
-        if(shieldRegenTimer >= data.shieldRegenInterval)
+        if (shieldRegenTimer >= data.shieldRegenInterval)
         {
             shieldRegenTimer -= data.shieldRegenInterval;
-            if(currentShield < data.maxShield && Time.time > lastDamageTime + data.shieldRegenStartTime)
+            if (currentShield < data.maxShield && Time.time > lastDamageTime + data.shieldRegenStartTime)
             {
                 currentShield += data.shieldRegen;
                 currentShield = Mathf.Min(currentShield, data.maxShield);
@@ -140,10 +229,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         energyRegenTimer += Time.deltaTime;
-        if(energyRegenTimer >= data.energyRegenInterval)
+        if (energyRegenTimer >= data.energyRegenInterval)
         {
             energyRegenTimer -= data.energyRegenInterval;
-            if(currentEnergy < data.maxEnergy)
+            if (currentEnergy < data.maxEnergy)
             {
                 currentEnergy += data.energyRegen;
                 currentEnergy = Mathf.Min(currentEnergy, data.maxEnergy);
@@ -153,10 +242,9 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
         }
     }
-
     public bool TryConsumeEnergy(float amount)
     {
-        if(currentEnergy < amount) return false;
+        if (currentEnergy < amount) return false;
         currentEnergy -= amount;
         OnEnergyChanged?.Invoke(currentEnergy, data.maxEnergy);
         UIManager.Instance?.UpdatePlayerEnergy(currentEnergy, data.maxEnergy);
@@ -168,7 +256,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         lastDamageTime = Time.time;
         float remainingDamage = damage;
 
-        if(currentShield > 0)
+        if (currentShield > 0)
         {
             float shieldAbsord = Mathf.Min(currentShield, remainingDamage);
             currentShield -= shieldAbsord;
@@ -178,7 +266,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             PlayShieldHitEffect();
             if (currentShield <= 0) PlayShieldBreakEffect();
         }
-        if(remainingDamage > 0)
+        if (remainingDamage > 0)
         {
             currentHealth -= remainingDamage;
             OnHealthChanged?.Invoke(currentHealth, data.maxHealth);
@@ -188,7 +276,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             else StartCoroutine(InvincibilityRoutine());
         }
     }
-
     private IEnumerator InvincibilityRoutine()
     {
         isInvincible = true;
@@ -201,7 +288,30 @@ public class PlayerController : MonoBehaviour, IDamageable
         isDead = true;
         OnPlayerDeath?.Invoke();
         PlayDeathEffect();
-        Destroy(gameObject, 1f);
+        UIManager.Instance?.ShowGameOverDialog("Game Over", RestartMission, QuitGame);
+        Destroy(gameObject, 0.1f);
+
+    }
+
+    private void RestartMission()
+    {
+        var stage = StageController.Instance;
+        if(stage != null)
+        {
+            stage.RestartMission();
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
+    private void QuitGame()
+    {
+        Application.Quit();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+
     }
 
     private void PlayHitEffect()
@@ -232,13 +342,13 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if(other.CompareTag("EnemyBullet"))
         {
-            var projectile = other.GetComponent<PlayerProjectile>();
+            var projectile = other.GetComponent<EnemyProjectile>();
             if (projectile != null)
             {
                 TakeDamage(projectile.damage);
             }
         }
-        else if(other.CompareTag("Enemy"))
+        else if(other.CompareTag("Enemy") && !collisionLocked)
         {
             TakeDamage(data.collisionDamage);
             StartCoroutine(CollisionCooldown());
@@ -246,7 +356,20 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
     private IEnumerator CollisionCooldown()
     {
+        collisionLocked = true;
         yield return new WaitForSeconds(data.collisionDamageCooldown);
+        collisionLocked = false;
+    }
+    private void ResetStats()
+    {
+        currentHealth = data.maxHealth;
+        currentShield = data.maxShield;
+        currentEnergy = data.maxEnergy;
+        isDead = false;
+        isInvincible = false;
+        lastDamageTime = -999f;
+        shieldRegenTimer = 0f;
+        energyRegenTimer = 0f;
     }
     public void Respawn()
     {

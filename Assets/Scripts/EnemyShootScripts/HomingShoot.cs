@@ -19,10 +19,10 @@ public class HomingShoot : EnemyShootBehavior
     {
         Fire();
     }
-
+    public Transform CurrentTarget => GameManager.Instance?.CurrentPlayer?.transform;
     private void Fire()
     {
-        Transform target = enemy.CurrentTarget;
+        Transform target = CurrentTarget;
         if (target == null) return;
 
         Vector2 dir = GetForwardDirection();
@@ -34,7 +34,7 @@ public class HomingShoot : EnemyShootBehavior
         {
             Vector2 velocity = dir * bullet.speed;
             projectile.Initialize(velocity, bullet.lifeTime, bullet.damage, bullet.poolTag, enemy);
-            projectile.EnableHoming(PlayerController.Instance.transform, homingDelay, homingTurnSpeed);
+            projectile.EnableHoming(target, homingDelay, homingTurnSpeed);
         }
     }
 }

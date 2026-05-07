@@ -7,11 +7,12 @@ public class PlayerProjectile : MonoBehaviour
 {
     public float acceleration = 0f;
     public bool rotateToVelocity = true;
+    public float damage { get; private set; }
 
     private Rigidbody2D rb;
     private float lifeTime;
     private float lifeTimer;
-    public float damage;
+    
     private bool isHoming = false;
     private Transform homingTarget;
     private float homingDelay;
