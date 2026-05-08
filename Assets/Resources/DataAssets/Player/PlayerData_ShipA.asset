@@ -26,7 +26,7 @@ MonoBehaviour:
   energyRegen: 10
   energyRegenInterval: 0.05
   speed: 10
-  acceleration: 10
+  acceleration: 100
   collisionDamage: 40
   collisionDamageCooldown: 0.5
   invincibilityDuration: 1.5

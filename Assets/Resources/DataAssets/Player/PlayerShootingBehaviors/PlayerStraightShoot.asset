@@ -16,7 +16,7 @@ MonoBehaviour:
   fireRate: 5
   bullet:
     poolTag: PlayerBullet
-    speed: 5
+    speed: 10
     damage: 10
     lifeTime: 10
   energyCost: 1
