@@ -217,6 +217,9 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         if (isDead) return;
 
+        if (data.hitSFX != null)
+            AudioManager.Instance?.PlaySFX(data.hitSFX, transform.position);
+
         currentHealth -= damage;
         
         if (currentHealth <= 0)
@@ -231,6 +234,10 @@ public class Enemy : MonoBehaviour, IDamageable
         isDead = true;
         runtimeAIBehavior?.OnDeath();
         OnDeath?.Invoke(this);
+
+        if (data.deathSFX != null)
+            AudioManager.Instance?.PlaySFX(data.deathSFX, transform.position);
+
         Destroy(gameObject);
     }
 

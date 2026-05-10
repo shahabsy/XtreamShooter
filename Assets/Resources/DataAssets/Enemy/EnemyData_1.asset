@@ -24,4 +24,6 @@ MonoBehaviour:
   spriteScale: {x: 1, y: 1}
   sortingLayerName: Character
   orderInLayer: 11
+  hitSFX: {fileID: 8300000, guid: 206d2f4a1a2fb014bbf4d45cc436b45d, type: 3}
+  deathSFX: {fileID: 8300000, guid: dff8b0e740fae4240a76b41cd26143e4, type: 3}
   prefab: {fileID: 6468513381374726774, guid: 6c44e472d96322a4f870a7c856b206ea, type: 3}

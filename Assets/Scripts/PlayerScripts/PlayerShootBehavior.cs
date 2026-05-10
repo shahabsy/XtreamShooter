@@ -8,6 +8,9 @@ public abstract class PlayerShootBehavior : ScriptableObject
     public float fireRate = 5f;
     public BulletConfig bullet;
 
+    [Header("Audio")]
+    public AudioClip shootSFX;
+
     [Header("Energy Cost")]
     public float energyCost = 0f;
 
@@ -42,6 +45,9 @@ public abstract class PlayerShootBehavior : ScriptableObject
         if (string.IsNullOrEmpty(bullet.poolTag)) return;
         GameObject obj = ObjectPooler.Instance.SpawnFromPool(bullet.poolTag, firePoint.position, Quaternion.identity);
         if (obj == null) return;
+
+        if (shootSFX != null)
+            AudioManager.Instance?.PlaySFX(shootSFX, firePoint.position, 1f);
 
         PlayerProjectile projectile = obj.GetComponent<PlayerProjectile>();
         if(projectile != null)

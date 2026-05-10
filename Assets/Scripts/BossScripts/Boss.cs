@@ -181,11 +181,11 @@ public class Boss : MonoBehaviour, IDamageable
         //Debug.Log($"Boss collided with {other.gameObject.name}");
         if (other.CompareTag("PlayerBullet"))
         {
-            Projectile proj = other.GetComponent<Projectile>();
+            PlayerProjectile proj = other.GetComponent<PlayerProjectile>();
             if (proj != null)
             {
                 TakeDamage(proj.damage);
-                proj.OnHit();
+                //proj.();
                 //Debug.Log($"Boss hit by projectile dealing {proj.damage} damage");
             }
         }

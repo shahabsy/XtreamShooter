@@ -93,7 +93,7 @@ public class EnemyProjectile : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.GetComponent<Enemy>() == owner) return;
-        Debug.Log($"{other.name}");
+        //Debug.Log($"{other.name}");
         IDamageable damageable = other.GetComponent<IDamageable>();
         if(damageable != null)
         {

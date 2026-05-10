@@ -93,7 +93,7 @@ public class PlayerProjectile : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.gameObject.layer == LayerMask.NameToLayer("Enemies"))
+        if(other.CompareTag("Enemy"))
         {
             if(other.TryGetComponent<IDamageable>(out var damageable))
             {

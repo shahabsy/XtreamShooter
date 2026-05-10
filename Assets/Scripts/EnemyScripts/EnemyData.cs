@@ -6,6 +6,7 @@ public class EnemyData : ScriptableObject
 {
     [Header("Identity")]
     public string enemyName;
+
     [Header("Stats")]
     public float health = 30f;
     public float moveSpeed = 2f;
@@ -23,6 +24,10 @@ public class EnemyData : ScriptableObject
     public Vector2 spriteScale = Vector2.one;
     public string sortingLayerName = "Default";
     public int orderInLayer = 0;
+
+    [Header("Audio")]
+    public AudioClip hitSFX;
+    public AudioClip deathSFX;
 
     [Header("Prefab (required for spawning")]
     public GameObject prefab;
