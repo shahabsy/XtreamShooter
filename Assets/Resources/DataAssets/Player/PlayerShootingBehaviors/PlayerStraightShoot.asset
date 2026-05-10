@@ -18,5 +18,5 @@ MonoBehaviour:
     poolTag: PlayerBullet
     speed: 10
     damage: 10
-    lifeTime: 10
+    lifeTime: 3
   energyCost: 1

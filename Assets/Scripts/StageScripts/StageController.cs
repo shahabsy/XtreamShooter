@@ -28,7 +28,7 @@ public class StageController : MonoBehaviour
     private string pendingWaveId = null;
     private bool isLoadingNext = false;
 
-    private Dictionary<string, Action<string>> triggerHandlers = new Dictionary<string, Action<string>>();
+    //private Dictionary<string, Action<string>> triggerHandlers = new Dictionary<string, Action<string>>();
 
     private void Awake()
     {
@@ -87,7 +87,24 @@ public class StageController : MonoBehaviour
         isLoadingNext = false;
 
         missionRoutine = StartCoroutine(RunMission());
+        // Play ambient music from tile set
+        StartCoroutine(PlayMissionMusicWithDelay(0.2f));
     }
+
+    private IEnumerator PlayMissionMusicWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (currentMission.tileSet != null && currentMission.tileSet.ambientMusic != null)
+        {
+            Debug.Log($"Mission {currentMission.missionName} music is started playing.");
+            MusicManager.Instance?.PlayMusic(currentMission.tileSet.ambientMusic);
+        }
+        else
+        {
+            Debug.LogWarning($"No ambient music for mission {currentMission.missionName}");
+        }
+    }
+
     private IEnumerator RunMission()
     {
         // Wait one frame to ensure all obects are setled
@@ -253,6 +270,10 @@ public class StageController : MonoBehaviour
         
         Debug.Log($"Mission: {currentMission.missionName} completed.");
 
+        //Stop Music
+        Debug.Log($"Mission {currentMission.nextMissionId} Music is stopped.");
+        MusicManager.Instance?.StopMusic();
+
         //Cleanup
         StopAllCoroutines();
         CancelInvoke();
@@ -292,6 +313,9 @@ public class StageController : MonoBehaviour
         StopAllCoroutines();
         CancelInvoke();
 
+        //Immediately stop any playing music
+        MusicManager.Instance?.StopMusic(0f);
+
         enemySpawner?.ClearAllEnemies();
         EntityTracker.Instance?.ResetTracker();
 
@@ -308,6 +332,9 @@ public class StageController : MonoBehaviour
             Debug.LogError("PlayerSpawner not found in scene.");
 
         RefreshReferences();
+
+        if (bossEncounter != null)
+            bossEncounter.ResetEncounter();
 
         // Reset UI
         uiManager.ResetTimer();

@@ -287,6 +287,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if(isDead) return;
         isDead = true;
         OnPlayerDeath?.Invoke();
+        MusicManager.Instance?.StopMusic();
         PlayDeathEffect();
         UIManager.Instance?.ShowGameOverDialog("Game Over", RestartMission, QuitGame);
         Destroy(gameObject, 0.1f);

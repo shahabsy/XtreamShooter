@@ -37,7 +37,7 @@ MonoBehaviour:
   sortingLayerName: Default
   orderInLayer: 0
   hitVFX: {fileID: 0}
-  hitSFX: {fileID: 0}
+  hitSFX: {fileID: 8300000, guid: 35368db4f5edbb847a64de5af658b494, type: 3}
   deathVFX: {fileID: 0}
   deathSFX: {fileID: 0}
   shieldHitVFX: {fileID: 0}

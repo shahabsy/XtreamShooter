@@ -20,6 +20,7 @@ public class BossEncounterController : MonoBehaviour
     public System.Action<int> OnPhaseChanged;
 
     private bool isRunning = false;
+    private AudioClip ambientMusicBackup;
 
     public IEnumerator StartEncounter(string bossId)
     {
@@ -31,7 +32,17 @@ public class BossEncounterController : MonoBehaviour
 
         if (freezeScrolling) BackgroundSpawner.Instance?.SetScrolling(false);
 
-        //if (freezePlayer) PlayerController.Instance?.FreezeMovement(0.5f);
+        var tileSet = StageController.Instance?.currentMission.tileSet;
+        if(tileSet != null)
+        {
+            ambientMusicBackup = tileSet.ambientMusic;
+            if(tileSet.bossMusic != null)
+            {
+                MusicManager.Instance?.StopMusic(0.5f);
+                yield return new WaitForSeconds(0.5f);
+                MusicManager.Instance?.PlayMusic(tileSet.bossMusic);
+            }
+        }
 
         if (showBossUI)
         {
@@ -48,6 +59,11 @@ public class BossEncounterController : MonoBehaviour
         
         yield return new WaitForSeconds(outroDelay);
 
+        //if(ambientMusicBackup != null)
+        //{
+            //MusicManager.Instance?.PlayMusic(ambientMusicBackup);
+        //}
+
         if (showBossUI) UIManager.Instance?.HideBossUIAfterDelay();
 
         if (freezeScrolling) BackgroundSpawner.Instance?.SetScrolling(true);
@@ -61,6 +77,9 @@ public class BossEncounterController : MonoBehaviour
         if (spawner == null) yield break;
 
         yield return spawner.SpawnBossRoutine(bossId);
+        
+        var boss = FindAnyObjectByType<Boss>();
+        if(boss != null) BindBossHealthEvent(boss);
 
         while (EntityTracker.Instance != null && EntityTracker.Instance.HasBoss)
             yield return null;
@@ -83,4 +102,10 @@ public class BossEncounterController : MonoBehaviour
     }
 
     public bool IsRunning => isRunning;
+
+    public void ResetEncounter()
+    {
+        isRunning = false;
+        StopAllCoroutines();
+    }
 }

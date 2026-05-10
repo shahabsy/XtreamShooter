@@ -23,6 +23,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b9c9ac56ffd312b4b9c4b88a91c381d0, type: 2}
   - {fileID: 11400000, guid: 5c6958cbf2d2f3c49a662110eebc4657, type: 2}
   baseScrollSpeed: 5
-  ambientMusic: {fileID: 8300000, guid: 8b91caa62a0d8c7499615770dc899e08, type: 3}
-  bossMusic: {fileID: 8300000, guid: 830bd216f0961ec49990a558ae09f6c6, type: 3}
+  ambientMusic: {fileID: 8300000, guid: 6cff4aaa919fb6e478f30852050f52dc, type: 3}
+  bossMusic: {fileID: 8300000, guid: 8b91caa62a0d8c7499615770dc899e08, type: 3}
   ambientLight: {r: 1, g: 1, b: 1, a: 1}
