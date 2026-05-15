@@ -39,11 +39,11 @@ MonoBehaviour:
   hitVFX: {fileID: 0}
   hitSFX: {fileID: 8300000, guid: 35368db4f5edbb847a64de5af658b494, type: 3}
   deathVFX: {fileID: 0}
-  deathSFX: {fileID: 0}
+  deathSFX: {fileID: 8300000, guid: 4673104483205bd43a98bac64a6ee5e5, type: 3}
   shieldHitVFX: {fileID: 0}
-  shieldHitSFX: {fileID: 0}
+  shieldHitSFX: {fileID: 8300000, guid: 35368db4f5edbb847a64de5af658b494, type: 3}
   shieldBreakVFX: {fileID: 0}
-  shieldBreakSFX: {fileID: 0}
+  shieldBreakSFX: {fileID: 8300000, guid: 4673104483205bd43a98bac64a6ee5e5, type: 3}
   shotSpawnOffset: {x: 0, y: 0}
   thrusterSpawns: []
   equipmentSlots: []

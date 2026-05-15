@@ -11,7 +11,10 @@ public class MissionTileSet : ScriptableObject
 
     [Header("Audio")]
     public AudioClip ambientMusic;
+    public float ambientMusicVolume = 1f;
     public AudioClip bossMusic;
+    public float bossMusicVolume = 1f;
+
 
     [Header("Visual Overrides")]
     public Color ambientLight = Color.white;

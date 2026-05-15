@@ -40,7 +40,7 @@ public class BossEncounterController : MonoBehaviour
             {
                 MusicManager.Instance?.StopMusic(0.5f);
                 yield return new WaitForSeconds(0.5f);
-                MusicManager.Instance?.PlayMusic(tileSet.bossMusic);
+                MusicManager.Instance?.PlayMusic(tileSet.bossMusic, tileSet.bossMusicVolume);
             }
         }
 
@@ -61,7 +61,7 @@ public class BossEncounterController : MonoBehaviour
 
         //if(ambientMusicBackup != null)
         //{
-            //MusicManager.Instance?.PlayMusic(ambientMusicBackup);
+            //MusicManager.Instance?.PlayMusic(ambientMusicBackup, tileSet.bossMusicVolume);
         //}
 
         if (showBossUI) UIManager.Instance?.HideBossUIAfterDelay();

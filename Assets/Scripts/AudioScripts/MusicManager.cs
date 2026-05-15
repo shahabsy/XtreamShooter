@@ -27,17 +27,19 @@ public class MusicManager : MonoBehaviour
         }
     }
 
-    public void PlayMusic(AudioClip clip, float fadeDuration = 0.5f)
+    public void PlayMusic(AudioClip clip, float volume, float fadeDuration = 0.5f)
     {
         if (clip == null) return;
         if (currentClip == clip && musicSource.isPlaying) return;
         if (currentFade != null)
             StopCoroutine(currentFade);
 
+        musicSource.volume = Mathf.Clamp01(volume);
+
         if (musicSource.isPlaying)
-            currentFade = StartCoroutine(FadeOutAndPlayNew(clip, fadeDuration));
+            currentFade = StartCoroutine(FadeOutAndPlayNew(clip, fadeDuration, volume));
         else
-            currentFade = StartCoroutine(FadeInNew(clip, fadeDuration));
+            currentFade = StartCoroutine(FadeInNew(clip, fadeDuration, volume));
     }
     public void StopMusic(float fadeDuration = 0.5f)
     {
@@ -47,22 +49,23 @@ public class MusicManager : MonoBehaviour
         }
         currentFade = StartCoroutine(FadeOutAndStop(fadeDuration));
     }
-    private IEnumerator FadeOutAndPlayNew(AudioClip newClip, float duration)
+    private IEnumerator FadeOutAndPlayNew(AudioClip newClip, float duration, float volume)
     {
         yield return FadeOut(duration);
         musicSource.Stop();
         musicSource.clip = newClip;
+        musicSource.volume = volume;
         musicSource.Play();
-        yield return FadeIn(duration);
+        yield return FadeIn(duration, volume);
         currentClip = newClip;
         currentFade = null;
     }
-    private IEnumerator FadeInNew(AudioClip newClip, float duration)
+    private IEnumerator FadeInNew(AudioClip newClip, float duration, float volume)
     {
         musicSource.clip = newClip;
         musicSource.volume = 0f;
         musicSource.Play();
-        yield return FadeIn(duration);
+        yield return FadeIn(duration, volume);
         currentClip = newClip;
         currentFade = null;
     }
@@ -90,16 +93,15 @@ public class MusicManager : MonoBehaviour
         }
         musicSource.volume = 0f;
     }
-    private IEnumerator FadeIn(float duration)
+    private IEnumerator FadeIn(float duration, float volume)
     {
-        float targetVolume = 1f;
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            musicSource.volume = Mathf.Lerp(0f, targetVolume, elapsed / duration);
+            musicSource.volume = Mathf.Lerp(0f, volume, elapsed / duration);
             yield return null;
         }
-        musicSource.volume = targetVolume;
+        musicSource.volume = volume;
     }
 }

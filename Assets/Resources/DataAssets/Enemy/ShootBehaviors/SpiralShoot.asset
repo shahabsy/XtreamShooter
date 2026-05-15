@@ -18,6 +18,7 @@ MonoBehaviour:
     speed: 5
     damage: 10
     lifeTime: 3
+  shootSFX: {fileID: 8300000, guid: b36caa9c7731a6e4a970521ef50d58bc, type: 3}
   shootImmediately: 1
   bulletsPerShot: 2
   angleStep: 15

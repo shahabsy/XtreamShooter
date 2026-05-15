@@ -97,7 +97,8 @@ public class StageController : MonoBehaviour
         if (currentMission.tileSet != null && currentMission.tileSet.ambientMusic != null)
         {
             Debug.Log($"Mission {currentMission.missionName} music is started playing.");
-            MusicManager.Instance?.PlayMusic(currentMission.tileSet.ambientMusic);
+            float volume = currentMission.tileSet.ambientMusicVolume;
+            MusicManager.Instance?.PlayMusic(currentMission.tileSet.ambientMusic, volume);
         }
         else
         {

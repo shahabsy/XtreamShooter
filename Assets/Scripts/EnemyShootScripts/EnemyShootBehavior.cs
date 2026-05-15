@@ -3,8 +3,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EnemyShootBehavior", menuName = "Game/Enemy/EnemyShootBehavior")]
 public abstract class EnemyShootBehavior : ScriptableObject
 {
+    [Header("General")]
     public float fireRate = 1f;
     public BulletConfig bullet;
+
+    [Header("Audio")]
+    public AudioClip shootSFX;
 
     public bool shootImmediately = true;
     
@@ -30,6 +34,11 @@ public abstract class EnemyShootBehavior : ScriptableObject
         if (string.IsNullOrEmpty(bullet.poolTag)) return;
         GameObject obj = ObjectPooler.Instance.SpawnFromPool(bullet.poolTag, firePoint.position, Quaternion.identity);
         if(obj == null) return;
+
+        if(shootSFX != null)
+        {
+            AudioManager.Instance?.PlaySFX(shootSFX, firePoint.position);
+        }
 
         EnemyProjectile projectile = obj.GetComponent<EnemyProjectile>();
         if(projectile != null)
