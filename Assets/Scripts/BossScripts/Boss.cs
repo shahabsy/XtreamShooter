@@ -2,6 +2,8 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Collections;
+using System.Collections.Generic;
+
 
 public class Boss : MonoBehaviour, IDamageable
 {
@@ -17,12 +19,16 @@ public class Boss : MonoBehaviour, IDamageable
     private bool isDefeated = false;
     private bool initialized = false;
 
-    private float nextFireTime;
-    public Transform firePoint; // set this in inspector
+    private List<BossShootBehavior> runtimeShoots = new List<BossShootBehavior>();
+    private List<BossSummonBehavior> runtimeSummons = new List<BossSummonBehavior>();
+
+    public Transform[] firePoints; // set this in inspector
+    public Transform[] summonSpawnPoints;
 
     private SpriteRenderer spriteRenderer;
 
     public float HealthNormalized => currentHealth / data.maxHealth;
+
 
     private void OnEnable()
     {
@@ -54,6 +60,8 @@ public class Boss : MonoBehaviour, IDamageable
         currentHealth = data.maxHealth;
 
         SetupVisuals();
+        SetupShoot();
+        SetupSummon();
         SortPhasesDescending();
 
         initialized = true;
@@ -69,9 +77,36 @@ public class Boss : MonoBehaviour, IDamageable
 
         transform.localScale = data.spriteScale;
     }
+    private void SetupShoot()
+    {
+        if (data.shootBehaviors == null) return;
+        foreach(var behavior in data.shootBehaviors)
+        {
+            if (behavior == null) continue;
+            var clone = Instantiate(behavior);
+
+            int index = clone.firePointIndex;
+            Transform point = index >= 0 && index < firePoints.Length ? firePoints[index] : firePoints[0];
+            clone.Initialize(this, point);
+            runtimeShoots.Add(clone);
+        }
+    }
+    private void SetupSummon()
+    {
+        if (data.summonBehaviors == null) return;
+        foreach(var behavior in data.summonBehaviors)
+        {
+            if (behavior == null) continue;
+            var clone = Instantiate(behavior);
+            int index = clone.spawnPointIndex;
+            Transform point = (index >= 0 && index < summonSpawnPoints.Length) ? summonSpawnPoints[index] : transform;
+            clone.Initialize(this, point);
+            runtimeSummons.Add(clone);
+        }
+    }
     private void SortPhasesDescending()
     {
-        if (data.phases == null && data.phases.Length <= 1) return;
+        if (data.phases == null || data.phases.Length <= 1) return;
         
         data.phases = data.phases
             .OrderByDescending(p => p.healthThreshold)
@@ -84,33 +119,17 @@ public class Boss : MonoBehaviour, IDamageable
 
         transform.Translate(Vector2.left * data.moveSpeed * Time.deltaTime);
 
-        if (Time.time >= nextFireTime)
-        {
-            nextFireTime = Time.time + (1f / data.fireRate);
-            Shoot();
-        }
+        
+        foreach (var shoot in runtimeShoots)
+            shoot.TryShoot(Time.deltaTime);
+
+        foreach (var summon in runtimeSummons)
+            summon.TrySummon(Time.deltaTime);
+
 
         if (transform.position.x < data.leftBoundary)
         {
             Defeat();
-        }
-    }
-    void Shoot()
-    {
-        if (ObjectPooler.Instance != null && !string.IsNullOrEmpty(data.bulletPoolTag))
-        {
-            GameObject bullet = ObjectPooler.Instance.SpawnFromPool(
-                                                    data.bulletPoolTag,
-                                                    firePoint.position,
-                                                    Quaternion.identity);
-            if (bullet != null)
-            {
-                Projectile proj = bullet.GetComponent<Projectile>();
-                if (proj != null)
-                {
-                    proj.SetSpeed(-data.bulletSpeed);
-                }
-            }
         }
     }
 
@@ -172,7 +191,10 @@ public class Boss : MonoBehaviour, IDamageable
     }
     private IEnumerator DeathSequence()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.3f);
+        EnemySpawner.Instance?.ClearAllEnemies();
+        ClearAllEnemyBullets();
+        yield return new WaitForSeconds(0.2f);
         Destroy(gameObject);
     }
 
@@ -195,6 +217,17 @@ public class Boss : MonoBehaviour, IDamageable
     private void OnDestroy()
     {
         EntityTracker.Instance?.UnregisterBoss(this);
-        Destroy(gameObject);
+        foreach (var s in runtimeShoots)
+            if (s != null) Destroy(s);
+        runtimeShoots.Clear();
+    }
+
+    private void ClearAllEnemyBullets()
+    {
+        EnemyProjectile[] bullets = FindObjectsByType<EnemyProjectile>(FindObjectsSortMode.None);
+        foreach (EnemyProjectile bullet in bullets)
+        {
+            bullet.ReturnToPool();
+        }
     }
 }

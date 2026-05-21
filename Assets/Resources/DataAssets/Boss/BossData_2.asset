@@ -20,9 +20,11 @@ MonoBehaviour:
   spriteScale: {x: 4, y: 4}
   sortingLayerName: Character
   orderInLayer: 11
-  fireRate: 1
-  bulletPoolTag: Enemybullet
-  bulletSpeed: 10
+  shootBehaviors:
+  - {fileID: 11400000, guid: 14ecb50f15e1df741b02017af312d175, type: 2}
+  summonBehaviors:
+  - {fileID: 11400000, guid: 33b1e739c075cc943969a45d00c5f385, type: 2}
+  - {fileID: 11400000, guid: 5840e14543f70d34cbb499191532d37a, type: 2}
   phases:
   - healthThreshold: 0.75
     dialog: take this shot2
@@ -30,4 +32,4 @@ MonoBehaviour:
     dialog: take that shot2
   - healthThreshold: 0.25
     dialog: take both shots now2
-  leftBoundary: -12
+  leftBoundary: -13.449664

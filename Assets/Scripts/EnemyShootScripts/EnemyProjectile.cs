@@ -59,7 +59,7 @@ public class EnemyProjectile : MonoBehaviour
         lifeTimer -= Time.fixedDeltaTime;
         if(lifeTimer <= 0)
         {
-            Debug.Log($"{name} retuned to pool after {lifeTime} secs.");
+            //Debug.Log($"{name} retuned to pool after {lifeTime} secs.");
             ReturnToPool();
             return;
         }
@@ -106,7 +106,7 @@ public class EnemyProjectile : MonoBehaviour
         }
     }
 
-    private void ReturnToPool()
+    public void ReturnToPool()
     {
         rb.linearVelocity = Vector2.zero;
         gameObject.SetActive(false);

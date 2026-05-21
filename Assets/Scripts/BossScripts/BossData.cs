@@ -1,3 +1,5 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BossData_", menuName = "Game/BossData")]
@@ -17,10 +19,11 @@ public class BossData : ScriptableObject
     public string sortingLayerName = "Default";
     public int orderInLayer = 0;
 
-    [Header("Attack Settings")]
-    public float fireRate = 1f;
-    public string bulletPoolTag = "Enemybullet";
-    public float bulletSpeed = 5f;
+    [Header("ShootingBehaviors (multiple allowed)")]
+    public List<BossShootBehavior> shootBehaviors;
+
+    [Header("SummonBehaviors (multiple allowed)")]
+    public List<BossSummonBehavior> summonBehaviors;
 
     [Header("Phase Transitions")]
     public BossPhaseData[] phases; // Array of phase data, ordered by health threshold descending
@@ -32,7 +35,7 @@ public class BossData : ScriptableObject
 [System.Serializable]
 public class  BossPhaseData
 {
-    [Range(0f, 1f)]
+    [UnityEngine.Range(0f, 1f)]
     public float healthThreshold; // Percentage of max health to trigger this phase
     [TextArea]
     public string dialog; // Dialog to show when this phase starts
