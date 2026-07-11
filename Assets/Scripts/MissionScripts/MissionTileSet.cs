@@ -1,10 +1,12 @@
 using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine.Rendering.Universal;
 
 [CreateAssetMenu(fileName = "MissionTileSet", menuName = "Game/MissionTileSet")]
 public class MissionTileSet : ScriptableObject
 {
     [Header("Background Layer")]
-    public BackgroundLayerData[] layers; // order from far to near layers
+    public BackgroundLayerData[] layers;
 
     [Header("Environment settings")]
     public float baseScrollSpeed = 1f;
@@ -15,8 +17,12 @@ public class MissionTileSet : ScriptableObject
     public AudioClip bossMusic;
     public float bossMusicVolume = 1f;
 
-
     [Header("Visual Overrides")]
-    public Color ambientLight = Color.white;
+    public Color ambientColor = Color.white;
+    
+    [Header("Dynamic Lighting")]
+    public bool useDynamicLighting = false;
+    public Light2D ambientLight;
+    public Gradient timeOfDayGradient;
+    public float transitionDuration = 5f;
 }
-

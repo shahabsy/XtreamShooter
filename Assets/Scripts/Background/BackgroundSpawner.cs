@@ -1,20 +1,16 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System;
-using UnityEngine.Rendering;
 
 public class BackgroundSpawner : MonoBehaviour
 {
     public static BackgroundSpawner Instance { get; private set; }
 
-    
     private MissionTileSet currentTileSet;
     private float globalScrollSpeed;
     private bool scrollingEnabled = true;
     private float scrollSpeedMultiplier = 1f;
 
     [SerializeField] private List<BackgroundLayer> activeLayers = new List<BackgroundLayer>();
-
 
     private void Awake()
     {
@@ -33,12 +29,8 @@ public class BackgroundSpawner : MonoBehaviour
         currentTileSet = tileSet;
         globalScrollSpeed = tileSet.baseScrollSpeed;
 
-
         ClearAllLayer();
         
-        currentTileSet = tileSet;
-        globalScrollSpeed = tileSet.baseScrollSpeed;
-
         SpawnAllLayers();
     }
 
@@ -46,11 +38,9 @@ public class BackgroundSpawner : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
-            //Debug.Log(child.gameObject.name);
             Destroy(child.gameObject);   
         }
         activeLayers.Clear();
-        //Debug.Log("Cleared all background layers.");
     }
 
     private void SpawnAllLayers()
@@ -84,11 +74,9 @@ public class BackgroundSpawner : MonoBehaviour
         scrollingEnabled = enabled;
     }
 
-
     public void SetScrollingMultiplier(float multiplier)
     {
         scrollSpeedMultiplier = multiplier;
-        Debug.Log($"Background Speed Multiplier set to {multiplier}");
     }
 
     public void ResetSpawner()
@@ -97,6 +85,5 @@ public class BackgroundSpawner : MonoBehaviour
         scrollingEnabled = true;
         scrollSpeedMultiplier = 1f;
         globalScrollSpeed = 0f;
-        //Debug.Log("BackgroundSpawner reset.");
     }
 }

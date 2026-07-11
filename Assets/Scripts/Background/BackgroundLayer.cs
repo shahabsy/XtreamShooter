@@ -1,14 +1,14 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System;
-using System.Net.NetworkInformation;
 
 public class BackgroundLayer : MonoBehaviour
 {
     private BackgroundLayerData data;
     private float tileWidth;
     private int sortingOrderBase;
+    private float scrollTimer;
+    private float currentScrollSpeed;
 
     private List<GameObject> activeTiles = new List<GameObject>();
 
@@ -27,8 +27,11 @@ public class BackgroundLayer : MonoBehaviour
         tileWidth = GetTileWidth();
         if (tileWidth <= 0f) return;
 
+        scrollTimer = 0f;
+        currentScrollSpeed = data.scrollSpeed;
         SpawnInitialTiles();
     }
+
     private float GetTileWidth()
     {
         if (data.possibleTiles == null || data.possibleTiles.Count == 0) return 0f;
@@ -36,20 +39,11 @@ public class BackgroundLayer : MonoBehaviour
         BackgroundTileData firstTile = data.possibleTiles[0];
         if (firstTile == null || firstTile.sprite == null)
         {
-            Debug.LogWarning("First tile or its sprite is null for layer: " + data.name);
-            return 1f; // Default width
+            Debug.LogWarning("First tile or its sprite is null for layer: " + name);
+            return 1f;
         }
         float width = firstTile.sprite.rect.width / firstTile.sprite.pixelsPerUnit;
         return width;
-    }
-    private float GetTileWidth0()
-    {
-        if(data.possibleTiles == null || data.possibleTiles.Count == 0)
-        {
-            Debug.LogWarning("No possible tiles defined for layer: " + data.name);
-            return 1f; // Default width
-        }
-        return data.possibleTiles[0].sprite.bounds.size.x;
     }
 
     private void SpawnInitialTiles()
@@ -75,10 +69,10 @@ public class BackgroundLayer : MonoBehaviour
     {
         if(data.possibleTiles == null || data.possibleTiles.Count == 0)
         {
-            Debug.LogWarning("No possible tiles defined for layer: " + data.name);
+            Debug.LogWarning("No possible tiles defined for layer: " + name);
             return null;
         }
-        BackgroundTileData tileData = data.possibleTiles[UnityEngine.Random.Range(0, data.possibleTiles.Count)];
+        BackgroundTileData tileData = data.possibleTiles[Random.Range(0, data.possibleTiles.Count)];
         GameObject tileObj = new GameObject($"Tile_{tileData.name}");
         tileObj.transform.SetParent(transform);
         tileObj.transform.position = new Vector3(xPos, 0, data.zOffset);
@@ -95,16 +89,19 @@ public class BackgroundLayer : MonoBehaviour
     {
         if(activeTiles.Count == 0) return;
 
+        scrollTimer += delta;
+        currentScrollSpeed = CalculateCurrentSpeed(delta);
+
         foreach (var tile in activeTiles)
         {
             if (tile == null) continue;
             
             Vector3 pos = tile.transform.position;
-            pos.x -= delta * data.scrollSpeed;
+            pos.x -= currentScrollSpeed * delta;
             tile.transform.position = pos;
 
             Camera cam = Camera.main;
-            if( cam != null)
+            if(cam != null)
             {
                 float leftEdge = cam.ViewportToWorldPoint(Vector3.zero).x - tileWidth;
 
@@ -117,6 +114,35 @@ public class BackgroundLayer : MonoBehaviour
         }
     }
 
+    private float CalculateCurrentSpeed(float delta)
+    {
+        switch(data.scrollingMode)
+        {
+            case ScrollingMode.Constant:
+                return data.scrollSpeed;
+            
+            case ScrollingMode.EaseInEaseOut:
+                scrollTimer %= data.easeDuration * 2f;
+                if(scrollTimer < data.easeDuration)
+                {
+                    float t = scrollTimer / data.easeDuration;
+                    return Mathf.Lerp(data.scrollSpeedRange.x, data.scrollSpeedRange.y, t);
+                }
+                else
+                {
+                    float t = (scrollTimer - data.easeDuration) / data.easeDuration;
+                    return Mathf.Lerp(data.scrollSpeedRange.y, data.scrollSpeedRange.x, t);
+                }
+            
+            case ScrollingMode.SineWave:
+                float sineValue = Mathf.Sin(scrollTimer * data.sineFrequency * Mathf.PI * 2f);
+                return data.scrollSpeed + sineValue * data.sineAmplitude;
+            
+            default:
+                return data.scrollSpeed;
+        }
+    }
+
     private float GetRightmostTileX()
     {
         float max = -Mathf.Infinity;
@@ -126,19 +152,5 @@ public class BackgroundLayer : MonoBehaviour
                 max = tile.transform.position.x;
         }
         return max;
-    }
-
-    private void ChangeTileSprite(GameObject tile)
-    {
-        if(data.possibleTiles.Count <= 1) return;
-        var newTileData = data.possibleTiles[UnityEngine.Random.Range(0, data.possibleTiles.Count)];
-        if (newTileData != null && newTileData.sprite != null)
-        {
-            var sr = tile.GetComponent<SpriteRenderer>();
-            if(sr != null)
-            {
-                sr.sprite = newTileData.sprite;
-            }
-        }
     }
 }

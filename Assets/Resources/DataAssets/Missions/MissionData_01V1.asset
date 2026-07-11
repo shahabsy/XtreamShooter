@@ -30,7 +30,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 733506741b8e03847a77c8d299071c26, type: 2}
   - {fileID: 11400000, guid: 7611b712c36986347a88de99d2c49989, type: 2}
   enabled: 1
-  tileSet: {fileID: 11400000, guid: 0043fe8a3a81d284db4ecebb2e1df728, type: 2}
+  tileSet: {fileID: 11400000, guid: 8c420888190ea5643b159862647b41f9, type: 2}
   rewards: []
   killCredit: 10
   levelCompleteCredit: 200

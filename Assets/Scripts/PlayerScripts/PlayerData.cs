@@ -61,6 +61,16 @@ public class PlayerData : ScriptableObject
 [System.Serializable]
 public struct ThrusterSpawnData
 {
+    // Need to implement for player thruster visual effects
     public GameObject vfxPrefab;
     public Vector2 offset;
+    /// <summary>
+    /// //////////////////////
+    /// new params
+    /// </summary>
+    public Color color; // Tint-based variation
+    public float intensityScale; // multiplier for the intensity of the thruster effect
+    //////////////////////////////
+    // Use case: player ship trails with configurable colors and intensity based on ship state (e.g., normal flight, boost, damage).
+
 }
